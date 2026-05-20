@@ -5,11 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================
-   TERO STUDIOS — Kinetic Editorial Design System
-   Light-mode, editorial typography, vermillion accent
+   TERO STUDIOS — Modern Studio Design System
+   Light-mode, Syne display, Plus Jakarta body, vermillion accent
    ============================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Work+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap");
 
 @theme inline {
   --radius-sm: 2px;
@@ -48,9 +48,9 @@
   --color-parchment: var(--border);
   --color-slate: var(--muted-foreground);
 
-  --font-display: "Instrument Serif", Georgia, serif;
-  --font-sans: "Work Sans", "Inter", system-ui, sans-serif;
-  --font-body: "Work Sans", "Inter", system-ui, sans-serif;
+  --font-display: "Syne", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   --font-mono: "Space Mono", ui-monospace, monospace;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -91,7 +91,6 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-body);
-    font-feature-settings: "ss01", "ss02";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -103,14 +102,14 @@
 
   h1, h2, h3, h4, h5 {
     font-family: var(--font-display);
-    font-weight: 400;
-    letter-spacing: -0.015em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
-  .font-display { font-family: var(--font-display); font-style: italic; font-weight: 400; }
-  .font-sans-display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; }
+  .font-display { font-family: var(--font-display); font-weight: 700; }
+  .font-sans-display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; }
   .font-body { font-family: var(--font-body); }
   .font-mono { font-family: var(--font-mono); }
 
@@ -136,10 +135,9 @@
 
   .hero-headline {
     font-family: var(--font-display);
-    font-style: italic;
     font-weight: 700;
     line-height: 0.92;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
   }
 }
 
