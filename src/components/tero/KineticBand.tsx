@@ -78,7 +78,7 @@ export function KineticBand() {
         <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-slate">
           (Scroll to play)
         </span>
-        <span className="font-display text-[20px] italic text-ink/70">
+        <span className="font-display text-[20px] text-ink/70">
           a studio in perpetual motion
         </span>
       </div>
