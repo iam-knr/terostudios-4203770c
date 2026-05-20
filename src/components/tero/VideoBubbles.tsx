@@ -182,24 +182,26 @@ function BubbleNode({
   const scrollX = useTransform(progress, [start, end], [ox, 0], { clamp: true });
   const scrollY = useTransform(progress, [start, end], [oy, 0], { clamp: true });
 
-  // Cursor-reactive drift: each bubble nudges away from / toward the cursor
-  // based on its distance. Closer bubbles move more, far ones barely react.
-  const reach = 22; // px max nudge
-  const hoverX = useTransform([mx, my] as unknown as MotionValue<number>[], (v) => {
-    const [vx, vy] = v as unknown as number[];
+  // Cursor-reactive repulsion: bubbles push AWAY from the cursor.
+  // Only active once the cluster is fully assembled (progress >= 0.78).
+  const reach = 28; // px max nudge
+  const hoverX = useTransform([mx, my, progress] as unknown as MotionValue<number>[], (v) => {
+    const [vx, vy, pr] = v as unknown as number[];
+    if (pr < 0.78) return 0;
     const dx = vx - b.x / 100;
     const dy = vy - b.y / 100;
     const d = Math.hypot(dx, dy);
-    const falloff = Math.max(0, 1 - d / 0.35);
-    return dx * reach * falloff;
+    const falloff = Math.max(0, 1 - d / 0.3);
+    return -dx * reach * falloff;
   });
-  const hoverY = useTransform([mx, my] as unknown as MotionValue<number>[], (v) => {
-    const [vx, vy] = v as unknown as number[];
+  const hoverY = useTransform([mx, my, progress] as unknown as MotionValue<number>[], (v) => {
+    const [vx, vy, pr] = v as unknown as number[];
+    if (pr < 0.78) return 0;
     const dx = vx - b.x / 100;
     const dy = vy - b.y / 100;
     const d = Math.hypot(dx, dy);
-    const falloff = Math.max(0, 1 - d / 0.35);
-    return dy * reach * falloff;
+    const falloff = Math.max(0, 1 - d / 0.3);
+    return -dy * reach * falloff;
   });
 
   const x = useTransform([scrollX, hoverX] as MotionValue<number>[], (v) => (v as number[])[0] + (v as number[])[1]);
