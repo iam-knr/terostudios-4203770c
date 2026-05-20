@@ -102,15 +102,15 @@
   }
 
   h1, h2, h3, h4, h5 {
-    font-family: var(--font-sans);
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.015em;
   }
 }
 
 @layer utilities {
-  .font-display { font-family: var(--font-display); font-style: italic; font-weight: 700; }
-  .font-sans-display { font-family: var(--font-sans); }
+  .font-display { font-family: var(--font-display); font-style: italic; font-weight: 400; }
+  .font-sans-display { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; }
   .font-body { font-family: var(--font-body); }
   .font-mono { font-family: var(--font-mono); }
 
