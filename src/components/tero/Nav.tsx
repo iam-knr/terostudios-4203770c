@@ -74,17 +74,17 @@ export function Nav() {
 
   return (
     <header className="fixed left-0 right-0 top-0 z-50 pointer-events-none">
-      {/* Bar background — slides up and fades out on scroll */}
+      {/* Bar background — editorial cream bar that slides up on scroll */}
       <div
         className={[
           "absolute inset-0 transition-all duration-500",
           scrolled
             ? "-translate-y-full opacity-0"
-            : "translate-y-0 opacity-100 bg-[#1a1a1a]/70 backdrop-blur-2xl border-b border-white/5",
+            : "translate-y-0 opacity-100 bg-cream/85 backdrop-blur-xl border-b border-ink/8",
         ].join(" ")}
       />
 
-      <div className="relative container-tero flex h-[80px] items-center justify-between pointer-events-auto">
+      <div className="relative container-tero flex h-[72px] items-center justify-between pointer-events-auto">
         <Link
           ref={logoRef}
           to="/"
@@ -97,35 +97,34 @@ export function Nav() {
             width={220}
             height={50}
             className={[
-              "h-10 md:h-12 w-auto object-contain transition-[filter] duration-300",
-              scrolled && lightBg ? "[filter:invert(1)_brightness(0)]" : "",
+              "h-9 md:h-10 w-auto object-contain transition-[filter] duration-300",
+              // Default cream bar = dark logo. When bar gone over dark bg, invert to white.
+              scrolled && !lightBg ? "[filter:invert(1)_brightness(2)]" : "[filter:invert(1)_brightness(0)]",
             ].join(" ")}
-
           />
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-9">
           {items.map((it) => {
             const active = pathname === it.to;
+            // While bar is visible (not scrolled) → ink text on cream.
+            // After bar slides up → adapt to underlying bg.
+            const onDark = scrolled && !lightBg;
             return (
               <Link
                 key={it.to}
                 to={it.to}
                 className={[
-                  "relative font-body text-[14px] font-medium transition-colors",
-                  lightBg
-                    ? active
-                      ? "text-black"
-                      : "text-black/70 hover:text-black"
-                    : active
-                    ? "text-white"
-                    : "text-white/75 hover:text-white",
+                  "relative font-mono text-[11px] uppercase tracking-[0.22em] font-medium transition-colors",
+                  onDark
+                    ? active ? "text-white" : "text-white/70 hover:text-white"
+                    : active ? "text-ink" : "text-ink/60 hover:text-ink",
                 ].join(" ")}
               >
                 {it.label}
                 <span
                   className={[
-                    "absolute -bottom-1 left-0 h-[2px] bg-vermillion transition-transform duration-300",
+                    "absolute -bottom-1.5 left-0 h-px bg-vermillion transition-transform duration-300 origin-left",
                     active ? "w-full scale-x-100" : "w-full scale-x-0",
                   ].join(" ")}
                 />
@@ -136,7 +135,7 @@ export function Nav() {
 
         <Link
           to="/contact"
-          className="hidden md:inline-flex items-center gap-2 rounded-[4px] bg-gradient-to-br from-[#E8390E] to-[#C42D06] px-5 py-2.5 text-[13px] font-medium text-white shadow-[0_6px_20px_rgba(232,57,14,0.25)] transition-transform hover:scale-[1.03] active:scale-[0.98]"
+          className="hidden md:inline-flex items-center gap-2 bg-ink px-5 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-cream transition-all hover:bg-vermillion"
         >
           Start a project
         </Link>
@@ -146,9 +145,9 @@ export function Nav() {
           onClick={() => setOpen((v) => !v)}
           className={[
             "md:hidden inline-flex h-10 w-10 items-center justify-center rounded-md border transition-colors",
-            lightBg
-              ? "border-black/15 bg-black/5 text-black"
-              : "border-white/15 bg-white/5 text-white",
+            scrolled && !lightBg
+              ? "border-white/20 bg-white/5 text-white"
+              : "border-ink/15 bg-ink/5 text-ink",
           ].join(" ")}
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
