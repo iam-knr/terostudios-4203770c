@@ -8,13 +8,41 @@ import p5 from "@/assets/portfolio-5.jpg";
 import p6 from "@/assets/portfolio-6.jpg";
 
 const cards = [
-  { img: p1, title: "Night Goggles", subtitle: "Mindchatter" },
-  { img: p2, title: "Loss | 逝去", subtitle: "Short Film" },
-  { img: p3, title: "Now | 正念", subtitle: "Movement Study" },
-  { img: p4, title: "Saigon Souls", subtitle: "A film by Robin Mahieux" },
-  { img: p5, title: "Website of the Day", subtitle: "CSSDA · 2026" },
-  { img: p6, title: "FWA of the Day", subtitle: "Awarded · 2026" },
-  { img: p1, title: "Site of the Day", subtitle: "Awwwards · May 14, 2026" },
+  {
+    img: p1,
+    n: "01",
+    title: "Discovery",
+    subtitle: "Step 01 — Brief",
+    desc: "We start with a single conversation. What's the story, who's it for, where does it live, and what does success actually look like.",
+  },
+  {
+    img: p2,
+    n: "02",
+    title: "Concept",
+    subtitle: "Step 02 — Direction",
+    desc: "Mood boards, written treatments and tone references. We commit to a creative direction before a single frame is drawn.",
+  },
+  {
+    img: p3,
+    n: "03",
+    title: "Storyboard",
+    subtitle: "Step 03 — Planning",
+    desc: "Frame-by-frame planning. Every beat, every cut, every transition mapped before production begins.",
+  },
+  {
+    img: p4,
+    n: "04",
+    title: "Production",
+    subtitle: "Step 04 — Build",
+    desc: "Design, animation, 3D, VFX and sound — built in parallel by senior leads, with weekly reviews shared on Frame.io.",
+  },
+  {
+    img: p6,
+    n: "05",
+    title: "Delivery",
+    subtitle: "Step 05 — Launch",
+    desc: "Final masters in every format you need, plus the source files. We stay available for two weeks of free polish post-launch.",
+  },
 ];
 
 // Per-card rotation (degrees) to mimic the scattered poster layout
