@@ -9,6 +9,7 @@ import { StatsSection } from "@/components/tero/StatsSection";
 import { Testimonials } from "@/components/tero/Testimonials";
 import { Awards } from "@/components/tero/Awards";
 import { FAQ } from "@/components/tero/FAQ";
+import { KineticBand } from "@/components/tero/KineticBand";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -30,6 +31,7 @@ function Index() {
       <Hero />
       <LogoStrip />
       <ServicesScroller />
+      <KineticBand />
       <HorizontalShowcase />
       <Process />
       <StatsSection />
