@@ -50,8 +50,8 @@ export function HorizontalShowcase() {
         {/* Top bar — wordmark + menu, mimicking the reference */}
         <div className="flex items-center justify-between px-8 pt-8 md:px-12">
           <span className="font-mono text-[12px] uppercase tracking-[0.2em] text-ink/70">— Menu</span>
-          <span className="font-display text-[28px] italic leading-none text-ink">
-            tero<span className="not-italic font-body font-light tracking-tight">studios</span>
+          <span className="font-display text-[28px] leading-none text-ink">
+            tero<span className="font-body font-medium tracking-tight">studios</span>
           </span>
           <a href="/contact" className="font-body text-[14px] text-ink/80 hover:text-vermillion transition-colors">
             Let's chat →

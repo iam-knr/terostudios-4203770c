@@ -104,7 +104,7 @@ export function StatsSection() {
 
             {/* Note */}
             <div className="col-span-5 md:col-span-3">
-              <p className="font-display italic text-[16px] md:text-[20px] leading-snug text-ink/70">
+              <p className="font-display text-[16px] md:text-[20px] leading-snug text-ink/70">
                 &ldquo;{s.note}.&rdquo;
               </p>
             </div>
