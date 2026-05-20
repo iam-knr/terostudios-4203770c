@@ -12,35 +12,30 @@ const cards = [
     n: "01",
     title: "Discovery",
     subtitle: "Step 01 — Brief",
-    desc: "We start with a single conversation. What's the story, who's it for, where does it live, and what does success actually look like.",
   },
   {
     img: p2,
     n: "02",
     title: "Concept",
     subtitle: "Step 02 — Direction",
-    desc: "Mood boards, written treatments and tone references. We commit to a creative direction before a single frame is drawn.",
   },
   {
     img: p3,
     n: "03",
     title: "Storyboard",
     subtitle: "Step 03 — Planning",
-    desc: "Frame-by-frame planning. Every beat, every cut, every transition mapped before production begins.",
   },
   {
     img: p4,
     n: "04",
     title: "Production",
     subtitle: "Step 04 — Build",
-    desc: "Design, animation, 3D, VFX and sound — built in parallel by senior leads, with weekly reviews shared on Frame.io.",
   },
   {
     img: p6,
     n: "05",
     title: "Delivery",
     subtitle: "Step 05 — Launch",
-    desc: "Final masters in every format you need, plus the source files. We stay available for two weeks of free polish post-launch.",
   },
 ];
 
