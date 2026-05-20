@@ -173,10 +173,9 @@ function BubbleNode({
 }) {
   const { ox, oy } = offscreenOffset(b.from);
 
-  // Each bubble travels from offscreen → 0 within its own slice of scroll.
-  // Convergence happens between 0 and 0.55 of the section's scroll range.
-  const start = b.order;
-  const end = Math.min(b.order + 0.32, 0.62);
+  // Each bubble travels from offscreen → 0 quickly, then stays locked in the cluster.
+  const start = b.order * 0.45;
+  const end = Math.min(start + 0.2, 0.42);
 
   const x = useTransform(progress, [start, end], [ox, 0], { clamp: true });
   const y = useTransform(progress, [start, end], [oy, 0], { clamp: true });
@@ -187,6 +186,8 @@ function BubbleNode({
   return (
     <motion.div
       className="absolute z-10"
+      whileHover={{ scale: 1.18, zIndex: 50 }}
+      transition={{ type: "spring", stiffness: 260, damping: 18 }}
       style={{
         left: `${b.x}%`,
         top: `${b.y}%`,
