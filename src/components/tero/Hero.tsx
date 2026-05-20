@@ -208,17 +208,28 @@ export function Hero() {
         style={{ perspective: 1400 }}
       >
         <motion.div
-          style={{ rotateX: rx, rotateY: ry, x: px, y: py, transformStyle: "preserve-3d" }}
+          style={{
+            rotateX: rx,
+            rotateY: ry,
+            x: px,
+            y: py,
+            transformStyle: "preserve-3d",
+          }}
           className="relative overflow-hidden rounded-2xl border border-parchment shadow-[0_30px_80px_-30px_rgba(17,19,24,0.35)]"
         >
-          <video
-            src="/hero-reel.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-auto block aspect-[16/10] object-cover bg-ink"
-          />
+          <motion.div
+            style={{ scale: videoScale, y: videoY }}
+            className="relative will-change-transform"
+          >
+            <video
+              src="/hero-reel.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-auto block aspect-[16/10] object-cover bg-ink"
+            />
+          </motion.div>
 
           {/* Sheen sweep */}
           <motion.div
