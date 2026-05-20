@@ -184,14 +184,6 @@ export function ServicesScroller() {
             {String(active + 1).padStart(2, "0")} / {String(services.length).padStart(2, "0")}
           </span>
         </div>
-
-        {/* Bottom counter */}
-        <div className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-between px-8 pb-8 md:px-12 font-mono text-[11px] uppercase tracking-[0.25em] text-[#efe9d8]/60">
-          <span>— They trust us</span>
-          <span>
-            {String(active + 1).padStart(2, "0")} / {String(services.length).padStart(2, "0")}
-          </span>
-        </div>
       </div>
     </section>
   );
