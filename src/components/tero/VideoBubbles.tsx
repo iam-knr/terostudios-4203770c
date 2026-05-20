@@ -199,11 +199,11 @@ function BubbleNode({
         opacity,
       }}
     >
-      {/* continuous float */}
+      {/* subtle individual shimmer, while the parent keeps the cluster locked */}
       <motion.div
         animate={{
-          y: [0, -b.drift, 0, b.drift * 0.6, 0],
-          x: [0, b.drift * 0.4, 0, -b.drift * 0.3, 0],
+          y: [0, -b.drift, 0, b.drift * 0.45, 0],
+          x: [0, b.drift * 0.22, 0, -b.drift * 0.18, 0],
         }}
         transition={{ duration: b.bob, repeat: Infinity, ease: "easeInOut" }}
         className="w-full h-full"
@@ -240,38 +240,41 @@ function BubbleLink({
     return `${Math.max(8, Math.min(78, 22 + offset))}%`;
   });
 
+  const glossBackground = useTransform(
+    [hlX, hlY] as unknown as MotionValue<string>[],
+    (v) => {
+      const [x, y] = v as unknown as string[];
+      return `radial-gradient(circle at ${x} ${y}, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.34) 13%, rgba(255,255,255,0.08) 27%, transparent 42%), radial-gradient(circle at ${100 - parseFloat(x)}% ${100 - parseFloat(y)}%, rgba(255,255,255,0.25) 0%, transparent 28%)`;
+    }
+  );
+
   return (
     <Link
       to="/portfolio"
-      className="group relative block w-full h-full rounded-full overflow-hidden will-change-transform transition-transform duration-500 ease-out hover:scale-[1.12]"
+      className="group relative block w-full h-full rounded-full overflow-hidden will-change-transform transition-transform duration-500 ease-out hover:scale-[1.16] hover:z-30"
       style={{
         boxShadow:
-          "0 25px 60px -20px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(255,255,255,0.08)",
+          "0 30px 70px -22px rgba(0,0,0,0.85), 0 10px 24px -16px rgba(255,255,255,0.35), inset 0 0 0 1px rgba(255,255,255,0.20)",
       }}
     >
       <img
         src={img}
         alt=""
         loading="lazy"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover saturate-[1.16] contrast-[1.08] transition-transform duration-700 ease-out group-hover:scale-110"
       />
-      {/* dark tint */}
-      <div className="absolute inset-0 bg-black/15" />
+      {/* glass depth */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_32%_18%,rgba(255,255,255,0.35),transparent_24%),radial-gradient(circle_at_70%_82%,rgba(0,0,0,0.50),transparent_48%),linear-gradient(145deg,rgba(255,255,255,0.10),rgba(0,0,0,0.24))]" />
 
       {/* Cursor-following specular highlight */}
       <motion.div
         aria-hidden
-        className="absolute inset-0 rounded-full pointer-events-none"
-        style={{
-          background: useTransform(
-            [hlX, hlY] as unknown as MotionValue<string>[],
-            (v) => {
-              const [x, y] = v as unknown as string[];
-              return `radial-gradient(circle at ${x} ${y}, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.18) 14%, transparent 34%), radial-gradient(circle at ${100 - parseFloat(x)}% ${100 - parseFloat(y)}%, rgba(255,255,255,0.22) 0%, transparent 28%)`;
-            }
-          ),
-        }}
+        className="absolute inset-0 rounded-full pointer-events-none opacity-70 transition-opacity duration-300 group-hover:opacity-100"
+        style={{ background: glossBackground }}
       />
+
+      {/* hover sweep */}
+      <div className="absolute inset-y-[-25%] left-[-80%] w-1/2 rotate-[24deg] bg-gradient-to-r from-transparent via-white/45 to-transparent blur-[2px] opacity-0 transition-all duration-700 ease-out group-hover:left-[130%] group-hover:opacity-100" />
 
       {/* Rim shading */}
       <div
@@ -279,7 +282,7 @@ function BubbleLink({
         className="absolute inset-0 rounded-full pointer-events-none"
         style={{
           boxShadow:
-            "inset 0 -10px 22px rgba(255,255,255,0.16), inset 0 10px 20px rgba(0,0,0,0.4)",
+            "inset 8px 12px 18px rgba(255,255,255,0.18), inset -12px -18px 34px rgba(0,0,0,0.62), inset 0 0 0 2px rgba(255,255,255,0.10)",
         }}
       />
 
