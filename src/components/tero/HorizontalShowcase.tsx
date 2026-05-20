@@ -151,7 +151,7 @@ export function HorizontalShowcase() {
         <div className="flex items-center justify-between px-8 pb-8 md:px-12 font-mono text-[11px] uppercase tracking-[0.25em] text-ink/60">
           <span>Scroll →</span>
           <span>
-            {String(active + 1).padStart(2, "0")} / {String(cards.length).padStart(2, "0")} — Selected works
+            {String(active + 1).padStart(2, "0")} / {String(cards.length).padStart(2, "0")} — Our process
           </span>
         </div>
       </div>
