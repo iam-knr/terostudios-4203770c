@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import hero from "@/assets/hero-fluid.jpg";
+
 import { Link } from "@tanstack/react-router";
 import { ArrowDown } from "lucide-react";
 
@@ -203,13 +203,15 @@ export function Hero() {
           style={{ rotateX: rx, rotateY: ry, x: px, y: py, transformStyle: "preserve-3d" }}
           className="relative overflow-hidden rounded-2xl border border-parchment shadow-[0_30px_80px_-30px_rgba(17,19,24,0.35)]"
         >
-          <img
-            src={hero}
-            alt="Abstract 3D fluid form animation still"
-            width={1600}
-            height={1024}
-            className="w-full h-auto block"
+          <video
+            src="/hero-reel.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-auto block aspect-[16/10] object-cover bg-ink"
           />
+
           {/* Sheen sweep */}
           <motion.div
             aria-hidden
