@@ -122,14 +122,14 @@ export function Hero() {
             </span>
           </motion.div>
 
-          {/* Stage */}
-          <div className="relative flex-1 w-full flex items-center justify-center">
+          {/* Stage — headlines sit OUTSIDE the video frame, in the cream margins */}
+          <div className="relative flex-1 w-full">
             <motion.h1
               style={{ y: headTopY, opacity: headOpacity }}
-              className="absolute top-[10%] left-0 right-0 text-center font-display font-extrabold uppercase tracking-tighter leading-[0.85] text-ink text-[clamp(56px,10vw,160px)] z-30 pointer-events-none"
+              className="absolute top-[2%] left-0 right-0 text-center font-display font-extrabold uppercase tracking-tighter leading-[0.85] text-ink text-[clamp(32px,5.6vw,84px)] z-30 pointer-events-none"
             >
               Stories{" "}
-              <span className="italic font-normal lowercase font-body text-[0.38em] align-middle text-vermillion px-3">
+              <span className="italic font-normal lowercase font-body text-[0.42em] align-middle text-vermillion px-3">
                 that
               </span>{" "}
               move,
@@ -137,10 +137,10 @@ export function Hero() {
 
             <motion.h1
               style={{ y: headBotY, opacity: headOpacity }}
-              className="absolute bottom-[18%] left-0 right-0 text-center font-display font-extrabold uppercase tracking-tighter leading-[0.85] text-ink text-[clamp(56px,10vw,160px)] z-30 pointer-events-none"
+              className="absolute bottom-[2%] left-0 right-0 text-center font-display font-extrabold uppercase tracking-tighter leading-[0.85] text-ink text-[clamp(32px,5.6vw,84px)] z-30 pointer-events-none"
             >
               frames{" "}
-              <span className="italic font-normal lowercase font-body text-[0.38em] align-middle text-ink/70">
+              <span className="italic font-normal lowercase font-body text-[0.42em] align-middle text-ink/70">
                 stay.
               </span>
             </motion.h1>
