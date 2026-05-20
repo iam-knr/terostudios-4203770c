@@ -70,6 +70,41 @@ export function ServicesScroller() {
       }}
     >
       <div className="sticky top-0 h-screen overflow-hidden">
+        {/* Section-scoped ambient glow — warm cream/amber/vermillion */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden" style={{ mixBlendMode: "multiply" }}>
+          {[
+            { color: "rgba(232,57,14,0.18)", size: 560, from: { x: "-8vw", y: "8vh" }, to: { x: "55vw", y: "65vh" }, duration: 26 },
+            { color: "rgba(196,154,60,0.30)", size: 680, from: { x: "65vw", y: "-5vh" }, to: { x: "8vw", y: "70vh" }, duration: 34 },
+            { color: "rgba(218,160,110,0.28)", size: 520, from: { x: "35vw", y: "75vh" }, to: { x: "78vw", y: "15vh" }, duration: 30 },
+            { color: "rgba(232,57,14,0.14)", size: 440, from: { x: "5vw", y: "55vh" }, to: { x: "60vw", y: "5vh" }, duration: 38 },
+          ].map((b, i) => (
+            <motion.div
+              key={i}
+              initial={{ x: b.from.x, y: b.from.y }}
+              animate={{ x: [b.from.x, b.to.x, b.from.x], y: [b.from.y, b.to.y, b.from.y] }}
+              transition={{ duration: b.duration, ease: "easeInOut", repeat: Infinity }}
+              style={{
+                width: b.size,
+                height: b.size,
+                background: `radial-gradient(circle at center, ${b.color} 0%, transparent 65%)`,
+                filter: "blur(70px)",
+                position: "absolute",
+                left: 0,
+                top: 0,
+                borderRadius: "9999px",
+                willChange: "transform",
+              }}
+            />
+          ))}
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage: "radial-gradient(rgba(80,50,20,0.5) 1px, transparent 1px)",
+              backgroundSize: "3px 3px",
+            }}
+          />
+        </div>
+
         {/* Top bar */}
         <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-8 pt-8 md:px-12">
           <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-ink/60">
