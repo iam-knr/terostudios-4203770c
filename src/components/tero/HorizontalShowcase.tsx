@@ -131,12 +131,6 @@ export function HorizontalShowcase() {
                     {c.subtitle}
                   </p>
                 </div>
-                {/* Step description at bottom */}
-                <div className="absolute inset-x-0 bottom-0 p-5 text-center bg-gradient-to-t from-ink/85 via-ink/55 to-transparent">
-                  <p className="font-body text-[13px] leading-relaxed text-white/95">
-                    {c.desc}
-                  </p>
-                </div>
               </motion.div>
             ))}
           </motion.div>
