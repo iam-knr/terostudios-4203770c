@@ -280,91 +280,130 @@ function BubbleLink({
       className="group relative block w-full h-full rounded-full overflow-hidden will-change-transform transition-transform duration-500 ease-out hover:scale-[1.16] hover:z-30"
       style={{
         boxShadow:
-          // outer drop, soft contact shadow, rim light, inner glass tint
-          "0 36px 70px -22px rgba(0,0,0,0.95), 0 14px 28px -18px rgba(0,0,0,0.6), 0 4px 10px -2px rgba(255,255,255,0.18), inset 0 0 0 1px rgba(255,255,255,0.28)",
+          "0 40px 80px -18px rgba(0,0,0,0.95), 0 18px 36px -16px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(255,255,255,0.4)",
       }}
     >
-      {/* Photo content — slightly distorted via scale for refraction feel */}
+      {/* Video content — scale + saturation simulates lens magnification */}
       <video
         src="/hero-reel.mp4"
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover scale-[1.08] saturate-[1.18] contrast-[1.10] transition-transform duration-700 ease-out group-hover:scale-[1.18]"
+        className="absolute inset-0 w-full h-full object-cover scale-[1.2] saturate-[1.25] contrast-[1.12] brightness-[1.05] transition-transform duration-700 ease-out group-hover:scale-[1.3]"
       />
 
-      {/* Chromatic edge tint — bluish refraction ring like real glass */}
+      {/* Spherical edge darkening — gives the lens-ball depth */}
+      <div
+        aria-hidden
+        className="absolute inset-0 rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle at 50% 50%, transparent 42%, rgba(0,0,0,0.22) 72%, rgba(0,0,0,0.6) 92%, rgba(0,0,0,0.9) 100%)",
+        }}
+      />
+
+      {/* Chromatic rim — cyan/magenta refraction fringe */}
       <div
         aria-hidden
         className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen"
         style={{
           background:
-            "radial-gradient(circle at 50% 50%, transparent 58%, rgba(120,180,255,0.18) 78%, rgba(255,180,210,0.12) 92%, transparent 100%)",
+            "radial-gradient(circle at 50% 50%, transparent 70%, rgba(120,200,255,0.32) 86%, rgba(255,160,210,0.22) 94%, transparent 100%)",
         }}
       />
 
-      {/* Deep glass depth — top-left light, bottom-right shadow */}
+      {/* Soft top-left main highlight */}
       <div
         aria-hidden
         className="absolute inset-0 rounded-full pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle at 30% 22%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.18) 14%, transparent 32%), radial-gradient(circle at 72% 80%, rgba(0,0,0,0.55) 0%, transparent 52%), linear-gradient(150deg, rgba(255,255,255,0.14) 0%, transparent 38%, rgba(0,0,0,0.30) 100%)",
+            "radial-gradient(ellipse 55% 45% at 28% 22%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.4) 22%, rgba(255,255,255,0.12) 42%, transparent 62%)",
+          mixBlendMode: "screen",
         }}
       />
 
-      {/* Cursor-following specular highlight (large soft) */}
+      {/* Bottom bounce light */}
+      <div
+        aria-hidden
+        className="absolute inset-0 rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 32% at 50% 92%, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.1) 32%, transparent 58%)",
+          mixBlendMode: "screen",
+        }}
+      />
+
+      {/* Cursor-following gloss */}
       <motion.div
         aria-hidden
-        className="absolute inset-0 rounded-full pointer-events-none opacity-90"
-        style={{ background: glossBackground }}
+        className="absolute inset-0 rounded-full pointer-events-none"
+        style={{ background: glossBackground, mixBlendMode: "screen" }}
       />
 
-      {/* Crisp pin-prick specular — fixed top-left, simulates point light */}
+      {/* Signature pin-prick specular */}
       <div
         aria-hidden
         className="absolute pointer-events-none rounded-full"
         style={{
-          top: "10%",
-          left: "16%",
-          width: "22%",
-          height: "14%",
+          top: "14%",
+          left: "20%",
+          width: "16%",
+          height: "11%",
           background:
-            "radial-gradient(ellipse at center, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.55) 35%, transparent 70%)",
-          filter: "blur(1px)",
+            "radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(255,255,255,0.75) 32%, rgba(255,255,255,0.18) 65%, transparent 80%)",
+          filter: "blur(0.6px)",
         }}
       />
 
-      {/* Secondary small highlight */}
+      {/* Crescent rim arc — bottom-right reflection */}
+      <div
+        aria-hidden
+        className="absolute inset-0 rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle at 75% 78%, transparent 62%, rgba(255,255,255,0.55) 73%, transparent 80%)",
+          mixBlendMode: "screen",
+        }}
+      />
+
+      {/* Sparkle dots */}
       <div
         aria-hidden
         className="absolute pointer-events-none rounded-full"
         style={{
-          top: "22%",
-          left: "30%",
-          width: "8%",
-          height: "5%",
+          top: "30%", left: "40%", width: "4%", height: "4%",
+          background: "rgba(255,255,255,0.95)",
+          filter: "blur(0.4px)",
+          boxShadow: "0 0 6px rgba(255,255,255,0.8)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute pointer-events-none rounded-full"
+        style={{
+          top: "62%", left: "72%", width: "3%", height: "3%",
           background: "rgba(255,255,255,0.85)",
-          filter: "blur(0.5px)",
+          filter: "blur(0.4px)",
         }}
       />
 
       {/* hover sweep */}
-      <div className="absolute inset-y-[-25%] left-[-80%] w-1/2 rotate-[24deg] bg-gradient-to-r from-transparent via-white/45 to-transparent blur-[2px] opacity-0 transition-all duration-700 ease-out group-hover:left-[130%] group-hover:opacity-100" />
+      <div className="absolute inset-y-[-25%] left-[-80%] w-1/2 rotate-[24deg] bg-gradient-to-r from-transparent via-white/55 to-transparent blur-[2px] opacity-0 transition-all duration-700 ease-out group-hover:left-[130%] group-hover:opacity-100" />
 
-      {/* Rim shading — dark vignette + bright thin rim */}
+      {/* Final crisp glass rim */}
       <div
         aria-hidden
         className="absolute inset-0 rounded-full pointer-events-none"
         style={{
           boxShadow:
-            "inset 6px 10px 22px rgba(255,255,255,0.22), inset -14px -22px 40px rgba(0,0,0,0.72), inset 0 0 0 1.5px rgba(255,255,255,0.18), inset 0 -2px 6px rgba(255,255,255,0.10)",
+            "inset 0 0 0 1px rgba(255,255,255,0.5), inset 4px 6px 18px rgba(255,255,255,0.3), inset -10px -16px 34px rgba(0,0,0,0.6), inset 0 -3px 8px rgba(255,255,255,0.2)",
         }}
       />
 
       {/* Hover play icon */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
         <div className="w-10 h-10 rounded-full border border-white/70 backdrop-blur-sm flex items-center justify-center bg-black/40">
           <span className="block w-0 h-0 border-t-[6px] border-t-transparent border-l-[9px] border-l-white border-b-[6px] border-b-transparent ml-1" />
         </div>
