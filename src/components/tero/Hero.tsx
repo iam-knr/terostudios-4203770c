@@ -72,7 +72,7 @@ export function Hero() {
         const sample = document.createElement("canvas");
         const sctx = sample.getContext("2d")!;
 
-        const target = Math.min(w, h) * 0.72;
+        const target = Math.min(w, h) * 0.92;
         const scale = target / Math.max(img.width, img.height);
         const sw = Math.round(img.width * scale);
         const sh = Math.round(img.height * scale);
@@ -82,7 +82,7 @@ export function Hero() {
         const data = sctx.getImageData(0, 0, sw, sh).data;
 
         // Wider step → fewer but bigger grains
-        const step = Math.max(4, Math.round(Math.min(sw, sh) / 110));
+        const step = Math.max(2, Math.round(Math.min(sw, sh) / 180));
         const offsetX = (w - sw) / 2;
         const offsetY = (h - sh) / 2;
 
@@ -111,7 +111,7 @@ export function Hero() {
           else if (side === 2) { sx = Math.random() * w; sy = h + 60 + Math.random() * 300; }
           else { sx = -60 - Math.random() * 300; sy = Math.random() * h; }
 
-          const baseSize = 2.2 + Math.random() * 3.4; // chunky
+          const baseSize = 0.6 + Math.random() * 1.8;
           return {
             hx: pt.x,
             hy: pt.y,
