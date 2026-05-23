@@ -72,7 +72,7 @@ export function Hero() {
         const sample = document.createElement("canvas");
         const sctx = sample.getContext("2d")!;
 
-        const target = Math.min(w, h) * 0.72;
+        const target = Math.min(w, h) * 0.92;
         const scale = target / Math.max(img.width, img.height);
         const sw = Math.round(img.width * scale);
         const sh = Math.round(img.height * scale);
