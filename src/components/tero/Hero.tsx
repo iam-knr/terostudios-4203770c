@@ -1,176 +1,310 @@
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
+import logoSrc from "@/assets/tero-mark.png";
 
+/**
+ * Particle/grain hero — thousands of warm grains fly in from random
+ * positions and settle into the shape of the Tero Studios logo,
+ * then breathe gently and react to the cursor. Inspired by propvr.ai.
+ */
 export function Hero() {
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [formed, setFormed] = useState(false);
 
-  // Scroll-tied progress across the tall sticky section
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-  const p = useSpring(scrollYProgress, { stiffness: 120, damping: 28, mass: 0.4 });
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const wrap = wrapRef.current;
+    if (!canvas || !wrap) return;
 
-  // Editorial frame expansion: reaches fullscreen quickly, then holds
-  const insetY = useTransform(p, [0, 0.25], ["18%", "0%"]);
-  const insetX = useTransform(p, [0, 0.25], ["18%", "0%"]);
-  const radius = useTransform(p, [0, 0.25], ["14px", "0px"]);
-  const clipPath = useTransform(
-    [insetY, insetX, radius] as never,
-    ([y, x, r]: string[]) => `inset(${y} ${x} ${y} ${x} round ${r})`,
-  );
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
 
-  // Headline splits apart and fades as frame expands
-  const headTopY = useTransform(p, [0, 0.2], [0, -180]);
-  const headBotY = useTransform(p, [0, 0.2], [0, 180]);
-  const headOpacity = useTransform(p, [0, 0.18], [1, 0]);
-  const metaOpacity = useTransform(p, [0, 0.12], [1, 0]);
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
-  // Video scale: starts slightly zoomed inside the small frame, settles to 1
-  const videoScale = useTransform(p, [0, 0.25], [1.15, 1]);
-  const overlayOpacity = useTransform(p, [0.2, 0.32], [0, 1]);
+    type P = {
+      // home (target) position in CSS px relative to canvas
+      hx: number;
+      hy: number;
+      // current
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      size: number;
+      color: string;
+      // per-particle breathing offset
+      phase: number;
+    };
+
+    let particles: P[] = [];
+    let mouseX = -9999;
+    let mouseY = -9999;
+    let raf = 0;
+    let formedAt = 0;
+    const start = performance.now();
+
+    const palette = [
+      "rgba(232, 57, 14, 0.95)",   // vermillion
+      "rgba(232, 57, 14, 0.7)",
+      "rgba(196, 154, 60, 0.85)",  // amber
+      "rgba(26, 26, 31, 0.9)",     // ink
+      "rgba(26, 26, 31, 0.6)",
+      "rgba(218, 160, 110, 0.75)", // sand
+    ];
+
+    function resize() {
+      const w = wrap!.clientWidth;
+      const h = wrap!.clientHeight;
+      canvas!.width = w * DPR;
+      canvas!.height = h * DPR;
+      canvas!.style.width = `${w}px`;
+      canvas!.style.height = `${h}px`;
+      ctx!.setTransform(DPR, 0, 0, DPR, 0, 0);
+      buildParticles(w, h);
+    }
+
+    function buildParticles(w: number, h: number) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = logoSrc;
+      img.onload = () => {
+        // Off-screen sample canvas
+        const sample = document.createElement("canvas");
+        const sctx = sample.getContext("2d")!;
+
+        // Fit the logo into ~62% of the smallest dimension
+        const target = Math.min(w, h) * 0.62;
+        const scale = target / Math.max(img.width, img.height);
+        const sw = Math.round(img.width * scale);
+        const sh = Math.round(img.height * scale);
+        sample.width = sw;
+        sample.height = sh;
+        sctx.drawImage(img, 0, 0, sw, sh);
+        const data = sctx.getImageData(0, 0, sw, sh).data;
+
+        // Sample every Nth pixel for grain density
+        const step = Math.max(2, Math.round(Math.min(sw, sh) / 180));
+        const offsetX = (w - sw) / 2;
+        const offsetY = (h - sh) / 2;
+
+        const pts: { x: number; y: number; a: number }[] = [];
+        for (let y = 0; y < sh; y += step) {
+          for (let x = 0; x < sw; x += step) {
+            const i = (y * sw + x) * 4;
+            const a = data[i + 3];
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            // Treat dark or opaque pixels as logo body
+            const lum = (r + g + b) / 3;
+            if (a > 110 && lum < 230) {
+              pts.push({ x: x + offsetX, y: y + offsetY, a });
+            }
+          }
+        }
+
+        particles = pts.map((pt) => {
+          // Spawn from random outside-edge
+          const side = Math.floor(Math.random() * 4);
+          let sx = 0;
+          let sy = 0;
+          if (side === 0) { sx = Math.random() * w; sy = -40 - Math.random() * 200; }
+          else if (side === 1) { sx = w + 40 + Math.random() * 200; sy = Math.random() * h; }
+          else if (side === 2) { sx = Math.random() * w; sy = h + 40 + Math.random() * 200; }
+          else { sx = -40 - Math.random() * 200; sy = Math.random() * h; }
+
+          return {
+            hx: pt.x,
+            hy: pt.y,
+            x: sx,
+            y: sy,
+            vx: 0,
+            vy: 0,
+            size: 0.6 + Math.random() * 1.8,
+            color: palette[Math.floor(Math.random() * palette.length)],
+            phase: Math.random() * Math.PI * 2,
+          };
+        });
+      };
+    }
+
+    function tick(now: number) {
+      const w = canvas!.clientWidth;
+      const h = canvas!.clientHeight;
+      ctx!.clearRect(0, 0, w, h);
+
+      const t = (now - start) / 1000;
+      const formProgress = Math.min(1, t / 2.2);
+
+      let avgDist = 0;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        // Gentle breathing offset around home
+        const bob = Math.sin(t * 0.9 + p.phase) * 2.4;
+        const sway = Math.cos(t * 0.7 + p.phase * 0.7) * 2.0;
+        const tx = p.hx + sway;
+        const ty = p.hy + bob;
+
+        // Spring toward target
+        const dx = tx - p.x;
+        const dy = ty - p.y;
+        const stiffness = 0.055 + formProgress * 0.04;
+        const damping = 0.78;
+        p.vx = (p.vx + dx * stiffness) * damping;
+        p.vy = (p.vy + dy * stiffness) * damping;
+
+        // Cursor repulsion
+        const mdx = p.x - mouseX;
+        const mdy = p.y - mouseY;
+        const md2 = mdx * mdx + mdy * mdy;
+        const R = 110;
+        if (md2 < R * R) {
+          const d = Math.sqrt(md2) || 1;
+          const force = (1 - d / R) * 6;
+          p.vx += (mdx / d) * force;
+          p.vy += (mdy / d) * force;
+        }
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        avgDist += Math.abs(dx) + Math.abs(dy);
+
+        ctx!.beginPath();
+        ctx!.fillStyle = p.color;
+        ctx!.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+
+      if (!formed && particles.length > 0) {
+        const a = avgDist / particles.length;
+        if (a < 3) {
+          if (!formedAt) formedAt = now;
+          if (now - formedAt > 400) setFormed(true);
+        } else {
+          formedAt = 0;
+        }
+      }
+
+      raf = requestAnimationFrame(tick);
+    }
+
+    function onMove(e: MouseEvent) {
+      const r = canvas!.getBoundingClientRect();
+      mouseX = e.clientX - r.left;
+      mouseY = e.clientY - r.top;
+    }
+    function onLeave() {
+      mouseX = -9999;
+      mouseY = -9999;
+    }
+
+    resize();
+    raf = requestAnimationFrame(tick);
+    window.addEventListener("resize", resize);
+    wrap.addEventListener("mousemove", onMove);
+    wrap.addEventListener("mouseleave", onLeave);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+      wrap.removeEventListener("mousemove", onMove);
+      wrap.removeEventListener("mouseleave", onLeave);
+    };
+  }, [formed]);
 
   return (
     <section
-      ref={sectionRef}
-      className="relative w-full bg-cream"
-      style={{ height: "200vh" }}
+      className="relative w-full overflow-hidden bg-cream"
+      style={{ minHeight: "100vh" }}
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* Hairline magazine grid */}
-        <div aria-hidden className="pointer-events-none absolute inset-0">
-          <div className="absolute top-0 left-6 md:left-12 w-px h-full bg-ink/[0.06]" />
-          <div className="absolute top-0 right-6 md:right-12 w-px h-full bg-ink/[0.06]" />
-          <div className="absolute top-1/2 left-0 w-full h-px bg-ink/[0.06]" />
+      {/* Editorial hairline grid */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute top-0 left-6 md:left-12 w-px h-full bg-ink/[0.06]" />
+        <div className="absolute top-0 right-6 md:right-12 w-px h-full bg-ink/[0.06]" />
+        <div className="absolute top-1/2 left-0 w-full h-px bg-ink/[0.06]" />
+      </div>
+
+      {/* Warm ambient glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 55% at 50% 55%, rgba(232,57,14,0.10) 0%, rgba(196,154,60,0.06) 35%, transparent 70%)",
+        }}
+      />
+
+      {/* Particle stage */}
+      <div ref={wrapRef} className="absolute inset-0 z-10">
+        <canvas ref={canvasRef} className="block w-full h-full" />
+      </div>
+
+      {/* Foreground content */}
+      <div className="relative z-20 mx-auto flex h-screen max-w-[1500px] flex-col px-6 md:px-12 pointer-events-none">
+        {/* Top meta */}
+        <div className="flex items-center justify-between pt-28">
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/55">
+            Tero Studios — Est. 2014
+          </span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/55">
+            Bengaluru / IN
+          </span>
         </div>
 
-        {/* Central showreel frame — expands to FULL viewport on scroll */}
+        {/* Center spacer (logo forms here in canvas) */}
+        <div className="flex-1" />
+
+        {/* Caption that appears once the grains have formed */}
         <motion.div
-          style={{ clipPath, WebkitClipPath: clipPath as never }}
-          className="absolute inset-0 z-20 overflow-hidden bg-ink shadow-[0_30px_80px_-30px_rgba(17,19,24,0.45)] pointer-events-none"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: formed ? 1 : 0, y: formed ? 0 : 12 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-10 text-center"
         >
-          <motion.video
-            src="/hero-reel.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            style={{ scale: videoScale }}
-            className="absolute inset-0 w-full h-full object-cover will-change-transform"
-          />
-          {/* Tint for editorial cohesion */}
-          <div className="absolute inset-0 bg-ink/20 mix-blend-multiply" />
-
-          {/* Editorial corner labels */}
-          <div className="absolute top-6 left-6 text-cream/70 font-mono text-[10px] uppercase tracking-[0.25em]">
-            Studio Reel // 001
-          </div>
-          <div className="absolute top-6 right-6 flex items-center gap-2 text-cream/70 font-mono text-[10px] uppercase tracking-[0.25em]">
-            <span className="h-1.5 w-1.5 rounded-full bg-vermillion animate-pulse" />
-            REC · 24 FPS · 4K
-          </div>
-          <div className="absolute bottom-6 left-6 text-cream/70 font-mono text-[10px] uppercase tracking-[0.25em]">
-            Selected Works · 2024
-          </div>
-          <div className="absolute bottom-6 right-6 text-cream/70 font-mono text-[10px] uppercase tracking-[0.25em]">
-            Tero Studios ©
-          </div>
-
-          {/* Fullscreen overlay (appears when frame fully expanded) */}
-          <motion.div
-            style={{ opacity: overlayOpacity }}
-            className="absolute inset-0 flex flex-col items-center justify-center text-cream pointer-events-none"
-          >
-            {/* Soft vignette behind text for legibility */}
-            <div
-              aria-hidden
-              className="absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 35%, transparent 65%)",
-              }}
-            />
-            <span
-              className="relative font-mono text-[10px] uppercase tracking-[0.4em] text-cream/80 mb-6"
-              style={{ textShadow: "0 2px 12px rgba(0,0,0,0.6)" }}
-            >
-              Showreel 2024
+          <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-ink/55 mb-3">
+            — A studio of moving things
+          </p>
+          <h1 className="font-display font-extrabold uppercase tracking-tighter leading-[0.9] text-ink text-[clamp(22px,3.4vw,46px)]">
+            Stories{" "}
+            <span className="italic font-normal lowercase font-body text-[0.7em] text-vermillion">
+              that
+            </span>{" "}
+            move, frames{" "}
+            <span className="italic font-normal lowercase font-body text-[0.7em] text-ink/70">
+              that stay.
             </span>
-            <h2
-              className="relative font-display font-extrabold uppercase tracking-tighter text-[clamp(40px,7vw,110px)] leading-[0.9] text-center text-white"
-              style={{ textShadow: "0 4px 30px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5)" }}
-            >
-              Now <span className="italic text-vermillion">playing.</span>
-            </h2>
-          </motion.div>
-
+          </h1>
         </motion.div>
 
-
-        <div className="relative h-full w-full max-w-[1500px] mx-auto px-6 md:px-12 flex flex-col">
-          {/* Overline meta — minimal */}
-          <motion.div
-            style={{ opacity: metaOpacity }}
-            className="w-full flex justify-between items-center pt-28"
-          >
-            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/50">
-              Tero Studios — Est. 2014
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/50">
-              Bengaluru / IN
-            </span>
-          </motion.div>
-
-          {/* Stage — headlines sit OUTSIDE the video frame, in the cream margins */}
-          <div className="relative flex-1 w-full">
-            <motion.h1
-              style={{ y: headTopY, opacity: headOpacity }}
-              className="absolute top-[2%] left-0 right-0 text-center font-display font-extrabold uppercase tracking-tighter leading-[0.85] text-ink text-[clamp(32px,5.6vw,84px)] z-30 pointer-events-none"
+        {/* Bottom actions */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: formed ? 1 : 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="flex items-center justify-between pb-10 pointer-events-auto"
+        >
+          <div className="flex gap-3">
+            <Link
+              to="/contact"
+              className="px-7 py-3.5 bg-vermillion text-cream font-mono text-[11px] font-bold uppercase tracking-[0.2em] transition-colors hover:bg-ink"
             >
-              Stories{" "}
-              <span className="italic font-normal lowercase font-body text-[0.42em] align-middle text-vermillion px-3">
-                that
-              </span>{" "}
-              move,
-            </motion.h1>
-
-            <motion.h1
-              style={{ y: headBotY, opacity: headOpacity }}
-              className="absolute bottom-[2%] left-0 right-0 text-center font-display font-extrabold uppercase tracking-tighter leading-[0.85] text-ink text-[clamp(32px,5.6vw,84px)] z-30 pointer-events-none"
+              Start a project
+            </Link>
+            <Link
+              to="/portfolio"
+              className="px-7 py-3.5 border border-ink/20 text-ink font-mono text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-ink hover:text-cream"
             >
-              frames{" "}
-              <span className="italic font-normal lowercase font-body text-[0.42em] align-middle text-ink/70">
-                stay.
-              </span>
-            </motion.h1>
+              See work
+            </Link>
           </div>
-
-          {/* Bottom actions — slim */}
-          <motion.div
-            style={{ opacity: metaOpacity }}
-            className="w-full flex justify-between items-center pb-10"
-          >
-            <div className="flex gap-3">
-              <Link
-                to="/contact"
-                className="px-7 py-3.5 bg-vermillion text-cream font-mono text-[11px] font-bold uppercase tracking-[0.2em] transition-colors hover:bg-ink"
-              >
-                Start a project
-              </Link>
-              <Link
-                to="/portfolio"
-                className="px-7 py-3.5 border border-ink/20 text-ink font-mono text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-ink hover:text-cream"
-              >
-                See work
-              </Link>
-            </div>
-
-            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/40">
-              Scroll ↓
-            </span>
-          </motion.div>
-        </div>
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/40">
+            Scroll ↓
+          </span>
+        </motion.div>
       </div>
     </section>
   );
