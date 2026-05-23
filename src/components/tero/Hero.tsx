@@ -82,7 +82,7 @@ export function Hero() {
         const data = sctx.getImageData(0, 0, sw, sh).data;
 
         // Wider step → fewer but bigger grains
-        const step = Math.max(4, Math.round(Math.min(sw, sh) / 110));
+        const step = Math.max(2, Math.round(Math.min(sw, sh) / 180));
         const offsetX = (w - sw) / 2;
         const offsetY = (h - sh) / 2;
 
