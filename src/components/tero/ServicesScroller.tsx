@@ -142,9 +142,10 @@ export function ServicesScroller() {
                 {i === active && (
                   <>
                     <span className="inline-block h-px w-6 bg-vermillion" />
-                    <span className="font-body text-[12px] text-ink/70">Now</span>
+                    <span className="font-body text-[12px] text-ink/70">{s.tag}</span>
                   </>
                 )}
+
               </li>
             ))}
           </ul>
