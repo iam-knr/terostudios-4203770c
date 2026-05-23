@@ -4,9 +4,9 @@ import { Link } from "@tanstack/react-router";
 import logoSrc from "@/assets/tero-mark.png";
 
 /**
- * Particle/grain hero — thousands of warm grains fly in from random
+ * Particle/grain hero — chunky warm grains fly in from random
  * positions and settle into the shape of the Tero Studios logo,
- * then breathe gently and react to the cursor. Inspired by propvr.ai.
+ * then breathe gently and react to the cursor.
  */
 export function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -24,18 +24,17 @@ export function Hero() {
     const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
     type P = {
-      // home (target) position in CSS px relative to canvas
       hx: number;
       hy: number;
-      // current
       x: number;
       y: number;
       vx: number;
       vy: number;
       size: number;
+      baseSize: number;
       color: string;
-      // per-particle breathing offset
       phase: number;
+      glow: number;
     };
 
     let particles: P[] = [];
@@ -47,11 +46,11 @@ export function Hero() {
 
     const palette = [
       "rgba(232, 57, 14, 0.95)",   // vermillion
-      "rgba(232, 57, 14, 0.7)",
-      "rgba(196, 154, 60, 0.85)",  // amber
-      "rgba(26, 26, 31, 0.9)",     // ink
-      "rgba(26, 26, 31, 0.6)",
-      "rgba(218, 160, 110, 0.75)", // sand
+      "rgba(255, 95, 40, 0.85)",   // bright vermillion
+      "rgba(196, 154, 60, 0.9)",   // amber
+      "rgba(218, 160, 110, 0.85)", // sand
+      "rgba(26, 26, 31, 0.92)",    // ink
+      "rgba(60, 40, 30, 0.8)",     // espresso
     ];
 
     function resize() {
@@ -70,12 +69,10 @@ export function Hero() {
       img.crossOrigin = "anonymous";
       img.src = logoSrc;
       img.onload = () => {
-        // Off-screen sample canvas
         const sample = document.createElement("canvas");
         const sctx = sample.getContext("2d")!;
 
-        // Fit the logo into ~62% of the smallest dimension
-        const target = Math.min(w, h) * 0.62;
+        const target = Math.min(w, h) * 0.72;
         const scale = target / Math.max(img.width, img.height);
         const sw = Math.round(img.width * scale);
         const sh = Math.round(img.height * scale);
@@ -84,32 +81,37 @@ export function Hero() {
         sctx.drawImage(img, 0, 0, sw, sh);
         const data = sctx.getImageData(0, 0, sw, sh).data;
 
-        // Sample every Nth pixel for grain density
-        const step = Math.max(2, Math.round(Math.min(sw, sh) / 180));
+        // Wider step → fewer but bigger grains
+        const step = Math.max(4, Math.round(Math.min(sw, sh) / 110));
         const offsetX = (w - sw) / 2;
         const offsetY = (h - sh) / 2;
 
-        const pts: { x: number; y: number; a: number }[] = [];
+        const pts: { x: number; y: number }[] = [];
         for (let y = 0; y < sh; y += step) {
           for (let x = 0; x < sw; x += step) {
             const i = (y * sw + x) * 4;
             const a = data[i + 3];
             if (a > 80) {
-              pts.push({ x: x + offsetX, y: y + offsetY, a });
+              // slight jitter so grain feels organic, not gridded
+              pts.push({
+                x: x + offsetX + (Math.random() - 0.5) * step * 0.6,
+                y: y + offsetY + (Math.random() - 0.5) * step * 0.6,
+              });
             }
           }
         }
 
-        particles = pts.map((pt) => {
-          // Spawn from random outside-edge
+        particles = pts.map(() => 0).map((_, idx) => {
+          const pt = pts[idx];
           const side = Math.floor(Math.random() * 4);
           let sx = 0;
           let sy = 0;
-          if (side === 0) { sx = Math.random() * w; sy = -40 - Math.random() * 200; }
-          else if (side === 1) { sx = w + 40 + Math.random() * 200; sy = Math.random() * h; }
-          else if (side === 2) { sx = Math.random() * w; sy = h + 40 + Math.random() * 200; }
-          else { sx = -40 - Math.random() * 200; sy = Math.random() * h; }
+          if (side === 0) { sx = Math.random() * w; sy = -60 - Math.random() * 300; }
+          else if (side === 1) { sx = w + 60 + Math.random() * 300; sy = Math.random() * h; }
+          else if (side === 2) { sx = Math.random() * w; sy = h + 60 + Math.random() * 300; }
+          else { sx = -60 - Math.random() * 300; sy = Math.random() * h; }
 
+          const baseSize = 2.2 + Math.random() * 3.4; // chunky
           return {
             hx: pt.x,
             hy: pt.y,
@@ -117,9 +119,11 @@ export function Hero() {
             y: sy,
             vx: 0,
             vy: 0,
-            size: 0.6 + Math.random() * 1.8,
+            size: baseSize,
+            baseSize,
             color: palette[Math.floor(Math.random() * palette.length)],
             phase: Math.random() * Math.PI * 2,
+            glow: Math.random() < 0.18 ? 1 : 0, // ~18% are accent glow grains
           };
         });
       };
@@ -128,7 +132,9 @@ export function Hero() {
     function tick(now: number) {
       const w = canvas!.clientWidth;
       const h = canvas!.clientHeight;
-      ctx!.clearRect(0, 0, w, h);
+      // Soft trail for a glow-feel
+      ctx!.fillStyle = "rgba(253, 250, 246, 0.28)";
+      ctx!.fillRect(0, 0, w, h);
 
       const t = (now - start) / 1000;
       const formProgress = Math.min(1, t / 2.2);
@@ -137,28 +143,25 @@ export function Hero() {
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // Gentle breathing offset around home
-        const bob = Math.sin(t * 0.9 + p.phase) * 2.4;
-        const sway = Math.cos(t * 0.7 + p.phase * 0.7) * 2.0;
+        const bob = Math.sin(t * 0.9 + p.phase) * 2.8;
+        const sway = Math.cos(t * 0.7 + p.phase * 0.7) * 2.4;
         const tx = p.hx + sway;
         const ty = p.hy + bob;
 
-        // Spring toward target
         const dx = tx - p.x;
         const dy = ty - p.y;
         const stiffness = 0.055 + formProgress * 0.04;
-        const damping = 0.78;
+        const damping = 0.8;
         p.vx = (p.vx + dx * stiffness) * damping;
         p.vy = (p.vy + dy * stiffness) * damping;
 
-        // Cursor repulsion
         const mdx = p.x - mouseX;
         const mdy = p.y - mouseY;
         const md2 = mdx * mdx + mdy * mdy;
-        const R = 110;
+        const R = 140;
         if (md2 < R * R) {
           const d = Math.sqrt(md2) || 1;
-          const force = (1 - d / R) * 6;
+          const force = (1 - d / R) * 8;
           p.vx += (mdx / d) * force;
           p.vy += (mdy / d) * force;
         }
@@ -168,11 +171,21 @@ export function Hero() {
 
         avgDist += Math.abs(dx) + Math.abs(dy);
 
+        const pulse = 1 + Math.sin(t * 1.4 + p.phase) * 0.15;
+        const r = p.baseSize * pulse;
+
+        if (p.glow) {
+          ctx!.shadowColor = "rgba(232, 57, 14, 0.6)";
+          ctx!.shadowBlur = 14;
+        } else {
+          ctx!.shadowBlur = 0;
+        }
         ctx!.beginPath();
         ctx!.fillStyle = p.color;
-        ctx!.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx!.arc(p.x, p.y, r, 0, Math.PI * 2);
         ctx!.fill();
       }
+      ctx!.shadowBlur = 0;
 
       if (!formed && particles.length > 0) {
         const a = avgDist / particles.length;
@@ -220,16 +233,27 @@ export function Hero() {
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
         <div className="absolute top-0 left-6 md:left-12 w-px h-full bg-ink/[0.06]" />
         <div className="absolute top-0 right-6 md:right-12 w-px h-full bg-ink/[0.06]" />
-        <div className="absolute top-1/2 left-0 w-full h-px bg-ink/[0.06]" />
+        <div className="absolute top-[18%] left-0 w-full h-px bg-ink/[0.05]" />
+        <div className="absolute bottom-[18%] left-0 w-full h-px bg-ink/[0.05]" />
       </div>
 
-      {/* Warm ambient glow */}
+      {/* Layered ambient glow */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0"
         style={{
           background:
-            "radial-gradient(ellipse 70% 55% at 50% 55%, rgba(232,57,14,0.10) 0%, rgba(196,154,60,0.06) 35%, transparent 70%)",
+            "radial-gradient(ellipse 60% 50% at 50% 52%, rgba(232,57,14,0.14) 0%, rgba(196,154,60,0.08) 35%, transparent 70%)",
+        }}
+      />
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0"
+        animate={{ opacity: [0.5, 0.85, 0.5] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          background:
+            "radial-gradient(circle 320px at 30% 70%, rgba(196,154,60,0.18), transparent 60%), radial-gradient(circle 280px at 75% 30%, rgba(232,57,14,0.14), transparent 60%)",
         }}
       />
 
@@ -241,35 +265,44 @@ export function Hero() {
       {/* Foreground content */}
       <div className="relative z-20 mx-auto flex h-screen max-w-[1500px] flex-col px-6 md:px-12 pointer-events-none">
         {/* Top meta */}
-        <div className="flex items-center justify-between pt-28">
-          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/55">
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="flex items-center justify-between pt-28"
+        >
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/55 flex items-center gap-2">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-vermillion animate-pulse" />
             Tero Studios — Est. 2014
           </span>
           <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/55">
-            Bengaluru / IN
+            Bengaluru · 12.97° N
           </span>
-        </div>
+        </motion.div>
 
-        {/* Center spacer (logo forms here in canvas) */}
         <div className="flex-1" />
 
-        {/* Caption that appears once the grains have formed */}
+        {/* Caption that appears once grains have formed */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: formed ? 1 : 0, y: formed ? 0 : 12 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: formed ? 1 : 0, y: formed ? 0 : 16 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="mb-10 text-center"
         >
-          <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-ink/55 mb-3">
-            — A studio of moving things
-          </p>
-          <h1 className="font-display font-extrabold uppercase tracking-tighter leading-[0.9] text-ink text-[clamp(22px,3.4vw,46px)]">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <span className="h-px w-8 bg-vermillion/60" />
+            <p className="font-mono text-[10px] uppercase tracking-[0.4em] text-vermillion">
+              A studio of moving things
+            </p>
+            <span className="h-px w-8 bg-vermillion/60" />
+          </div>
+          <h1 className="font-display font-extrabold uppercase tracking-tighter leading-[0.9] text-ink text-[clamp(24px,3.6vw,52px)]">
             Stories{" "}
-            <span className="italic font-normal lowercase font-body text-[0.7em] text-vermillion">
+            <span className="italic font-normal lowercase font-body text-[0.65em] text-vermillion">
               that
             </span>{" "}
             move, frames{" "}
-            <span className="italic font-normal lowercase font-body text-[0.7em] text-ink/70">
+            <span className="italic font-normal lowercase font-body text-[0.65em] text-ink/70">
               that stay.
             </span>
           </h1>
@@ -279,26 +312,34 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: formed ? 1 : 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="flex items-center justify-between pb-10 pointer-events-auto"
+          transition={{ duration: 0.6, delay: 0.25 }}
+          className="flex items-end justify-between pb-10 pointer-events-auto"
         >
           <div className="flex gap-3">
             <Link
               to="/contact"
-              className="px-7 py-3.5 bg-vermillion text-cream font-mono text-[11px] font-bold uppercase tracking-[0.2em] transition-colors hover:bg-ink"
+              className="group relative overflow-hidden px-8 py-4 bg-vermillion text-cream font-mono text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-ink"
             >
-              Start a project
+              <span className="relative z-10">Start a project →</span>
+              <span className="absolute inset-0 bg-ink translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" />
             </Link>
             <Link
               to="/portfolio"
-              className="px-7 py-3.5 border border-ink/20 text-ink font-mono text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-ink hover:text-cream"
+              className="px-8 py-4 border border-ink/25 text-ink font-mono text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-ink hover:text-cream hover:border-ink"
             >
-              See work
+              See the reel
             </Link>
           </div>
-          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/40">
-            Scroll ↓
-          </span>
+          <motion.div
+            animate={{ y: [0, 6, 0] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            className="flex flex-col items-end gap-2"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-ink/50">
+              Scroll
+            </span>
+            <span className="block w-px h-10 bg-gradient-to-b from-ink/40 to-transparent" />
+          </motion.div>
         </motion.div>
       </div>
     </section>
