@@ -72,7 +72,7 @@ export function Hero() {
         const sample = document.createElement("canvas");
         const sctx = sample.getContext("2d")!;
 
-        const target = Math.min(w, h) * 0.92;
+        const target = Math.min(w, h) * 0.62;
         const scale = target / Math.max(img.width, img.height);
         const sw = Math.round(img.width * scale);
         const sh = Math.round(img.height * scale);
@@ -272,7 +272,7 @@ export function Hero() {
         <div className="flex-1" />
 
         {/* Caption + CTA grouped near bottom so they don't overlap the logo */}
-        <div className="pb-28 md:pb-36">
+        <div className="pb-10 md:pb-14">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: formed ? 1 : 0, y: formed ? 0 : 18 }}
