@@ -258,7 +258,7 @@ export function Hero() {
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex items-center justify-between pt-20 md:pt-24"
+          className="flex items-center justify-between pt-14 md:pt-16"
         >
           <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-ink/55 flex items-center gap-2.5">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-vermillion animate-pulse" />
@@ -269,7 +269,7 @@ export function Hero() {
           </span>
         </motion.div>
 
-        <div className="flex-1" />
+        <div className="h-8 md:h-12" />
 
         {/* Caption that appears once grains have formed */}
         <motion.div
@@ -306,7 +306,7 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: formed ? 1 : 0 }}
           transition={{ duration: 0.6, delay: 0.25 }}
-          className="flex items-end justify-between pb-10 md:pb-12 pointer-events-auto"
+          className="flex items-end justify-between pb-6 md:pb-8 pointer-events-auto"
         >
           <div className="flex gap-3">
             <Link
