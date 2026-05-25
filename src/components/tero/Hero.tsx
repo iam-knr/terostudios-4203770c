@@ -301,6 +301,8 @@ export function Hero() {
           </h1>
         </motion.div>
 
+        <div className="flex-1" />
+
         {/* Bottom actions */}
         <motion.div
           initial={{ opacity: 0 }}
