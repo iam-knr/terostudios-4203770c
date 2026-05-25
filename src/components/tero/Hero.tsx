@@ -237,14 +237,12 @@ export function Hero() {
             "radial-gradient(ellipse 60% 50% at 50% 52%, rgba(232,57,14,0.14) 0%, rgba(196,154,60,0.08) 35%, transparent 70%)",
         }}
       />
-      <motion.div
+      <div
         aria-hidden
         className="pointer-events-none absolute inset-0 z-0"
-        animate={{ opacity: [0.5, 0.85, 0.5] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         style={{
           background:
-            "radial-gradient(circle 320px at 30% 70%, rgba(196,154,60,0.18), transparent 60%), radial-gradient(circle 280px at 75% 30%, rgba(232,57,14,0.14), transparent 60%)",
+            "radial-gradient(circle 320px at 30% 70%, rgba(196,154,60,0.16), transparent 60%), radial-gradient(circle 280px at 75% 30%, rgba(232,57,14,0.12), transparent 60%)",
         }}
       />
 
