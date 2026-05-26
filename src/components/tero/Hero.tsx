@@ -72,17 +72,20 @@ export function Hero() {
         const sample = document.createElement("canvas");
         const sctx = sample.getContext("2d")!;
 
-        const target = Math.min(w, h) * 0.72;
-        const scale = target / Math.max(img.width, img.height);
-        const sw = Math.round(img.width * scale);
-        const sh = Math.round(img.height * scale);
+        // Crop source to the "TERO" portion only (omit "STUDIOS")
+        const cropW = Math.round(img.width * 0.58);
+        const cropH = img.height;
+
+        const target = Math.min(w * 0.7, h * 0.55);
+        const scale = target / Math.max(cropW, cropH);
+        const sw = Math.round(cropW * scale);
+        const sh = Math.round(cropH * scale);
         sample.width = sw;
         sample.height = sh;
-        sctx.drawImage(img, 0, 0, sw, sh);
+        sctx.drawImage(img, 0, 0, cropW, cropH, 0, 0, sw, sh);
         const data = sctx.getImageData(0, 0, sw, sh).data;
 
-        // Denser sampling so small letters (STUDIOS) read clearly
-        const step = Math.max(2, Math.round(Math.min(sw, sh) / 220));
+        const step = Math.max(2, Math.round(Math.min(sw, sh) / 180));
         const offsetX = (w - sw) / 2;
         const offsetY = (h - sh) / 2;
 
