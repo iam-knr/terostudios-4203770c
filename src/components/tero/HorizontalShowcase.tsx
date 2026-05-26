@@ -1,46 +1,26 @@
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
-import p1 from "@/assets/portfolio-1.jpg";
-import p2 from "@/assets/portfolio-2.jpg";
-import p3 from "@/assets/portfolio-3.jpg";
-import p4 from "@/assets/portfolio-4.jpg";
-import p6 from "@/assets/portfolio-6.jpg";
+import pScript from "@/assets/process-script.jpg";
+import pStoryboard from "@/assets/process-storyboard.jpg";
+import pAnimatics from "@/assets/process-animatics.jpg";
+import p3D from "@/assets/process-3dmodel.jpg";
+import pLighting from "@/assets/process-lighting.jpg";
+import pVFX from "@/assets/process-vfx.jpg";
+import pDelivery from "@/assets/process-delivery.jpg";
 
 const cards = [
-  {
-    img: p1,
-    n: "01",
-    title: "Discovery",
-    subtitle: "Step 01 — Brief",
-  },
-  {
-    img: p2,
-    n: "02",
-    title: "Concept",
-    subtitle: "Step 02 — Direction",
-  },
-  {
-    img: p3,
-    n: "03",
-    title: "Storyboard",
-    subtitle: "Step 03 — Planning",
-  },
-  {
-    img: p4,
-    n: "04",
-    title: "Production",
-    subtitle: "Step 04 — Build",
-  },
-  {
-    img: p6,
-    n: "05",
-    title: "Delivery",
-    subtitle: "Step 05 — Launch",
-  },
+  { img: pScript, n: "01", title: "Script", subtitle: "Step 01 — Story" },
+  { img: pStoryboard, n: "02", title: "Storyboard", subtitle: "Step 02 — Frames" },
+  { img: pAnimatics, n: "03", title: "Animatics", subtitle: "Step 03 — Timing" },
+  { img: p3D, n: "04", title: "3D Modelling", subtitle: "Step 04 — Build" },
+  { img: pLighting, n: "05", title: "Lighting", subtitle: "Step 05 — Mood" },
+  { img: pVFX, n: "06", title: "VFX", subtitle: "Step 06 — Effects" },
+  { img: pDelivery, n: "07", title: "Final Delivery", subtitle: "Step 07 — Launch" },
 ];
 
 // Per-card rotation (degrees) to mimic the scattered poster layout
 const tilts = [-6, 4, -3, 6, -4, 3, -5];
+
 
 export function HorizontalShowcase() {
   const ref = useRef<HTMLDivElement>(null);
