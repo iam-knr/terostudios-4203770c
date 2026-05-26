@@ -17,7 +17,7 @@ const services = [
 
 export function Footer() {
   return (
-    <footer className="bg-ink text-cream">
+    <footer data-nav-theme="dark" className="bg-ink text-cream">
       {/* Final CTA strip */}
       <section className="border-b border-white/10">
         <div className="container-tero grid grid-cols-1 gap-10 py-24 md:grid-cols-12 md:py-32">
