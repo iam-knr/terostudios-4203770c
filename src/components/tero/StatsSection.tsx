@@ -10,11 +10,11 @@ export function StatsSection() {
   return (
     <section className="relative overflow-hidden bg-cream">
       {/* Editorial header */}
-      <div className="container-tero pt-20 md:pt-28">
+      <div className="container-tero pt-40 md:pt-56">
         <div className="flex items-end justify-between gap-6 border-b border-parchment pb-8">
           <div>
             <p className="overline">— By the numbers / 2014–2026</p>
-            <h2 className="mt-5 hero-headline text-[clamp(40px,6vw,84px)] max-w-3xl text-ink">
+            <h2 className="mt-5 hero-headline text-[clamp(36px,5vw,72px)] max-w-3xl text-ink leading-[1.05]">
               A decade of frames,
               <br />
               <span className="text-vermillion">shipped</span> with intent.
