@@ -47,7 +47,7 @@ export function Footer() {
       <div className="container-tero grid grid-cols-2 gap-12 py-20 md:grid-cols-12">
         <div className="col-span-2 md:col-span-4">
           <div className="flex items-center">
-            <img src={logo} alt="Tero Studios" width={220} height={64} className="h-16 md:h-20 w-auto object-contain [filter:invert(1)_brightness(2)]" />
+            <img src={logo} alt="Tero Studios" width={220} height={64} className="h-16 md:h-20 w-auto object-contain [filter:brightness(0)_invert(1)]" />
           </div>
           <p className="mt-6 max-w-xs font-body text-[14px] leading-relaxed text-cream/60">
             An animation and motion design studio building films, frames and
