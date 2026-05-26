@@ -110,8 +110,8 @@ export function Nav() {
             height={50}
             className={[
               "h-9 md:h-10 w-auto object-contain transition-[filter] duration-300",
-              // Default cream bar = dark logo. When bar gone over dark bg, invert to white.
-              scrolled && !lightBg ? "[filter:invert(1)_brightness(2)]" : "[filter:invert(1)_brightness(0)]",
+              // Light bg → dark logo, dark bg → white logo
+              lightBg ? "[filter:invert(1)_brightness(0)]" : "[filter:invert(1)_brightness(2)]",
             ].join(" ")}
           />
         </Link>
