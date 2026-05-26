@@ -50,7 +50,7 @@ export function StatsSection() {
                   / 0{i + 1}
                 </span>
                 <div className="flex flex-col gap-2">
-                  <h3 className="font-display font-extrabold tracking-tighter text-ink leading-[0.85] text-[clamp(56px,7vw,104px)] transition-colors duration-500 group-hover/item:text-vermillion">
+                  <h3 className="font-display font-extrabold tracking-tight text-ink leading-none text-[clamp(44px,5.5vw,84px)] pt-2 transition-colors duration-500 group-hover/item:text-vermillion">
                     {s.n}
                   </h3>
                   <div className="flex items-baseline justify-between gap-3 pt-3 border-t border-parchment">
