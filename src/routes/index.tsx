@@ -34,9 +34,9 @@ function Index() {
       <LogoStrip />
       <ServicesScroller />
       <KineticBand />
-      <HorizontalShowcase />
-      
       <StatsSection />
+      
+      <HorizontalShowcase />
       <Testimonials />
       <Awards />
       <FAQ />
