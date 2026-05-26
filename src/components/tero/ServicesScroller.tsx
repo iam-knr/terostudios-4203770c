@@ -112,11 +112,14 @@ export function ServicesScroller() {
           />
         </div>
 
-        {/* Top bar */}
-        <div className="absolute inset-x-0 top-0 z-20 flex items-center justify-center px-8 pt-8 md:px-12">
-          <span className="font-display text-[22px] leading-none text-ink">
-            tero<span className="font-body font-medium tracking-tight">studios</span>
+        {/* Top bar — section label, offset below the fixed nav */}
+        <div className="absolute inset-x-0 top-[88px] md:top-[96px] z-20 flex flex-col items-center gap-2 px-8 md:px-12">
+          <span className="font-mono text-[11px] uppercase tracking-[0.32em] text-ink/55">
+            What we craft
           </span>
+          <h2 className="font-display text-[clamp(20px,2.2vw,28px)] leading-none text-ink">
+            Our Primary Services
+          </h2>
         </div>
 
         {/* Left number rail */}
