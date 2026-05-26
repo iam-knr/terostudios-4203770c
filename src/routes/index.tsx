@@ -41,6 +41,7 @@ function Index() {
       <Testimonials />
       <Awards />
       <FAQ />
+      <CTAInteractive />
     </PageLayout>
   );
 }
