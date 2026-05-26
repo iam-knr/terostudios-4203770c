@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { GrainMorph } from "./GrainMorph";
 
 const services = [
   {
@@ -152,28 +153,8 @@ export function ServicesScroller() {
         </div>
 
         {/* Right side: mark + description */}
-        <div className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 z-30 w-[34%] md:w-[28%] max-w-sm text-right">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={services[active].n}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col items-end gap-6"
-            >
-              <div
-                className="font-display text-[clamp(56px,6.5vw,104px)] leading-none flex items-baseline gap-2"
-                style={{ color: "var(--accent-vermillion)", letterSpacing: "-0.04em" }}
-              >
-                {services[active].mark}
-                <span className="text-ink/40 text-[0.5em]">↗</span>
-              </div>
-              <p className="font-body text-[14px] md:text-[15px] leading-relaxed text-ink/75">
-                {services[active].desc}
-              </p>
-            </motion.div>
-          </AnimatePresence>
+        <div className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 z-30 w-[40%] md:w-[34%] max-w-[420px]">
+          <GrainMorph active={active} />
         </div>
 
         {/* The vertically scrolling stack of service names (left/center column) */}
