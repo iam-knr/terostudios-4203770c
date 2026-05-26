@@ -69,14 +69,14 @@ export function HorizontalShowcase() {
       }}
     >
       <div className="sticky top-0 flex h-screen flex-col overflow-hidden">
-        {/* Top bar — wordmark + menu, mimicking the reference */}
-        <div className="flex items-center justify-center px-8 pt-8 md:px-12">
-          <span className="font-display text-[28px] leading-none text-ink">
-            tero<span className="font-body font-medium tracking-tight">studios</span>
+        {/* Top bar — section label, offset below the fixed nav */}
+        <div className="absolute inset-x-0 top-[88px] md:top-[96px] z-20 flex flex-col items-center gap-2 px-8 md:px-12">
+          <span className="font-mono text-[11px] uppercase tracking-[0.32em] text-ink/55">
+            From brief to launch
           </span>
-          <a href="/contact" className="font-body text-[14px] text-ink/80 hover:text-vermillion transition-colors">
-            Let's chat →
-          </a>
+          <h2 className="font-display text-[clamp(20px,2.2vw,28px)] leading-none text-ink">
+            Our Process
+          </h2>
         </div>
 
         {/* Numbered index — left rail */}
