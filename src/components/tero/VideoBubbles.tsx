@@ -60,6 +60,7 @@ export function VideoBubbles() {
   return (
     <section
       ref={sectionRef}
+      data-nav-theme="dark"
       className="relative w-full bg-[#070707]"
       style={{ height: "260vh" }}
     >
