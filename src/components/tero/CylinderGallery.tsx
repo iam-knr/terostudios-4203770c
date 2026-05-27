@@ -112,10 +112,10 @@ export function CylinderGallery() {
                   key={i}
                   className="absolute left-1/2 top-1/2 overflow-hidden rounded-[6px] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] ring-1 ring-cream/10"
                   style={{
-                    width: "min(36vw, 320px)",
-                    height: "min(44vh, 420px)",
-                    marginLeft: "min(-18vw, -160px)",
-                    marginTop: "min(-22vh, -210px)",
+                    width: "min(24vw, 220px)",
+                    height: "min(36vh, 300px)",
+                    marginLeft: "min(-12vw, -110px)",
+                    marginTop: "min(-18vh, -150px)",
                     transformStyle: "preserve-3d",
                     transform: `rotateY(${angle}deg) translateZ(${z}px)`,
                     backfaceVisibility: "visible",
