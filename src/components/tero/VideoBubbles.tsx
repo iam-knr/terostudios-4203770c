@@ -240,7 +240,7 @@ export function VideoBubbles() {
         </div>
 
         {/* Bubbles — absolutely positioned at center, rAF-driven transforms */}
-        <div className="absolute inset-0 z-10" style={{ perspective: 1100 }}>
+        <div className="absolute inset-0 z-10" style={{ perspective: 980 }}>
           <div className="absolute left-1/2 top-1/2" style={{ transform: "translate(-50%,-50%)" }}>
             {BUBBLES.map((b, i) => (
               <div
@@ -284,7 +284,7 @@ function BubbleLink({ img, index }: { img: string; index: number }) {
     >
       <div
         className="relative w-full h-full rounded-full overflow-hidden bg-black"
-        style={{ clipPath: "circle(49.7% at 50% 50%)", isolation: "isolate" }}
+        style={{ clipPath: "circle(49.85% at 50% 50%)", isolation: "isolate" }}
       >
         <img
           src={img}
@@ -292,17 +292,17 @@ function BubbleLink({ img, index }: { img: string; index: number }) {
           loading={index < 5 ? "eager" : "lazy"}
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ transform: `scale(1.12) rotate(${index % 2 ? -3 : 3}deg)`, filter: "saturate(1.18) contrast(1.08) brightness(0.94)" }}
+          style={{ transform: `scale(1.18) rotate(${index % 2 ? -4 : 4}deg)`, filter: "saturate(1.2) contrast(1.12) brightness(0.9)" }}
         />
         {/* curvature shading */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle at 48% 44%, transparent 38%, rgba(0,0,0,0.28) 72%, rgba(0,0,0,0.78) 100%)" }} />
+          style={{ background: "radial-gradient(circle at 44% 38%, transparent 32%, rgba(0,0,0,0.30) 68%, rgba(0,0,0,0.86) 100%)" }} />
         {/* top dark cap */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none"
           style={{ background: "radial-gradient(circle at 50% -4%, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.14) 28%, transparent 46%)" }} />
         {/* glass refraction wash */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen opacity-70"
-          style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.46) 0%, transparent 23%, transparent 55%, rgba(255,120,64,0.18) 78%, rgba(255,255,255,0.30) 100%)" }} />
+          style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.55) 0%, transparent 22%, transparent 54%, rgba(255,120,64,0.20) 78%, rgba(255,255,255,0.34) 100%)" }} />
         {/* caustic crescent */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen"
           style={{ background: "radial-gradient(circle at 76% 80%, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.25) 12%, transparent 27%)" }} />
