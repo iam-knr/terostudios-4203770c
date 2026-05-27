@@ -63,6 +63,9 @@ export function VideoBubbles() {
 
     let mx = -9999, my = -9999;
     let smx = -9999, smy = -9999;
+    let pmx = -9999, pmy = -9999; // previous smoothed pointer (for velocity)
+    let pvx = 0, pvy = 0;         // smoothed pointer velocity (px/sec)
+    let pspeed = 0;                // smoothed pointer speed magnitude
     let progress = 0;
     let raf = 0;
     let active = true;
