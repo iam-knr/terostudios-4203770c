@@ -118,7 +118,8 @@ export function CylinderGallery() {
                     marginTop: "min(-22vh, -210px)",
                     transformStyle: "preserve-3d",
                     transform: `rotateY(${angle}deg) translateZ(${z}px)`,
-                    backfaceVisibility: "hidden",
+                    backfaceVisibility: "visible",
+                    opacity: 0.55 + 0.45 * fanVal,
                   }}
                 >
                   <img
