@@ -10,28 +10,28 @@ import p6 from "@/assets/portfolio-6.jpg";
 const IMAGES = [p1, p2, p3, p4, p5, p6];
 
 // Tight 3D cluster: local x/y/z coordinates rotate together like one stuck object.
-type B = { x: number; y: number; z: number; size: number; img: string; from: "l" | "r" | "t" | "b"; bob: number; phase: number };
+type B = { x: number; y: number; z: number; size: number; img: string; from: "l" | "r" | "t" | "b"; bob: number; phase: number; spin: number };
 
 const BUBBLES: B[] = [
-  { x:    0, y:    0, z:   70, size: 232, img: IMAGES[2], from: "t", bob: 7.1, phase: 0.0 },
-  { x:  -92, y:  -48, z:  120, size: 180, img: IMAGES[0], from: "l", bob: 7.7, phase: 0.8 },
-  { x:   98, y:  -34, z:  -56, size: 190, img: IMAGES[1], from: "r", bob: 7.3, phase: 1.7 },
-  { x:  -84, y:   86, z:  -64, size: 168, img: IMAGES[3], from: "b", bob: 8.2, phase: 2.5 },
-  { x:   90, y:   82, z:   92, size: 162, img: IMAGES[5], from: "r", bob: 7.9, phase: 3.2 },
-  { x: -156, y:   16, z:   22, size: 154, img: IMAGES[4], from: "l", bob: 8.7, phase: 4.0 },
-  { x:  158, y:    6, z:  -18, size: 152, img: IMAGES[1], from: "r", bob: 8.4, phase: 4.7 },
-  { x:  -36, y: -142, z:  -36, size: 138, img: IMAGES[4], from: "t", bob: 9.1, phase: 5.3 },
-  { x:   40, y:  146, z:   48, size: 132, img: IMAGES[3], from: "b", bob: 8.8, phase: 6.0 },
-  { x: -156, y: -118, z:   68, size: 116, img: IMAGES[1], from: "l", bob: 9.4, phase: 1.2 },
-  { x:  154, y:  118, z:  -70, size: 116, img: IMAGES[2], from: "r", bob: 9.0, phase: 2.1 },
-  { x: -204, y:   44, z:  -86, size: 104, img: IMAGES[0], from: "l", bob: 9.6, phase: 2.8 },
-  { x:  204, y:  -44, z:   96, size: 106, img: IMAGES[5], from: "r", bob: 9.3, phase: 3.6 },
-  { x:  -92, y:  164, z:  -14, size: 100, img: IMAGES[3], from: "b", bob: 9.8, phase: 4.4 },
-  { x:   94, y: -166, z:   20, size: 102, img: IMAGES[0], from: "t", bob: 9.5, phase: 5.1 },
-  { x: -198, y:  -56, z:   34, size:  92, img: IMAGES[2], from: "l", bob: 9.9, phase: 5.8 },
-  { x:  196, y:   58, z:  -38, size:  92, img: IMAGES[4], from: "r", bob: 9.7, phase: 0.4 },
-  { x:    2, y: -196, z:  -82, size:  88, img: IMAGES[5], from: "t", bob: 10.1, phase: 1.0 },
-  { x:  -10, y:  198, z:   86, size:  88, img: IMAGES[0], from: "b", bob: 10.0, phase: 2.0 },
+  { x:    0, y:    0, z:  118, size: 226, img: IMAGES[2], from: "t", bob: 7.1, phase: 0.0, spin: 0.0 },
+  { x: -100, y:  -46, z:   82, size: 182, img: IMAGES[0], from: "l", bob: 7.7, phase: 0.8, spin: 0.6 },
+  { x:  104, y:  -34, z:   44, size: 186, img: IMAGES[1], from: "r", bob: 7.3, phase: 1.7, spin: 1.3 },
+  { x:  -72, y:   92, z:  -54, size: 166, img: IMAGES[3], from: "b", bob: 8.2, phase: 2.5, spin: 2.0 },
+  { x:   82, y:   88, z:   70, size: 164, img: IMAGES[5], from: "r", bob: 7.9, phase: 3.2, spin: 2.7 },
+  { x:   -6, y: -128, z:  -68, size: 158, img: IMAGES[4], from: "t", bob: 8.7, phase: 4.0, spin: 3.4 },
+  { x: -154, y:   28, z:   12, size: 148, img: IMAGES[1], from: "l", bob: 8.4, phase: 4.7, spin: 4.1 },
+  { x:  154, y:   26, z:  -16, size: 146, img: IMAGES[4], from: "r", bob: 9.1, phase: 5.3, spin: 4.8 },
+  { x:  -42, y:  148, z:   54, size: 132, img: IMAGES[3], from: "b", bob: 8.8, phase: 6.0, spin: 5.5 },
+  { x:   56, y:  144, z:  -62, size: 126, img: IMAGES[1], from: "b", bob: 9.4, phase: 1.2, spin: 0.9 },
+  { x: -142, y: -112, z:   56, size: 118, img: IMAGES[2], from: "l", bob: 9.0, phase: 2.1, spin: 1.8 },
+  { x:  142, y: -106, z:  -58, size: 118, img: IMAGES[0], from: "r", bob: 9.6, phase: 2.8, spin: 2.6 },
+  { x: -192, y:   86, z:  -34, size: 102, img: IMAGES[5], from: "l", bob: 9.3, phase: 3.6, spin: 3.5 },
+  { x:  190, y:   82, z:   42, size: 104, img: IMAGES[3], from: "r", bob: 9.8, phase: 4.4, spin: 4.4 },
+  { x:  -84, y: -184, z:  -38, size: 100, img: IMAGES[0], from: "t", bob: 9.5, phase: 5.1, spin: 5.2 },
+  { x:   86, y: -182, z:   48, size:  98, img: IMAGES[2], from: "t", bob: 9.9, phase: 5.8, spin: 6.0 },
+  { x: -182, y:  -36, z:  100, size:  92, img: IMAGES[4], from: "l", bob: 9.7, phase: 0.4, spin: 1.1 },
+  { x:  180, y:  -40, z:  -98, size:  92, img: IMAGES[5], from: "r", bob: 10.1, phase: 1.0, spin: 3.1 },
+  { x:    2, y:  202, z:   18, size:  90, img: IMAGES[0], from: "b", bob: 10.0, phase: 2.0, spin: 5.0 },
 ];
 
 const FROM_OFFSET = { l: { x: -1200, y: 80 }, r: { x: 1200, y: -80 }, t: { x: 0, y: -850 }, b: { x: 0, y: 850 } };
@@ -101,17 +101,18 @@ export function VideoBubbles() {
       smy += (my - smy) * 0.15;
 
       // Phases
-      // 0.00 - 0.34: bubbles enter from screen edges and lock into the clump
-      // 0.34 - 0.52: breathe/hold while side copy appears
-      // 0.52 - 1.00: the stuck clump turns through a full 360°
-      const flyIn = easeOutCubic(progress / 0.34);
-      const spin = easeInOut((progress - 0.52) / 0.48);
-      const yaw = spin * Math.PI * 2; // full 360° turn
-      const pitch = Math.sin(spin * Math.PI * 2) * 0.16;
-      const clusterBob = Math.sin(t * 0.9) * 7;
+      // 0.00 - 0.30: bubbles enter from screen edges and lock into the clump
+      // 0.30 - 0.46: side copy appears while cluster breathes
+      // 0.46 - 1.00: the stuck clump performs a scroll-scrubbed 360° turn
+      const flyIn = easeOutCubic(progress / 0.30);
+      const spin = easeInOut((progress - 0.46) / 0.54);
+      const yaw = spin * Math.PI * 2;
+      const roll = Math.sin(spin * Math.PI * 2) * 0.14;
+      const pitch = Math.sin(spin * Math.PI * 2 + 0.7) * 0.12;
+      const clusterBob = Math.sin(t * 0.8) * 4;
 
       // side text reveal
-      const sideP = easeOutCubic((progress - 0.30) / 0.18);
+      const sideP = easeOutCubic((progress - 0.26) / 0.16);
       if (sideLRef.current) {
         sideLRef.current.style.transform = `translate3d(${(1 - sideP) * -80}px, -50%, 0)`;
         sideLRef.current.style.opacity = `${sideP}`;
@@ -131,24 +132,33 @@ export function VideoBubbles() {
 
         // Rigid 3D cluster rotation: every bubble keeps its local position,
         // so the group reads as stuck together while turning around.
+        const locked = 0.78 + 0.22 * flyIn;
+        const lx = b.x * locked;
+        const ly = b.y * locked;
+        const lz = b.z * locked;
         const cyaw = Math.cos(yaw);
         const syaw = Math.sin(yaw);
         const cp = Math.cos(pitch);
         const sp = Math.sin(pitch);
-        const x1 = b.x * cyaw + b.z * syaw;
-        const z1 = b.z * cyaw - b.x * syaw;
-        const y1 = b.y * cp - z1 * sp;
-        const z3 = z1 * cp + b.y * sp;
+        const cr = Math.cos(roll);
+        const sr = Math.sin(roll);
+        const xYaw = lx * cyaw + lz * syaw;
+        const zYaw = lz * cyaw - lx * syaw;
+        const yPitch = ly * cp - zYaw * sp;
+        const zPitch = zYaw * cp + ly * sp;
+        const x1 = xYaw * cr - yPitch * sr;
+        const y1 = yPitch * cr + xYaw * sr;
+        const z3 = zPitch;
 
         // perspective projection
-        const persp = 1100;
+        const persp = 980;
         const scale = persp / (persp - z3); // closer = larger
         const px = x1 * scale;
         const py = y1 * scale;
 
         // Micro-movement only; the large motion remains a single stuck cluster.
-        const bob = clusterBob + Math.sin(t / b.bob * Math.PI * 2 + b.phase) * 2.5;
-        const bobX = Math.cos(t / b.bob * Math.PI * 2 + b.phase) * 1.5;
+        const bob = clusterBob + Math.sin(t / b.bob * Math.PI * 2 + b.phase) * 1.4;
+        const bobX = Math.cos(t / b.bob * Math.PI * 2 + b.phase) * 0.8;
 
         // fly-in offset
         const off = FROM_OFFSET[b.from];
@@ -163,9 +173,9 @@ export function VideoBubbles() {
           const dx = targetX - smx;
           const dy = targetY - smy;
           const dist = Math.hypot(dx, dy);
-          const radius = 190;
+          const radius = 175;
           if (dist < radius && dist > 0.1) {
-            const f = (1 - dist / radius) * 58;
+            const f = (1 - dist / radius) * 46;
             rpx = (dx / dist) * f;
             rpy = (dy / dist) * f;
           }
@@ -173,11 +183,11 @@ export function VideoBubbles() {
 
         const finalX = px + inX + bobX + rpx;
         const finalY = py + inY + bob + rpy;
-        const finalScale = scale * (0.62 + 0.38 * flyIn);
-        const opacity = flyIn * (0.42 + 0.58 * clamp01(scale)); // back bubbles dim slightly
-        const z = Math.round(z3 + 1000);
+        const finalScale = scale * (0.66 + 0.34 * flyIn);
+        const opacity = flyIn * (0.50 + 0.50 * clamp01(scale));
+        const z = Math.round(z3 + 1000 + i * 0.01);
 
-        node.style.transform = `translate3d(${finalX}px, ${finalY}px, ${z3 * 0.16}px) scale(${finalScale})`;
+        node.style.transform = `translate3d(${finalX}px, ${finalY}px, ${z3 * 0.18}px) rotate(${yaw * 10 + b.spin}deg) scale(${finalScale})`;
         node.style.zIndex = String(z);
         node.style.opacity = String(opacity);
       }
@@ -230,7 +240,7 @@ export function VideoBubbles() {
         </div>
 
         {/* Bubbles — absolutely positioned at center, rAF-driven transforms */}
-        <div className="absolute inset-0 z-10" style={{ perspective: 1100 }}>
+        <div className="absolute inset-0 z-10" style={{ perspective: 980 }}>
           <div className="absolute left-1/2 top-1/2" style={{ transform: "translate(-50%,-50%)" }}>
             {BUBBLES.map((b, i) => (
               <div
@@ -274,7 +284,7 @@ function BubbleLink({ img, index }: { img: string; index: number }) {
     >
       <div
         className="relative w-full h-full rounded-full overflow-hidden bg-black"
-        style={{ clipPath: "circle(49.7% at 50% 50%)", isolation: "isolate" }}
+        style={{ clipPath: "circle(49.85% at 50% 50%)", isolation: "isolate" }}
       >
         <img
           src={img}
@@ -282,17 +292,17 @@ function BubbleLink({ img, index }: { img: string; index: number }) {
           loading={index < 5 ? "eager" : "lazy"}
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ transform: `scale(1.12) rotate(${index % 2 ? -3 : 3}deg)`, filter: "saturate(1.18) contrast(1.08) brightness(0.94)" }}
+          style={{ transform: `scale(1.18) rotate(${index % 2 ? -4 : 4}deg)`, filter: "saturate(1.2) contrast(1.12) brightness(0.9)" }}
         />
         {/* curvature shading */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle at 48% 44%, transparent 38%, rgba(0,0,0,0.28) 72%, rgba(0,0,0,0.78) 100%)" }} />
+          style={{ background: "radial-gradient(circle at 44% 38%, transparent 32%, rgba(0,0,0,0.30) 68%, rgba(0,0,0,0.86) 100%)" }} />
         {/* top dark cap */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none"
           style={{ background: "radial-gradient(circle at 50% -4%, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.14) 28%, transparent 46%)" }} />
         {/* glass refraction wash */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen opacity-70"
-          style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.46) 0%, transparent 23%, transparent 55%, rgba(255,120,64,0.18) 78%, rgba(255,255,255,0.30) 100%)" }} />
+          style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.55) 0%, transparent 22%, transparent 54%, rgba(255,120,64,0.20) 78%, rgba(255,255,255,0.34) 100%)" }} />
         {/* caustic crescent */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen"
           style={{ background: "radial-gradient(circle at 76% 80%, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.25) 12%, transparent 27%)" }} />
