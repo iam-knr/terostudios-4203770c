@@ -86,7 +86,9 @@ export function VideoBubbles() {
       // 0.55 - 1.00: full 360 turntable rotation
       const flyIn = Math.min(1, progress / 0.30);
       const spin = Math.max(0, Math.min(1, (progress - 0.55) / 0.45));
-      const yaw = spin * Math.PI * 2; // 0..2π
+      const yaw = spin * Math.PI * 2; // full 360° turn
+      const pitch = Math.sin(spin * Math.PI * 2) * 0.16;
+      const clusterBob = Math.sin(t * 0.9) * 7;
 
       // side text reveal
       const sideP = Math.max(0, Math.min(1, (progress - 0.32) / 0.18));
@@ -108,21 +110,26 @@ export function VideoBubbles() {
         const node = nodesRef.current[i];
         if (!node) continue;
 
-        // 3D-ish position: each bubble orbits center on a horizontal-ish ring with vertical offset
-        const angle = b.theta + yaw;
-        const x3 = Math.cos(angle) * b.r;
-        const z3 = Math.sin(angle) * b.r; // depth
-        const y3 = b.phi * 220;
+        // Rigid 3D cluster rotation: every bubble keeps its local position,
+        // so the group reads as stuck together while turning around.
+        const cyaw = Math.cos(yaw);
+        const syaw = Math.sin(yaw);
+        const cp = Math.cos(pitch);
+        const sp = Math.sin(pitch);
+        const x1 = b.x * cyaw + b.z * syaw;
+        const z1 = b.z * cyaw - b.x * syaw;
+        const y1 = b.y * cp - z1 * sp;
+        const z3 = z1 * cp + b.y * sp;
 
         // perspective projection
-        const persp = 900;
+        const persp = 1100;
         const scale = persp / (persp - z3); // closer = larger
-        const px = x3 * scale;
-        const py = y3 * scale;
+        const px = x1 * scale;
+        const py = y1 * scale;
 
-        // bob
-        const bob = Math.sin(t / b.bob * Math.PI * 2 + b.theta) * 6;
-        const bobX = Math.cos(t / b.bob * Math.PI * 2 + b.theta) * 3;
+        // Micro-movement only; the large motion remains a single stuck cluster.
+        const bob = clusterBob + Math.sin(t / b.bob * Math.PI * 2 + b.phase) * 2.5;
+        const bobX = Math.cos(t / b.bob * Math.PI * 2 + b.phase) * 1.5;
 
         // fly-in offset
         const off = FROM_OFFSET[b.from];
