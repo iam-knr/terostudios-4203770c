@@ -9,31 +9,38 @@ import p6 from "@/assets/portfolio-6.jpg";
 
 const IMAGES = [p1, p2, p3, p4, p5, p6];
 
-// Bubble layout in a 3D-ish cluster.
-// theta (yaw around vertical axis), phi (vertical offset 0=center), r (radius), size, img.
-type B = { theta: number; phi: number; r: number; size: number; img: string; from: "l" | "r" | "t" | "b"; bob: number };
+// Tight 3D cluster: local x/y/z coordinates rotate together like one stuck object.
+type B = { x: number; y: number; z: number; size: number; img: string; from: "l" | "r" | "t" | "b"; bob: number; phase: number };
 
 const BUBBLES: B[] = [
-  { theta: 0.0,  phi:  0.00, r: 0,   size: 200, img: IMAGES[2], from: "t", bob: 6.5 },
-  { theta: 0.6,  phi: -0.12, r: 110, size: 160, img: IMAGES[0], from: "l", bob: 7.0 },
-  { theta: 2.6,  phi:  0.10, r: 115, size: 168, img: IMAGES[1], from: "r", bob: 7.4 },
-  { theta: 4.0,  phi: -0.14, r: 130, size: 150, img: IMAGES[3], from: "l", bob: 6.8 },
-  { theta: 5.5,  phi:  0.16, r: 135, size: 158, img: IMAGES[5], from: "r", bob: 7.2 },
-  { theta: 1.3,  phi:  0.22, r: 160, size: 130, img: IMAGES[4], from: "t", bob: 7.8 },
-  { theta: 3.8,  phi: -0.24, r: 165, size: 134, img: IMAGES[1], from: "b", bob: 6.6 },
-  { theta: 0.9,  phi: -0.30, r: 190, size: 118, img: IMAGES[4], from: "l", bob: 8.2 },
-  { theta: 3.1,  phi:  0.28, r: 195, size: 122, img: IMAGES[3], from: "r", bob: 7.5 },
-  { theta: 2.0,  phi: -0.04, r: 215, size: 104, img: IMAGES[1], from: "t", bob: 8.5 },
-  { theta: 4.7,  phi:  0.04, r: 220, size: 108, img: IMAGES[2], from: "t", bob: 9.0 },
-  { theta: 1.8,  phi:  0.34, r: 240, size:  96, img: IMAGES[0], from: "b", bob: 7.9 },
-  { theta: 5.0,  phi: -0.36, r: 245, size: 100, img: IMAGES[5], from: "b", bob: 8.1 },
-  { theta: 0.3,  phi:  0.06, r: 265, size:  86, img: IMAGES[3], from: "l", bob: 7.1 },
-  { theta: 2.3,  phi: -0.08, r: 270, size:  90, img: IMAGES[0], from: "r", bob: 7.6 },
-  { theta: 3.5,  phi:  0.20, r: 285, size:  82, img: IMAGES[2], from: "l", bob: 8.0 },
-  { theta: 5.8,  phi: -0.20, r: 290, size:  86, img: IMAGES[4], from: "r", bob: 7.0 },
+  { x:    0, y:    0, z:   70, size: 232, img: IMAGES[2], from: "t", bob: 7.1, phase: 0.0 },
+  { x:  -92, y:  -48, z:  120, size: 180, img: IMAGES[0], from: "l", bob: 7.7, phase: 0.8 },
+  { x:   98, y:  -34, z:  -56, size: 190, img: IMAGES[1], from: "r", bob: 7.3, phase: 1.7 },
+  { x:  -84, y:   86, z:  -64, size: 168, img: IMAGES[3], from: "b", bob: 8.2, phase: 2.5 },
+  { x:   90, y:   82, z:   92, size: 162, img: IMAGES[5], from: "r", bob: 7.9, phase: 3.2 },
+  { x: -156, y:   16, z:   22, size: 154, img: IMAGES[4], from: "l", bob: 8.7, phase: 4.0 },
+  { x:  158, y:    6, z:  -18, size: 152, img: IMAGES[1], from: "r", bob: 8.4, phase: 4.7 },
+  { x:  -36, y: -142, z:  -36, size: 138, img: IMAGES[4], from: "t", bob: 9.1, phase: 5.3 },
+  { x:   40, y:  146, z:   48, size: 132, img: IMAGES[3], from: "b", bob: 8.8, phase: 6.0 },
+  { x: -156, y: -118, z:   68, size: 116, img: IMAGES[1], from: "l", bob: 9.4, phase: 1.2 },
+  { x:  154, y:  118, z:  -70, size: 116, img: IMAGES[2], from: "r", bob: 9.0, phase: 2.1 },
+  { x: -204, y:   44, z:  -86, size: 104, img: IMAGES[0], from: "l", bob: 9.6, phase: 2.8 },
+  { x:  204, y:  -44, z:   96, size: 106, img: IMAGES[5], from: "r", bob: 9.3, phase: 3.6 },
+  { x:  -92, y:  164, z:  -14, size: 100, img: IMAGES[3], from: "b", bob: 9.8, phase: 4.4 },
+  { x:   94, y: -166, z:   20, size: 102, img: IMAGES[0], from: "t", bob: 9.5, phase: 5.1 },
+  { x: -198, y:  -56, z:   34, size:  92, img: IMAGES[2], from: "l", bob: 9.9, phase: 5.8 },
+  { x:  196, y:   58, z:  -38, size:  92, img: IMAGES[4], from: "r", bob: 9.7, phase: 0.4 },
+  { x:    2, y: -196, z:  -82, size:  88, img: IMAGES[5], from: "t", bob: 10.1, phase: 1.0 },
+  { x:  -10, y:  198, z:   86, size:  88, img: IMAGES[0], from: "b", bob: 10.0, phase: 2.0 },
 ];
 
-const FROM_OFFSET = { l: { x: -1500, y: 100 }, r: { x: 1500, y: -100 }, t: { x: 0, y: -1000 }, b: { x: 0, y: 1000 } };
+const FROM_OFFSET = { l: { x: -1200, y: 80 }, r: { x: 1200, y: -80 }, t: { x: 0, y: -850 }, b: { x: 0, y: 850 } };
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
+const easeOutCubic = (n: number) => 1 - Math.pow(1 - clamp01(n), 3);
+const easeInOut = (n: number) => {
+  const p = clamp01(n);
+  return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+};
 
 export function VideoBubbles() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -58,6 +65,9 @@ export function VideoBubbles() {
     let smx = -9999, smy = -9999;
     let progress = 0;
     let raf = 0;
+    let active = true;
+    let stageW = stage.clientWidth;
+    let stageH = stage.clientHeight;
     let t0 = performance.now();
 
     const onMove = (e: MouseEvent) => {
@@ -70,11 +80,20 @@ export function VideoBubbles() {
     const computeProgress = () => {
       const r = section.getBoundingClientRect();
       const total = r.height - window.innerHeight;
-      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, total)));
+      const p = clamp01(-r.top / Math.max(1, total));
       progress = p;
+    };
+    const measure = () => {
+      stageW = stage.clientWidth;
+      stageH = stage.clientHeight;
+      computeProgress();
     };
 
     const tick = () => {
+      if (!active && !reduced) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       const now = performance.now();
       const t = (now - t0) / 1000;
       // smooth mouse
@@ -82,15 +101,17 @@ export function VideoBubbles() {
       smy += (my - smy) * 0.15;
 
       // Phases
-      // 0.00 - 0.30: fly in
-      // 0.30 - 0.55: settle/breathe
-      // 0.55 - 1.00: full 360 turntable rotation
-      const flyIn = Math.min(1, progress / 0.30);
-      const spin = Math.max(0, Math.min(1, (progress - 0.55) / 0.45));
-      const yaw = spin * Math.PI * 2; // 0..2π
+      // 0.00 - 0.34: bubbles enter from screen edges and lock into the clump
+      // 0.34 - 0.52: breathe/hold while side copy appears
+      // 0.52 - 1.00: the stuck clump turns through a full 360°
+      const flyIn = easeOutCubic(progress / 0.34);
+      const spin = easeInOut((progress - 0.52) / 0.48);
+      const yaw = spin * Math.PI * 2; // full 360° turn
+      const pitch = Math.sin(spin * Math.PI * 2) * 0.16;
+      const clusterBob = Math.sin(t * 0.9) * 7;
 
       // side text reveal
-      const sideP = Math.max(0, Math.min(1, (progress - 0.32) / 0.18));
+      const sideP = easeOutCubic((progress - 0.30) / 0.18);
       if (sideLRef.current) {
         sideLRef.current.style.transform = `translate3d(${(1 - sideP) * -80}px, -50%, 0)`;
         sideLRef.current.style.opacity = `${sideP}`;
@@ -100,36 +121,39 @@ export function VideoBubbles() {
         sideRRef.current.style.opacity = `${sideP}`;
       }
 
-      const stageRect = stage.getBoundingClientRect();
-      const cx = stageRect.width / 2;
-      const cy = stageRect.height / 2;
+      const cx = stageW / 2;
+      const cy = stageH / 2;
 
       for (let i = 0; i < BUBBLES.length; i++) {
         const b = BUBBLES[i];
         const node = nodesRef.current[i];
         if (!node) continue;
 
-        // 3D-ish position: each bubble orbits center on a horizontal-ish ring with vertical offset
-        const angle = b.theta + yaw;
-        const x3 = Math.cos(angle) * b.r;
-        const z3 = Math.sin(angle) * b.r; // depth
-        const y3 = b.phi * 220;
+        // Rigid 3D cluster rotation: every bubble keeps its local position,
+        // so the group reads as stuck together while turning around.
+        const cyaw = Math.cos(yaw);
+        const syaw = Math.sin(yaw);
+        const cp = Math.cos(pitch);
+        const sp = Math.sin(pitch);
+        const x1 = b.x * cyaw + b.z * syaw;
+        const z1 = b.z * cyaw - b.x * syaw;
+        const y1 = b.y * cp - z1 * sp;
+        const z3 = z1 * cp + b.y * sp;
 
         // perspective projection
-        const persp = 900;
+        const persp = 1100;
         const scale = persp / (persp - z3); // closer = larger
-        const px = x3 * scale;
-        const py = y3 * scale;
+        const px = x1 * scale;
+        const py = y1 * scale;
 
-        // bob
-        const bob = Math.sin(t / b.bob * Math.PI * 2 + b.theta) * 6;
-        const bobX = Math.cos(t / b.bob * Math.PI * 2 + b.theta) * 3;
+        // Micro-movement only; the large motion remains a single stuck cluster.
+        const bob = clusterBob + Math.sin(t / b.bob * Math.PI * 2 + b.phase) * 2.5;
+        const bobX = Math.cos(t / b.bob * Math.PI * 2 + b.phase) * 1.5;
 
         // fly-in offset
         const off = FROM_OFFSET[b.from];
-        const ease = 1 - Math.pow(1 - flyIn, 3);
-        const inX = off.x * (1 - ease);
-        const inY = off.y * (1 - ease);
+        const inX = off.x * (1 - flyIn);
+        const inY = off.y * (1 - flyIn);
 
         // repel from mouse (only when no fly-in animation pending)
         let rpx = 0, rpy = 0;
@@ -139,9 +163,9 @@ export function VideoBubbles() {
           const dx = targetX - smx;
           const dy = targetY - smy;
           const dist = Math.hypot(dx, dy);
-          const radius = 200;
+          const radius = 190;
           if (dist < radius && dist > 0.1) {
-            const f = (1 - dist / radius) * 80;
+            const f = (1 - dist / radius) * 58;
             rpx = (dx / dist) * f;
             rpy = (dy / dist) * f;
           }
@@ -149,11 +173,11 @@ export function VideoBubbles() {
 
         const finalX = px + inX + bobX + rpx;
         const finalY = py + inY + bob + rpy;
-        const finalScale = scale * (0.6 + 0.4 * ease);
-        const opacity = 0.25 + 0.75 * Math.min(1, scale); // back bubbles dim slightly
+        const finalScale = scale * (0.62 + 0.38 * flyIn);
+        const opacity = flyIn * (0.42 + 0.58 * clamp01(scale)); // back bubbles dim slightly
         const z = Math.round(z3 + 1000);
 
-        node.style.transform = `translate3d(${finalX}px, ${finalY}px, 0) scale(${finalScale})`;
+        node.style.transform = `translate3d(${finalX}px, ${finalY}px, ${z3 * 0.16}px) scale(${finalScale})`;
         node.style.zIndex = String(z);
         node.style.opacity = String(opacity);
       }
@@ -161,10 +185,12 @@ export function VideoBubbles() {
       raf = requestAnimationFrame(tick);
     };
 
-    computeProgress();
+    measure();
     const onScroll = () => computeProgress();
+    const observer = new IntersectionObserver(([entry]) => { active = entry.isIntersecting; }, { rootMargin: "120px" });
+    observer.observe(section);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", measure);
     window.addEventListener("mousemove", onMove, { passive: true });
     stage.addEventListener("mouseleave", onLeave);
     if (!reduced) raf = requestAnimationFrame(tick);
@@ -172,8 +198,9 @@ export function VideoBubbles() {
 
     return () => {
       cancelAnimationFrame(raf);
+      observer.disconnect();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", measure);
       window.removeEventListener("mousemove", onMove);
       stage.removeEventListener("mouseleave", onLeave);
     };
@@ -181,7 +208,7 @@ export function VideoBubbles() {
 
   return (
     <section ref={sectionRef} data-nav-theme="dark" className="relative w-full bg-[#070707]" style={{ height: "260vh" }}>
-      <div ref={stageRef} className="sticky top-0 h-screen w-full overflow-hidden">
+      <div ref={stageRef} className="sticky top-0 h-screen w-full overflow-hidden [transform-style:preserve-3d]">
         <div aria-hidden className="pointer-events-none absolute inset-0" style={{
           background: "radial-gradient(ellipse at 50% 55%, rgba(232,57,14,0.10) 0%, transparent 55%)",
         }} />
@@ -203,7 +230,7 @@ export function VideoBubbles() {
         </div>
 
         {/* Bubbles — absolutely positioned at center, rAF-driven transforms */}
-        <div className="absolute inset-0 z-10" style={{ perspective: 900 }}>
+        <div className="absolute inset-0 z-10" style={{ perspective: 1100 }}>
           <div className="absolute left-1/2 top-1/2" style={{ transform: "translate(-50%,-50%)" }}>
             {BUBBLES.map((b, i) => (
               <div
@@ -216,9 +243,10 @@ export function VideoBubbles() {
                   left: -b.size / 2,
                   top: -b.size / 2,
                   willChange: "transform, opacity",
+                  transformOrigin: "50% 50%",
                 }}
               >
-                <BubbleLink img={b.img} />
+                <BubbleLink img={b.img} index={i} />
               </div>
             ))}
           </div>
@@ -232,49 +260,57 @@ export function VideoBubbles() {
   );
 }
 
-function BubbleLink({ img }: { img: string }) {
+function BubbleLink({ img, index }: { img: string; index: number }) {
   return (
     <Link
       to="/portfolio"
+      data-cursor-hover
       className="group relative block w-full h-full rounded-full"
       style={{
-        filter: "drop-shadow(0 20px 28px rgba(0,0,0,0.55)) drop-shadow(0 6px 12px rgba(0,0,0,0.4))",
+        boxShadow: "0 26px 42px rgba(0,0,0,0.46), 0 8px 18px rgba(0,0,0,0.35)",
         transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
       }}
     >
-      <div className="relative w-full h-full rounded-full overflow-hidden">
+      <div
+        className="relative w-full h-full rounded-full overflow-hidden bg-black"
+        style={{ clipPath: "circle(49.7% at 50% 50%)", isolation: "isolate" }}
+      >
         <img
           src={img}
           alt=""
-          loading="lazy"
+          loading={index < 5 ? "eager" : "lazy"}
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ transform: "scale(1.08)", filter: "saturate(1.05) contrast(1.05)" }}
+          style={{ transform: `scale(1.12) rotate(${index % 2 ? -3 : 3}deg)`, filter: "saturate(1.18) contrast(1.08) brightness(0.94)" }}
         />
         {/* curvature shading */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle at 50% 50%, transparent 48%, rgba(0,0,0,0.35) 78%, rgba(0,0,0,0.7) 100%)" }} />
+          style={{ background: "radial-gradient(circle at 48% 44%, transparent 38%, rgba(0,0,0,0.28) 72%, rgba(0,0,0,0.78) 100%)" }} />
         {/* top dark cap */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle at 50% 0%, rgba(0,0,0,0.45) 0%, transparent 38%)" }} />
+          style={{ background: "radial-gradient(circle at 50% -4%, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.14) 28%, transparent 46%)" }} />
+        {/* glass refraction wash */}
+        <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen opacity-70"
+          style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.46) 0%, transparent 23%, transparent 55%, rgba(255,120,64,0.18) 78%, rgba(255,255,255,0.30) 100%)" }} />
         {/* caustic crescent */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen"
-          style={{ background: "radial-gradient(circle at 78% 82%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.18) 12%, transparent 24%)" }} />
+          style={{ background: "radial-gradient(circle at 76% 80%, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.25) 12%, transparent 27%)" }} />
         {/* chromatic tint */}
-        <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen opacity-60"
-          style={{ background: "radial-gradient(circle at 28% 22%, rgba(180,210,255,0.35) 0%, transparent 30%)" }} />
+        <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen opacity-70"
+          style={{ background: "radial-gradient(circle at 27% 20%, rgba(210,230,255,0.48) 0%, rgba(120,170,255,0.18) 22%, transparent 36%)" }} />
         {/* specular highlight */}
         <div aria-hidden className="absolute pointer-events-none"
-          style={{ top: "6%", left: "14%", width: "38%", height: "26%", borderRadius: "50%",
-            background: "radial-gradient(ellipse at 35% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.7) 22%, rgba(255,255,255,0.15) 55%, transparent 80%)",
-            filter: "blur(0.4px)" }} />
+          style={{ top: "5%", left: "13%", width: "40%", height: "27%", borderRadius: "50%",
+            background: "radial-gradient(ellipse at 35% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.78) 18%, rgba(255,255,255,0.18) 55%, transparent 82%)",
+            filter: "blur(0.25px)" }} />
         {/* pinpoint catchlight */}
         <div aria-hidden className="absolute pointer-events-none rounded-full"
           style={{ top: "11%", left: "22%", width: "8%", height: "8%",
             background: "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 40%, transparent 75%)" }} />
         {/* rim */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none"
-          style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.55), inset -8px -14px 26px rgba(0,0,0,0.55), inset 6px 10px 22px rgba(255,255,255,0.18)" }} />
+          style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.62), inset 0 0 18px rgba(255,255,255,0.22), inset -10px -16px 28px rgba(0,0,0,0.58), inset 7px 10px 20px rgba(255,255,255,0.24)" }} />
       </div>
     </Link>
   );
