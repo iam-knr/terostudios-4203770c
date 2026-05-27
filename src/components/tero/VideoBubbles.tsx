@@ -101,17 +101,18 @@ export function VideoBubbles() {
       smy += (my - smy) * 0.15;
 
       // Phases
-      // 0.00 - 0.34: bubbles enter from screen edges and lock into the clump
-      // 0.34 - 0.52: breathe/hold while side copy appears
-      // 0.52 - 1.00: the stuck clump turns through a full 360°
-      const flyIn = easeOutCubic(progress / 0.34);
-      const spin = easeInOut((progress - 0.52) / 0.48);
-      const yaw = spin * Math.PI * 2; // full 360° turn
-      const pitch = Math.sin(spin * Math.PI * 2) * 0.16;
-      const clusterBob = Math.sin(t * 0.9) * 7;
+      // 0.00 - 0.30: bubbles enter from screen edges and lock into the clump
+      // 0.30 - 0.46: side copy appears while cluster breathes
+      // 0.46 - 1.00: the stuck clump performs a scroll-scrubbed 360° turn
+      const flyIn = easeOutCubic(progress / 0.30);
+      const spin = easeInOut((progress - 0.46) / 0.54);
+      const yaw = spin * Math.PI * 2;
+      const roll = Math.sin(spin * Math.PI * 2) * 0.14;
+      const pitch = Math.sin(spin * Math.PI * 2 + 0.7) * 0.12;
+      const clusterBob = Math.sin(t * 0.8) * 4;
 
       // side text reveal
-      const sideP = easeOutCubic((progress - 0.30) / 0.18);
+      const sideP = easeOutCubic((progress - 0.26) / 0.16);
       if (sideLRef.current) {
         sideLRef.current.style.transform = `translate3d(${(1 - sideP) * -80}px, -50%, 0)`;
         sideLRef.current.style.opacity = `${sideP}`;
@@ -131,24 +132,33 @@ export function VideoBubbles() {
 
         // Rigid 3D cluster rotation: every bubble keeps its local position,
         // so the group reads as stuck together while turning around.
+        const locked = 0.78 + 0.22 * flyIn;
+        const lx = b.x * locked;
+        const ly = b.y * locked;
+        const lz = b.z * locked;
         const cyaw = Math.cos(yaw);
         const syaw = Math.sin(yaw);
         const cp = Math.cos(pitch);
         const sp = Math.sin(pitch);
-        const x1 = b.x * cyaw + b.z * syaw;
-        const z1 = b.z * cyaw - b.x * syaw;
-        const y1 = b.y * cp - z1 * sp;
-        const z3 = z1 * cp + b.y * sp;
+        const cr = Math.cos(roll);
+        const sr = Math.sin(roll);
+        const xYaw = lx * cyaw + lz * syaw;
+        const zYaw = lz * cyaw - lx * syaw;
+        const yPitch = ly * cp - zYaw * sp;
+        const zPitch = zYaw * cp + ly * sp;
+        const x1 = xYaw * cr - yPitch * sr;
+        const y1 = yPitch * cr + xYaw * sr;
+        const z3 = zPitch;
 
         // perspective projection
-        const persp = 1100;
+        const persp = 980;
         const scale = persp / (persp - z3); // closer = larger
         const px = x1 * scale;
         const py = y1 * scale;
 
         // Micro-movement only; the large motion remains a single stuck cluster.
-        const bob = clusterBob + Math.sin(t / b.bob * Math.PI * 2 + b.phase) * 2.5;
-        const bobX = Math.cos(t / b.bob * Math.PI * 2 + b.phase) * 1.5;
+        const bob = clusterBob + Math.sin(t / b.bob * Math.PI * 2 + b.phase) * 1.4;
+        const bobX = Math.cos(t / b.bob * Math.PI * 2 + b.phase) * 0.8;
 
         // fly-in offset
         const off = FROM_OFFSET[b.from];
@@ -163,9 +173,9 @@ export function VideoBubbles() {
           const dx = targetX - smx;
           const dy = targetY - smy;
           const dist = Math.hypot(dx, dy);
-          const radius = 190;
+          const radius = 175;
           if (dist < radius && dist > 0.1) {
-            const f = (1 - dist / radius) * 58;
+            const f = (1 - dist / radius) * 46;
             rpx = (dx / dist) * f;
             rpy = (dy / dist) * f;
           }
@@ -173,11 +183,11 @@ export function VideoBubbles() {
 
         const finalX = px + inX + bobX + rpx;
         const finalY = py + inY + bob + rpy;
-        const finalScale = scale * (0.62 + 0.38 * flyIn);
-        const opacity = flyIn * (0.42 + 0.58 * clamp01(scale)); // back bubbles dim slightly
-        const z = Math.round(z3 + 1000);
+        const finalScale = scale * (0.66 + 0.34 * flyIn);
+        const opacity = flyIn * (0.50 + 0.50 * clamp01(scale));
+        const z = Math.round(z3 + 1000 + i * 0.01);
 
-        node.style.transform = `translate3d(${finalX}px, ${finalY}px, ${z3 * 0.16}px) scale(${finalScale})`;
+        node.style.transform = `translate3d(${finalX}px, ${finalY}px, ${z3 * 0.18}px) rotate(${yaw * 10 + b.spin}deg) scale(${finalScale})`;
         node.style.zIndex = String(z);
         node.style.opacity = String(opacity);
       }
