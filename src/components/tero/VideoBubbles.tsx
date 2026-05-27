@@ -172,10 +172,10 @@ export function VideoBubbles() {
         const finalX = px + inX + bobX + rpx;
         const finalY = py + inY + bob + rpy;
         const finalScale = scale * (0.62 + 0.38 * flyIn);
-        const opacity = flyIn * (0.52 + 0.48 * clamp01(scale)); // back bubbles dim slightly
+        const opacity = flyIn * (0.42 + 0.58 * clamp01(scale)); // back bubbles dim slightly
         const z = Math.round(z3 + 1000);
 
-        node.style.transform = `translate3d(${finalX}px, ${finalY}px, 0) scale(${finalScale})`;
+        node.style.transform = `translate3d(${finalX}px, ${finalY}px, ${z3 * 0.16}px) scale(${finalScale})`;
         node.style.zIndex = String(z);
         node.style.opacity = String(opacity);
       }
@@ -244,7 +244,7 @@ export function VideoBubbles() {
                   transformOrigin: "50% 50%",
                 }}
               >
-                <BubbleLink img={b.img} />
+                <BubbleLink img={b.img} index={i} />
               </div>
             ))}
           </div>
@@ -258,34 +258,42 @@ export function VideoBubbles() {
   );
 }
 
-function BubbleLink({ img }: { img: string }) {
+function BubbleLink({ img, index }: { img: string; index: number }) {
   return (
     <Link
       to="/portfolio"
+      data-cursor-hover
       className="group relative block w-full h-full rounded-full"
       style={{
-        filter: "drop-shadow(0 20px 28px rgba(0,0,0,0.55)) drop-shadow(0 6px 12px rgba(0,0,0,0.4))",
+        boxShadow: "0 26px 42px rgba(0,0,0,0.46), 0 8px 18px rgba(0,0,0,0.35)",
         transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
       }}
     >
-      <div className="relative w-full h-full rounded-full overflow-hidden">
+      <div
+        className="relative w-full h-full rounded-full overflow-hidden bg-black"
+        style={{ clipPath: "circle(49.7% at 50% 50%)", isolation: "isolate" }}
+      >
         <img
           src={img}
           alt=""
-          loading="lazy"
+          loading={index < 5 ? "eager" : "lazy"}
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ transform: "scale(1.08)", filter: "saturate(1.05) contrast(1.05)" }}
+          style={{ transform: `scale(1.12) rotate(${index % 2 ? -3 : 3}deg)`, filter: "saturate(1.18) contrast(1.08) brightness(0.94)" }}
         />
         {/* curvature shading */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle at 50% 50%, transparent 48%, rgba(0,0,0,0.35) 78%, rgba(0,0,0,0.7) 100%)" }} />
+          style={{ background: "radial-gradient(circle at 48% 44%, transparent 38%, rgba(0,0,0,0.28) 72%, rgba(0,0,0,0.78) 100%)" }} />
         {/* top dark cap */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle at 50% 0%, rgba(0,0,0,0.45) 0%, transparent 38%)" }} />
+          style={{ background: "radial-gradient(circle at 50% -4%, rgba(0,0,0,0.50) 0%, rgba(0,0,0,0.14) 28%, transparent 46%)" }} />
+        {/* glass refraction wash */}
+        <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen opacity-70"
+          style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.46) 0%, transparent 23%, transparent 55%, rgba(255,120,64,0.18) 78%, rgba(255,255,255,0.30) 100%)" }} />
         {/* caustic crescent */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen"
-          style={{ background: "radial-gradient(circle at 78% 82%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.18) 12%, transparent 24%)" }} />
+          style={{ background: "radial-gradient(circle at 76% 80%, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.25) 12%, transparent 27%)" }} />
         {/* chromatic tint */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen opacity-60"
           style={{ background: "radial-gradient(circle at 28% 22%, rgba(180,210,255,0.35) 0%, transparent 30%)" }} />
