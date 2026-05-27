@@ -5,6 +5,7 @@ import { LogoStrip } from "@/components/tero/LogoStrip";
 import { ServicesScroller } from "@/components/tero/ServicesScroller";
 import { VideoBubbles } from "@/components/tero/VideoBubbles";
 import { HorizontalShowcase } from "@/components/tero/HorizontalShowcase";
+import { CylinderGallery } from "@/components/tero/CylinderGallery";
 
 
 import { StatsSection } from "@/components/tero/StatsSection";
@@ -39,6 +40,8 @@ function Index() {
       <StatsSection />
       
       <HorizontalShowcase />
+      <CylinderGallery />
+      
       
       <Testimonials />
       <Awards />
