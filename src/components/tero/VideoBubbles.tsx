@@ -250,29 +250,44 @@ export function VideoBubbles() {
           }
         }
 
-        // Mouse repulsion — soft, local push that bubbles ease out of the pointer
-        // path without yanking the whole cluster apart. Falloff is smoothstep so the
-        // edge of the influence radius is feathered (no popping in/out).
+        // Mouse repulsion — matched to the reference: bubbles begin reacting
+        // at the very edge of the influence ring (cubic ease-in onset) and fully
+        // recover to rest at the same boundary (no lingering tail). Strength is
+        // modulated by pointer inertia: a still pointer barely nudges, a fast
+        // swipe carves a clean channel through the cluster.
         if (smx > -9000) {
           const targetX = cx + cur[ix];
           const targetY = cy + cur[iy];
           const dx = targetX - smx;
           const dy = targetY - smy;
           const dist = Math.hypot(dx, dy);
-          // Scale influence with bubble size so big bubbles aren't shoved off-screen
-          // and small ones still react. Keep radius tight so neighbors keep sticking.
-          const radius = rad[i] * 1.55 + 70;
+          // Radius grows slightly with pointer speed so fast swipes feel
+          // weightier without bloating the static hover footprint.
+          const speedBoost = Math.min(1, pspeed / 1600); // 0..1
+          const radius = rad[i] * 1.55 + 70 + speedBoost * 60;
           if (dist < radius && dist > 0.1) {
-            // smoothstep falloff: 3u² - 2u³ where u = 1 - dist/radius
+            // Onset+recovery easing matched to the reference:
+            //   u = 1 - dist/radius  (0 at edge → 1 at center)
+            //   ease = u^2 * (3 - 2u)  smoothstep, then * u for cubic onset
+            // This delays the kick-in near the edge and lets bubbles fully
+            // recover at the same point with no jitter.
             const u = 1 - dist / radius;
-            const fall = u * u * (3 - 2 * u);
-            // gentle force; cohesion + spring will hold the cluster together
-            const strength = 520;
+            const fall = u * u * u * (3 - 2 * u); // smootherstep-ish, edge-aware
+            // Inertia: still pointer = 0.55x, fast swipe up to 1.85x.
+            const inertia = 0.55 + Math.min(1.3, pspeed / 1200);
+            // Directional bias — push slightly along pointer travel so the
+            // cluster parts ahead of the cursor and closes behind it.
+            const nx = dx / dist, ny = dy / dist;
+            const vmag = Math.max(1, pspeed);
+            const dirBias = (nx * pvx + ny * pvy) / vmag; // -1..1
+            const align = 1 + 0.35 * Math.max(0, dirBias);
+            const strength = 480 * inertia * align;
             const f = fall * strength;
-            ax += (dx / dist) * f;
-            ay += (dy / dist) * f;
+            ax += nx * f;
+            ay += ny * f;
           }
         }
+
 
         vel[ix] += ax * dt;
         vel[iy] += ay * dt;
