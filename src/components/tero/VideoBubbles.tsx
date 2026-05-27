@@ -296,7 +296,7 @@ export function VideoBubbles() {
   }, [reduced]);
 
   return (
-    <section ref={sectionRef} data-nav-theme="dark" className="relative w-full bg-[#070707]" style={{ height: "260vh" }}>
+    <section ref={sectionRef} data-nav-theme="dark" className="relative w-full bg-[#070707]" style={{ height: "440vh" }}>
       <div ref={stageRef} className="sticky top-0 h-screen w-full overflow-hidden [transform-style:preserve-3d]">
         <div aria-hidden className="pointer-events-none absolute inset-0" style={{
           background: "radial-gradient(ellipse at 50% 55%, rgba(232,57,14,0.10) 0%, transparent 55%)",
