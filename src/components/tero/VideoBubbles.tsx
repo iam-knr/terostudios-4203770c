@@ -9,28 +9,27 @@ import p6 from "@/assets/portfolio-6.jpg";
 
 const IMAGES = [p1, p2, p3, p4, p5, p6];
 
-// Bubble layout in a 3D-ish cluster.
-// theta (yaw around vertical axis), phi (vertical offset 0=center), r (radius), size, img.
-type B = { theta: number; phi: number; r: number; size: number; img: string; from: "l" | "r" | "t" | "b"; bob: number };
+// Tight 3D cluster: local x/y/z coordinates rotate together like one stuck object.
+type B = { x: number; y: number; z: number; size: number; img: string; from: "l" | "r" | "t" | "b"; bob: number; phase: number };
 
 const BUBBLES: B[] = [
-  { theta: 0.0,  phi:  0.00, r: 0,   size: 200, img: IMAGES[2], from: "t", bob: 6.5 },
-  { theta: 0.6,  phi: -0.12, r: 110, size: 160, img: IMAGES[0], from: "l", bob: 7.0 },
-  { theta: 2.6,  phi:  0.10, r: 115, size: 168, img: IMAGES[1], from: "r", bob: 7.4 },
-  { theta: 4.0,  phi: -0.14, r: 130, size: 150, img: IMAGES[3], from: "l", bob: 6.8 },
-  { theta: 5.5,  phi:  0.16, r: 135, size: 158, img: IMAGES[5], from: "r", bob: 7.2 },
-  { theta: 1.3,  phi:  0.22, r: 160, size: 130, img: IMAGES[4], from: "t", bob: 7.8 },
-  { theta: 3.8,  phi: -0.24, r: 165, size: 134, img: IMAGES[1], from: "b", bob: 6.6 },
-  { theta: 0.9,  phi: -0.30, r: 190, size: 118, img: IMAGES[4], from: "l", bob: 8.2 },
-  { theta: 3.1,  phi:  0.28, r: 195, size: 122, img: IMAGES[3], from: "r", bob: 7.5 },
-  { theta: 2.0,  phi: -0.04, r: 215, size: 104, img: IMAGES[1], from: "t", bob: 8.5 },
-  { theta: 4.7,  phi:  0.04, r: 220, size: 108, img: IMAGES[2], from: "t", bob: 9.0 },
-  { theta: 1.8,  phi:  0.34, r: 240, size:  96, img: IMAGES[0], from: "b", bob: 7.9 },
-  { theta: 5.0,  phi: -0.36, r: 245, size: 100, img: IMAGES[5], from: "b", bob: 8.1 },
-  { theta: 0.3,  phi:  0.06, r: 265, size:  86, img: IMAGES[3], from: "l", bob: 7.1 },
-  { theta: 2.3,  phi: -0.08, r: 270, size:  90, img: IMAGES[0], from: "r", bob: 7.6 },
-  { theta: 3.5,  phi:  0.20, r: 285, size:  82, img: IMAGES[2], from: "l", bob: 8.0 },
-  { theta: 5.8,  phi: -0.20, r: 290, size:  86, img: IMAGES[4], from: "r", bob: 7.0 },
+  { x:   0, y:   0, z:   35, size: 224, img: IMAGES[2], from: "t", bob: 7.1, phase: 0.0 },
+  { x: -132, y: -38, z:   10, size: 174, img: IMAGES[0], from: "l", bob: 7.7, phase: 0.8 },
+  { x:  126, y:  28, z:  -18, size: 180, img: IMAGES[1], from: "r", bob: 7.3, phase: 1.7 },
+  { x:  -78, y: 118, z:  -42, size: 156, img: IMAGES[3], from: "b", bob: 8.2, phase: 2.5 },
+  { x:   88, y:-116, z:   50, size: 162, img: IMAGES[5], from: "t", bob: 7.9, phase: 3.2 },
+  { x: -210, y:  58, z:  -34, size: 134, img: IMAGES[4], from: "l", bob: 8.7, phase: 4.0 },
+  { x:  206, y: -62, z:   28, size: 138, img: IMAGES[1], from: "r", bob: 8.4, phase: 4.7 },
+  { x: -172, y:-150, z:   22, size: 120, img: IMAGES[4], from: "l", bob: 9.1, phase: 5.3 },
+  { x:  166, y: 146, z:  -28, size: 126, img: IMAGES[3], from: "r", bob: 8.8, phase: 6.0 },
+  { x:  -22, y:-214, z:  -52, size: 116, img: IMAGES[1], from: "t", bob: 9.4, phase: 1.2 },
+  { x:   34, y: 220, z:   42, size: 112, img: IMAGES[2], from: "b", bob: 9.0, phase: 2.1 },
+  { x: -268, y: -34, z:  -70, size:  96, img: IMAGES[0], from: "l", bob: 9.6, phase: 2.8 },
+  { x:  264, y:  42, z:   76, size: 100, img: IMAGES[5], from: "r", bob: 9.3, phase: 3.6 },
+  { x: -106, y: 230, z:   10, size:  90, img: IMAGES[3], from: "b", bob: 9.8, phase: 4.4 },
+  { x:  118, y:-238, z:  -16, size:  92, img: IMAGES[0], from: "t", bob: 9.5, phase: 5.1 },
+  { x: -238, y: 150, z:   60, size:  86, img: IMAGES[2], from: "l", bob: 9.9, phase: 5.8 },
+  { x:  236, y:-154, z:  -58, size:  88, img: IMAGES[4], from: "r", bob: 9.7, phase: 0.4 },
 ];
 
 const FROM_OFFSET = { l: { x: -1500, y: 100 }, r: { x: 1500, y: -100 }, t: { x: 0, y: -1000 }, b: { x: 0, y: 1000 } };
