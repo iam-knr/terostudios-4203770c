@@ -295,20 +295,20 @@ function BubbleLink({ img, index }: { img: string; index: number }) {
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen"
           style={{ background: "radial-gradient(circle at 76% 80%, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.25) 12%, transparent 27%)" }} />
         {/* chromatic tint */}
-        <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen opacity-60"
-          style={{ background: "radial-gradient(circle at 28% 22%, rgba(180,210,255,0.35) 0%, transparent 30%)" }} />
+        <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen opacity-70"
+          style={{ background: "radial-gradient(circle at 27% 20%, rgba(210,230,255,0.48) 0%, rgba(120,170,255,0.18) 22%, transparent 36%)" }} />
         {/* specular highlight */}
         <div aria-hidden className="absolute pointer-events-none"
-          style={{ top: "6%", left: "14%", width: "38%", height: "26%", borderRadius: "50%",
-            background: "radial-gradient(ellipse at 35% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.7) 22%, rgba(255,255,255,0.15) 55%, transparent 80%)",
-            filter: "blur(0.4px)" }} />
+          style={{ top: "5%", left: "13%", width: "40%", height: "27%", borderRadius: "50%",
+            background: "radial-gradient(ellipse at 35% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.78) 18%, rgba(255,255,255,0.18) 55%, transparent 82%)",
+            filter: "blur(0.25px)" }} />
         {/* pinpoint catchlight */}
         <div aria-hidden className="absolute pointer-events-none rounded-full"
           style={{ top: "11%", left: "22%", width: "8%", height: "8%",
             background: "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 40%, transparent 75%)" }} />
         {/* rim */}
         <div aria-hidden className="absolute inset-0 rounded-full pointer-events-none"
-          style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.55), inset -8px -14px 26px rgba(0,0,0,0.55), inset 6px 10px 22px rgba(255,255,255,0.18)" }} />
+          style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.62), inset 0 0 18px rgba(255,255,255,0.22), inset -10px -16px 28px rgba(0,0,0,0.58), inset 7px 10px 20px rgba(255,255,255,0.24)" }} />
       </div>
     </Link>
   );
