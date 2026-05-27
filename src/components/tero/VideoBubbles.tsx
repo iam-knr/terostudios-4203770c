@@ -115,14 +115,24 @@ export function VideoBubbles() {
       smx += (mx - smx) * 0.15;
       smy += (my - smy) * 0.15;
 
-      const flyIn = easeOutCubic(progress / 0.30);
-      const spin = easeInOut((progress - 0.46) / 0.54);
+      // Timing tuned to the reference video:
+      //   0.00 – 0.22  fly-in from edges → lock into clump
+      //   0.22 – 0.34  brief settle + side copy reveal
+      //   0.34 – 0.95  scroll-scrubbed full 360° turn of the stuck cluster
+      //   0.95 – 1.00  hold final orientation
+      const flyIn = easeOutCubic(progress / 0.22);
+      const sRaw = clamp01((progress - 0.34) / (0.95 - 0.34));
+      // ease-in-out-quint: slow start, decisive middle, soft landing — matches
+      // the reference's deliberate turntable motion better than cubic.
+      const spin = sRaw < 0.5
+        ? 16 * sRaw * sRaw * sRaw * sRaw * sRaw
+        : 1 - Math.pow(-2 * sRaw + 2, 5) / 2;
       const yaw = spin * Math.PI * 2;
-      const roll = Math.sin(spin * Math.PI * 2) * 0.14;
-      const pitch = Math.sin(spin * Math.PI * 2 + 0.7) * 0.12;
+      const roll = Math.sin(spin * Math.PI * 2) * 0.10;
+      const pitch = Math.sin(spin * Math.PI * 2 + 0.6) * 0.09;
       const clusterBob = Math.sin(t * 0.8) * 4;
 
-      const sideP = easeOutCubic((progress - 0.26) / 0.16);
+      const sideP = easeOutCubic((progress - 0.20) / 0.14);
       if (sideLRef.current) {
         sideLRef.current.style.transform = `translate3d(${(1 - sideP) * -80}px, -50%, 0)`;
         sideLRef.current.style.opacity = `${sideP}`;
