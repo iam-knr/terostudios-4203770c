@@ -5,11 +5,13 @@ import { ScrollProgress } from "./ScrollProgress";
 import { TeroCursor } from "./Cursor";
 import { LoadingScreen } from "./LoadingScreen";
 import { AmbientGlow } from "./AmbientGlow";
+import { SmoothScroll } from "./SmoothScroll";
 import { motion } from "framer-motion";
 
 export function PageLayout({ children }: { children: ReactNode }) {
   return (
     <div className="bg-cream text-ink min-h-screen relative">
+      <SmoothScroll />
       <LoadingScreen />
       <AmbientGlow />
       <ScrollProgress />
