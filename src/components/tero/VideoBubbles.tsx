@@ -32,7 +32,13 @@ const BUBBLES: B[] = [
   { x:  236, y:-154, z:  -58, size:  88, img: IMAGES[4], from: "r", bob: 9.7, phase: 0.4 },
 ];
 
-const FROM_OFFSET = { l: { x: -1500, y: 100 }, r: { x: 1500, y: -100 }, t: { x: 0, y: -1000 }, b: { x: 0, y: 1000 } };
+const FROM_OFFSET = { l: { x: -1200, y: 80 }, r: { x: 1200, y: -80 }, t: { x: 0, y: -850 }, b: { x: 0, y: 850 } };
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
+const easeOutCubic = (n: number) => 1 - Math.pow(1 - clamp01(n), 3);
+const easeInOut = (n: number) => {
+  const p = clamp01(n);
+  return p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+};
 
 export function VideoBubbles() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -57,6 +63,9 @@ export function VideoBubbles() {
     let smx = -9999, smy = -9999;
     let progress = 0;
     let raf = 0;
+    let active = true;
+    let stageW = stage.clientWidth;
+    let stageH = stage.clientHeight;
     let t0 = performance.now();
 
     const onMove = (e: MouseEvent) => {
@@ -69,11 +78,20 @@ export function VideoBubbles() {
     const computeProgress = () => {
       const r = section.getBoundingClientRect();
       const total = r.height - window.innerHeight;
-      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, total)));
+      const p = clamp01(-r.top / Math.max(1, total));
       progress = p;
+    };
+    const measure = () => {
+      stageW = stage.clientWidth;
+      stageH = stage.clientHeight;
+      computeProgress();
     };
 
     const tick = () => {
+      if (!active && !reduced) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       const now = performance.now();
       const t = (now - t0) / 1000;
       // smooth mouse
@@ -81,17 +99,17 @@ export function VideoBubbles() {
       smy += (my - smy) * 0.15;
 
       // Phases
-      // 0.00 - 0.30: fly in
-      // 0.30 - 0.55: settle/breathe
-      // 0.55 - 1.00: full 360 turntable rotation
-      const flyIn = Math.min(1, progress / 0.30);
-      const spin = Math.max(0, Math.min(1, (progress - 0.55) / 0.45));
+      // 0.00 - 0.34: bubbles enter from screen edges and lock into the clump
+      // 0.34 - 0.52: breathe/hold while side copy appears
+      // 0.52 - 1.00: the stuck clump turns through a full 360°
+      const flyIn = easeOutCubic(progress / 0.34);
+      const spin = easeInOut((progress - 0.52) / 0.48);
       const yaw = spin * Math.PI * 2; // full 360° turn
       const pitch = Math.sin(spin * Math.PI * 2) * 0.16;
       const clusterBob = Math.sin(t * 0.9) * 7;
 
       // side text reveal
-      const sideP = Math.max(0, Math.min(1, (progress - 0.32) / 0.18));
+      const sideP = easeOutCubic((progress - 0.30) / 0.18);
       if (sideLRef.current) {
         sideLRef.current.style.transform = `translate3d(${(1 - sideP) * -80}px, -50%, 0)`;
         sideLRef.current.style.opacity = `${sideP}`;
@@ -101,9 +119,8 @@ export function VideoBubbles() {
         sideRRef.current.style.opacity = `${sideP}`;
       }
 
-      const stageRect = stage.getBoundingClientRect();
-      const cx = stageRect.width / 2;
-      const cy = stageRect.height / 2;
+      const cx = stageW / 2;
+      const cy = stageH / 2;
 
       for (let i = 0; i < BUBBLES.length; i++) {
         const b = BUBBLES[i];
@@ -133,9 +150,8 @@ export function VideoBubbles() {
 
         // fly-in offset
         const off = FROM_OFFSET[b.from];
-        const ease = 1 - Math.pow(1 - flyIn, 3);
-        const inX = off.x * (1 - ease);
-        const inY = off.y * (1 - ease);
+        const inX = off.x * (1 - flyIn);
+        const inY = off.y * (1 - flyIn);
 
         // repel from mouse (only when no fly-in animation pending)
         let rpx = 0, rpy = 0;
@@ -145,9 +161,9 @@ export function VideoBubbles() {
           const dx = targetX - smx;
           const dy = targetY - smy;
           const dist = Math.hypot(dx, dy);
-          const radius = 200;
+          const radius = 190;
           if (dist < radius && dist > 0.1) {
-            const f = (1 - dist / radius) * 80;
+            const f = (1 - dist / radius) * 58;
             rpx = (dx / dist) * f;
             rpy = (dy / dist) * f;
           }
@@ -155,8 +171,8 @@ export function VideoBubbles() {
 
         const finalX = px + inX + bobX + rpx;
         const finalY = py + inY + bob + rpy;
-        const finalScale = scale * (0.6 + 0.4 * ease);
-        const opacity = 0.25 + 0.75 * Math.min(1, scale); // back bubbles dim slightly
+        const finalScale = scale * (0.62 + 0.38 * flyIn);
+        const opacity = flyIn * (0.52 + 0.48 * clamp01(scale)); // back bubbles dim slightly
         const z = Math.round(z3 + 1000);
 
         node.style.transform = `translate3d(${finalX}px, ${finalY}px, 0) scale(${finalScale})`;
@@ -169,8 +185,10 @@ export function VideoBubbles() {
 
     computeProgress();
     const onScroll = () => computeProgress();
+    const observer = new IntersectionObserver(([entry]) => { active = entry.isIntersecting; }, { rootMargin: "120px" });
+    observer.observe(section);
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", measure);
     window.addEventListener("mousemove", onMove, { passive: true });
     stage.addEventListener("mouseleave", onLeave);
     if (!reduced) raf = requestAnimationFrame(tick);
@@ -178,8 +196,9 @@ export function VideoBubbles() {
 
     return () => {
       cancelAnimationFrame(raf);
+      observer.disconnect();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", measure);
       window.removeEventListener("mousemove", onMove);
       stage.removeEventListener("mouseleave", onLeave);
     };
