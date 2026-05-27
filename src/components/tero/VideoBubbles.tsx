@@ -234,16 +234,25 @@ export function VideoBubbles() {
           }
         }
 
-        // mouse repulsion
+        // Mouse repulsion — soft, local push that bubbles ease out of the pointer
+        // path without yanking the whole cluster apart. Falloff is smoothstep so the
+        // edge of the influence radius is feathered (no popping in/out).
         if (smx > -9000) {
           const targetX = cx + cur[ix];
           const targetY = cy + cur[iy];
           const dx = targetX - smx;
           const dy = targetY - smy;
           const dist = Math.hypot(dx, dy);
-          const radius = 200;
+          // Scale influence with bubble size so big bubbles aren't shoved off-screen
+          // and small ones still react. Keep radius tight so neighbors keep sticking.
+          const radius = rad[i] * 1.55 + 70;
           if (dist < radius && dist > 0.1) {
-            const f = (1 - dist / radius) * 1400;
+            // smoothstep falloff: 3u² - 2u³ where u = 1 - dist/radius
+            const u = 1 - dist / radius;
+            const fall = u * u * (3 - 2 * u);
+            // gentle force; cohesion + spring will hold the cluster together
+            const strength = 520;
+            const f = fall * strength;
             ax += (dx / dist) * f;
             ay += (dy / dist) * f;
           }
