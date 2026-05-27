@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Tero Studios is an independent animation and motion design studio in Bengaluru, building films, motion graphics and visual effects for global brands.",
+          "Tero Studios is an independent animation and motion design studio in Chennai, building films, motion graphics and visual effects for global brands.",
       },
     ],
   }),
