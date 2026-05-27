@@ -89,10 +89,10 @@ export function CylinderGallery() {
         <div
           className="relative z-10"
           style={{
-            perspective: "1600px",
+            perspective: "1400px",
             perspectiveOrigin: "50% 50%",
-            width: "min(70vw, 720px)",
-            height: "min(60vh, 520px)",
+            width: "min(60vw, 540px)",
+            height: "min(50vh, 380px)",
           }}
         >
           <motion.div
