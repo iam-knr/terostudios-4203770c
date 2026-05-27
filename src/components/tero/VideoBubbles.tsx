@@ -154,54 +154,123 @@ function BubbleLink({ img }: { img: string }) {
   return (
     <Link
       to="/portfolio"
-      className="group relative block w-full h-full rounded-full overflow-hidden transition-transform duration-500 ease-out hover:scale-[1.12] hover:z-30"
+      className="group relative block w-full h-full rounded-full transition-transform duration-500 ease-out hover:scale-[1.12] hover:z-30"
       style={{
-        boxShadow:
-          "0 28px 50px -22px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(255,255,255,0.22)",
+        filter:
+          "drop-shadow(0 22px 28px rgba(0,0,0,0.55)) drop-shadow(0 8px 14px rgba(0,0,0,0.4))",
         transform: "translateZ(0)",
       }}
     >
-      <img
-        src={img}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        className="absolute inset-0 w-full h-full object-cover scale-[1.05]"
-      />
+      {/* Sphere body — clipped image with internal refraction shading */}
+      <div className="relative w-full h-full rounded-full overflow-hidden">
+        <img
+          src={img}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            transform: "scale(1.08)",
+            filter: "saturate(1.05) contrast(1.05)",
+          }}
+        />
 
-      {/* Glass depth — single static layer (cheap) */}
-      <div
-        aria-hidden
-        className="absolute inset-0 rounded-full pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle at 30% 22%, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 14%, transparent 32%), radial-gradient(circle at 72% 80%, rgba(0,0,0,0.5) 0%, transparent 52%)",
-        }}
-      />
+        {/* Inner volumetric shading — darken edges, slight fisheye feel */}
+        <div
+          aria-hidden
+          className="absolute inset-0 rounded-full pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 50%, transparent 48%, rgba(0,0,0,0.35) 78%, rgba(0,0,0,0.7) 100%)",
+          }}
+        />
 
-      {/* Fixed highlight */}
-      <div
-        aria-hidden
-        className="absolute pointer-events-none rounded-full"
-        style={{
-          top: "10%",
-          left: "16%",
-          width: "22%",
-          height: "14%",
-          background:
-            "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 35%, transparent 70%)",
-        }}
-      />
+        {/* Bottom-right caustic crescent (back-lit refraction) */}
+        <div
+          aria-hidden
+          className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen"
+          style={{
+            background:
+              "radial-gradient(circle at 78% 82%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.18) 12%, transparent 24%)",
+          }}
+        />
 
-      {/* Rim — single inset shadow */}
-      <div
-        aria-hidden
-        className="absolute inset-0 rounded-full pointer-events-none"
-        style={{
-          boxShadow:
-            "inset -10px -16px 30px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.16)",
-        }}
-      />
+        {/* Top dark cap for sphere curvature */}
+        <div
+          aria-hidden
+          className="absolute inset-0 rounded-full pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 0%, rgba(0,0,0,0.45) 0%, transparent 38%)",
+          }}
+        />
+
+        {/* Soft cyan/blue chromatic tint on the lit side */}
+        <div
+          aria-hidden
+          className="absolute inset-0 rounded-full pointer-events-none mix-blend-screen opacity-60"
+          style={{
+            background:
+              "radial-gradient(circle at 28% 22%, rgba(180,210,255,0.35) 0%, transparent 30%)",
+          }}
+        />
+
+        {/* Primary specular highlight — sharp, glassy */}
+        <div
+          aria-hidden
+          className="absolute pointer-events-none"
+          style={{
+            top: "6%",
+            left: "14%",
+            width: "38%",
+            height: "26%",
+            borderRadius: "50%",
+            background:
+              "radial-gradient(ellipse at 35% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.7) 22%, rgba(255,255,255,0.15) 55%, transparent 80%)",
+            filter: "blur(0.4px)",
+          }}
+        />
+
+        {/* Tiny pinpoint catchlight */}
+        <div
+          aria-hidden
+          className="absolute pointer-events-none rounded-full"
+          style={{
+            top: "11%",
+            left: "22%",
+            width: "8%",
+            height: "8%",
+            background:
+              "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.6) 40%, transparent 75%)",
+          }}
+        />
+
+        {/* Secondary lower highlight (light wrap) */}
+        <div
+          aria-hidden
+          className="absolute pointer-events-none"
+          style={{
+            bottom: "10%",
+            left: "20%",
+            width: "32%",
+            height: "10%",
+            borderRadius: "50%",
+            background:
+              "radial-gradient(ellipse at center, rgba(255,255,255,0.45) 0%, transparent 70%)",
+            filter: "blur(1px)",
+          }}
+        />
+
+        {/* Rim — bright glass edge + inner shadow */}
+        <div
+          aria-hidden
+          className="absolute inset-0 rounded-full pointer-events-none"
+          style={{
+            boxShadow:
+              "inset 0 0 0 1px rgba(255,255,255,0.55), inset -8px -14px 26px rgba(0,0,0,0.55), inset 6px 10px 22px rgba(255,255,255,0.18)",
+          }}
+        />
+      </div>
     </Link>
   );
 }
