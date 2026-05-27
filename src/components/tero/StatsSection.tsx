@@ -128,27 +128,7 @@ export function StatsSection() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 divide-x divide-y md:divide-y-0 divide-parchment border-x border-parchment">
             {stats.map((s, i) => (
-              <div
-                key={i}
-                className="group/item relative flex flex-col justify-between gap-8 p-6 md:p-8 lg:p-10 min-h-[220px] md:min-h-[280px] transition-colors duration-500 hover:bg-ink/[0.03]"
-              >
-                <span className="font-mono text-[10px] tracking-[0.25em] text-vermillion uppercase">
-                  / 0{i + 1}
-                </span>
-                <div className="flex flex-col gap-2">
-                  <h3 className="font-display font-extrabold tracking-tight text-ink leading-none text-[clamp(44px,5.5vw,84px)] pt-2 transition-colors duration-500 group-hover/item:text-vermillion">
-                    {s.n}
-                  </h3>
-                  <div className="flex items-baseline justify-between gap-3 pt-3 border-t border-parchment">
-                    <p className="font-body text-sm md:text-base font-medium text-ink uppercase tracking-wide">
-                      {s.label}
-                    </p>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/50">
-                      {s.meta}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <StatCard key={i} index={i} {...s} />
             ))}
           </div>
         </div>
