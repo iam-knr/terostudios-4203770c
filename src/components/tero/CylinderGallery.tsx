@@ -27,7 +27,7 @@ export function CylinderGallery() {
 
   const N = images.length;
   const angleStep = 360 / N;
-  const RADIUS = 780; // translateZ in px — larger = more gap between cards
+  const RADIUS = 460; // translateZ in px
 
   // Fan-out progress (0 → 1) drives spread + scroll rotation
   const fanOut = useTransform(smooth, [0, 0.18], [0, 1]);
@@ -89,10 +89,10 @@ export function CylinderGallery() {
         <div
           className="relative z-10"
           style={{
-            perspective: "1600px",
+            perspective: "1400px",
             perspectiveOrigin: "50% 50%",
-            width: "min(70vw, 720px)",
-            height: "min(60vh, 520px)",
+            width: "min(60vw, 540px)",
+            height: "min(50vh, 380px)",
           }}
         >
           <motion.div
@@ -112,10 +112,10 @@ export function CylinderGallery() {
                   key={i}
                   className="absolute left-1/2 top-1/2 overflow-hidden rounded-[6px] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] ring-1 ring-cream/10"
                   style={{
-                    width: "min(36vw, 320px)",
-                    height: "min(44vh, 420px)",
-                    marginLeft: "min(-18vw, -160px)",
-                    marginTop: "min(-22vh, -210px)",
+                    width: "min(24vw, 220px)",
+                    height: "min(36vh, 300px)",
+                    marginLeft: "min(-12vw, -110px)",
+                    marginTop: "min(-18vh, -150px)",
                     transformStyle: "preserve-3d",
                     transform: `rotateY(${angle}deg) translateZ(${z}px)`,
                     backfaceVisibility: "visible",
