@@ -12,10 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as IndustriesRouteImport } from './routes/industries'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as IndustriesSlugRouteImport } from './routes/industries.$slug'
 
 const TeamRoute = TeamRouteImport.update({
   id: '/team',
@@ -30,6 +33,11 @@ const ServicesRoute = ServicesRouteImport.update({
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndustriesRoute = IndustriesRouteImport.update({
+  id: '/industries',
+  path: '/industries',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -52,24 +60,40 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicesSlugRoute = ServicesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const IndustriesSlugRoute = IndustriesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => IndustriesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
   '/contact': typeof ContactRoute
+  '/industries': typeof IndustriesRouteWithChildren
   '/portfolio': typeof PortfolioRoute
-  '/services': typeof ServicesRoute
+  '/services': typeof ServicesRouteWithChildren
   '/team': typeof TeamRoute
+  '/industries/$slug': typeof IndustriesSlugRoute
+  '/services/$slug': typeof ServicesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
   '/contact': typeof ContactRoute
+  '/industries': typeof IndustriesRouteWithChildren
   '/portfolio': typeof PortfolioRoute
-  '/services': typeof ServicesRoute
+  '/services': typeof ServicesRouteWithChildren
   '/team': typeof TeamRoute
+  '/industries/$slug': typeof IndustriesSlugRoute
+  '/services/$slug': typeof ServicesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,9 +101,12 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
   '/contact': typeof ContactRoute
+  '/industries': typeof IndustriesRouteWithChildren
   '/portfolio': typeof PortfolioRoute
-  '/services': typeof ServicesRoute
+  '/services': typeof ServicesRouteWithChildren
   '/team': typeof TeamRoute
+  '/industries/$slug': typeof IndustriesSlugRoute
+  '/services/$slug': typeof ServicesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,27 +115,36 @@ export interface FileRouteTypes {
     | '/about'
     | '/blog'
     | '/contact'
+    | '/industries'
     | '/portfolio'
     | '/services'
     | '/team'
+    | '/industries/$slug'
+    | '/services/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/blog'
     | '/contact'
+    | '/industries'
     | '/portfolio'
     | '/services'
     | '/team'
+    | '/industries/$slug'
+    | '/services/$slug'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/blog'
     | '/contact'
+    | '/industries'
     | '/portfolio'
     | '/services'
     | '/team'
+    | '/industries/$slug'
+    | '/services/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -116,8 +152,9 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   BlogRoute: typeof BlogRoute
   ContactRoute: typeof ContactRoute
+  IndustriesRoute: typeof IndustriesRouteWithChildren
   PortfolioRoute: typeof PortfolioRoute
-  ServicesRoute: typeof ServicesRoute
+  ServicesRoute: typeof ServicesRouteWithChildren
   TeamRoute: typeof TeamRoute
 }
 
@@ -142,6 +179,13 @@ declare module '@tanstack/react-router' {
       path: '/portfolio'
       fullPath: '/portfolio'
       preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/industries': {
+      id: '/industries'
+      path: '/industries'
+      fullPath: '/industries'
+      preLoaderRoute: typeof IndustriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -172,16 +216,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/services/$slug': {
+      id: '/services/$slug'
+      path: '/$slug'
+      fullPath: '/services/$slug'
+      preLoaderRoute: typeof ServicesSlugRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/industries/$slug': {
+      id: '/industries/$slug'
+      path: '/$slug'
+      fullPath: '/industries/$slug'
+      preLoaderRoute: typeof IndustriesSlugRouteImport
+      parentRoute: typeof IndustriesRoute
+    }
   }
 }
+
+interface IndustriesRouteChildren {
+  IndustriesSlugRoute: typeof IndustriesSlugRoute
+}
+
+const IndustriesRouteChildren: IndustriesRouteChildren = {
+  IndustriesSlugRoute: IndustriesSlugRoute,
+}
+
+const IndustriesRouteWithChildren = IndustriesRoute._addFileChildren(
+  IndustriesRouteChildren,
+)
+
+interface ServicesRouteChildren {
+  ServicesSlugRoute: typeof ServicesSlugRoute
+}
+
+const ServicesRouteChildren: ServicesRouteChildren = {
+  ServicesSlugRoute: ServicesSlugRoute,
+}
+
+const ServicesRouteWithChildren = ServicesRoute._addFileChildren(
+  ServicesRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   BlogRoute: BlogRoute,
   ContactRoute: ContactRoute,
+  IndustriesRoute: IndustriesRouteWithChildren,
   PortfolioRoute: PortfolioRoute,
-  ServicesRoute: ServicesRoute,
+  ServicesRoute: ServicesRouteWithChildren,
   TeamRoute: TeamRoute,
 }
 export const routeTree = rootRouteImport
