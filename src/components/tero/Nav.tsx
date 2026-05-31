@@ -112,7 +112,7 @@ export function Nav() {
       <div
         className={[
           "absolute inset-0 transition-all duration-500",
-          scrolled || openMega
+          openMega
             ? "opacity-100 bg-cream/95 backdrop-blur-xl border-b border-ink/8"
             : "opacity-0",
         ].join(" ")}
