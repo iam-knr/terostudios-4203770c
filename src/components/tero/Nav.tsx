@@ -113,8 +113,8 @@ export function Nav() {
         className={[
           "absolute inset-0 transition-all duration-500",
           scrolled || openMega
-            ? "translate-y-0 opacity-100 bg-cream/95 backdrop-blur-xl border-b border-ink/8"
-            : "translate-y-0 opacity-100 bg-cream/85 backdrop-blur-xl border-b border-ink/8",
+            ? "opacity-100 bg-cream/95 backdrop-blur-xl border-b border-ink/8"
+            : "opacity-0",
         ].join(" ")}
       />
 
