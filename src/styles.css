@@ -150,7 +150,8 @@
     line-height: 0.74;
     letter-spacing: 0;
     text-transform: uppercase;
-    transform: scaleX(0.78);
+    display: block;
+    transform: scaleX(0.58);
     transform-origin: left bottom;
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
