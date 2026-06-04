@@ -1,9 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
-import logo from "@/assets/tero-mark.png";
+import { AnimatePresence, motion } from "framer-motion";
 import { servicesByCategory } from "@/data/services";
 import { industries } from "@/data/industries";
+
+const cyclingWords = ["Studios", "Create.", "Visualize.", "Immerse."];
+
 
 type Item =
   | { to: string; label: string; mega?: never }
