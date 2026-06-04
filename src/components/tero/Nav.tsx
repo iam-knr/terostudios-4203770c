@@ -155,19 +155,22 @@ export function Nav() {
         <Link
           ref={logoRef}
           to="/"
-          className="flex items-baseline gap-2 group"
+          className="flex items-center gap-2.5 group"
           aria-label="Tero Studios home"
         >
-          <span
+          <img
+            src={teroWordmark}
+            alt="Tero"
+            width={1317}
+            height={480}
             className={[
-              "hero-headline text-[22px] md:text-[26px] leading-none tracking-[0.04em] transition-colors duration-300",
-              openMega || lightBg ? "text-ink" : "text-white",
+              "h-7 md:h-8 w-auto object-contain transition-[filter] duration-300",
+              openMega || lightBg ? "[filter:brightness(0)]" : "[filter:brightness(0)_invert(1)]",
             ].join(" ")}
-          >
-            Tero
-          </span>
+          />
           <CyclingWord onDark={!openMega && !lightBg} />
         </Link>
+
 
 
         <nav className="hidden lg:flex items-center gap-8">
