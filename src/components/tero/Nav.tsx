@@ -7,6 +7,34 @@ import { industries } from "@/data/industries";
 
 const cyclingWords = ["Studios", "Create.", "Visualize.", "Immerse."];
 
+function CyclingWord({ onDark }: { onDark: boolean }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setI((p) => (p + 1) % cyclingWords.length), 2200);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <span className="relative inline-block h-[1em] min-w-[110px] md:min-w-[140px] overflow-hidden align-baseline">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={cyclingWords[i]}
+          initial={{ y: "100%", opacity: 0, filter: "blur(6px)" }}
+          animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
+          exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          className={[
+            "hero-headline absolute left-0 top-0 text-[22px] md:text-[26px] leading-none tracking-[0.04em] whitespace-nowrap transition-colors",
+            onDark ? "text-vermillion" : "text-vermillion",
+          ].join(" ")}
+        >
+          {cyclingWords[i]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
+
 
 type Item =
   | { to: string; label: string; mega?: never }
