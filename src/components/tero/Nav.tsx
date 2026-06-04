@@ -16,7 +16,7 @@ function CyclingWord({ onDark }: { onDark: boolean }) {
     return () => clearInterval(t);
   }, []);
   return (
-    <span className="relative inline-block h-[1em] min-w-[110px] md:min-w-[140px] overflow-hidden align-baseline">
+    <span className="relative inline-block h-[1em] min-w-[110px] md:min-w-[140px] overflow-hidden align-baseline leading-none">
       <AnimatePresence mode="wait">
         <motion.span
           key={cyclingWords[i]}
@@ -26,7 +26,7 @@ function CyclingWord({ onDark }: { onDark: boolean }) {
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
           className={[
             "hero-headline absolute left-0 top-0 text-[22px] md:text-[26px] leading-none tracking-[0.04em] whitespace-nowrap transition-colors",
-            onDark ? "text-vermillion" : "text-vermillion",
+            onDark ? "text-white" : "text-ink",
           ].join(" ")}
         >
           {cyclingWords[i]}
@@ -35,6 +35,7 @@ function CyclingWord({ onDark }: { onDark: boolean }) {
     </span>
   );
 }
+
 
 
 
