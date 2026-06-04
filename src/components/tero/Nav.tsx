@@ -16,7 +16,7 @@ function CyclingWord({ onDark }: { onDark: boolean }) {
     return () => clearInterval(t);
   }, []);
   return (
-    <span className="relative inline-flex h-7 md:h-8 min-w-[104px] md:min-w-[116px] overflow-visible leading-none -ml-0.5 translate-y-[7px] md:translate-y-[8px]">
+    <span className="relative inline-flex h-7 md:h-8 min-w-[116px] md:min-w-[132px] overflow-visible leading-none ml-1.5 translate-y-[5px] md:translate-y-[5px]">
       <AnimatePresence mode="wait">
         <motion.span
           key={cyclingWords[i]}
@@ -29,7 +29,7 @@ function CyclingWord({ onDark }: { onDark: boolean }) {
             onDark ? "text-white" : "text-ink",
           ].join(" ")}
         >
-          <span className="tero-logo-cycle-text text-[31px] md:text-[35px]">{cyclingWords[i]}</span>
+          <span className="tero-logo-cycle-text text-[25px] md:text-[28px]">{cyclingWords[i]}</span>
         </motion.span>
       </AnimatePresence>
     </span>
