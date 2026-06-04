@@ -122,18 +122,23 @@ export function Nav() {
       />
 
       <div className="relative container-tero flex h-[72px] items-center justify-between pointer-events-auto">
-        <Link ref={logoRef} to="/" className="flex items-center group" aria-label="Tero Studios home">
-          <img
-            src={logo}
-            alt="Tero Studios"
-            width={220}
-            height={50}
+        <Link
+          ref={logoRef}
+          to="/"
+          className="flex items-baseline gap-2 group"
+          aria-label="Tero Studios home"
+        >
+          <span
             className={[
-              "h-9 md:h-10 w-auto object-contain transition-[filter] duration-300",
-              openMega || lightBg ? "[filter:brightness(0)]" : "[filter:brightness(0)_invert(1)]",
+              "hero-headline text-[22px] md:text-[26px] leading-none tracking-[0.04em] transition-colors duration-300",
+              openMega || lightBg ? "text-ink" : "text-white",
             ].join(" ")}
-          />
+          >
+            Tero
+          </span>
+          <CyclingWord onDark={!openMega && !lightBg} />
         </Link>
+
 
         <nav className="hidden lg:flex items-center gap-8">
           {items.map((it) => {
