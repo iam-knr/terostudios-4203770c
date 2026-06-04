@@ -16,7 +16,7 @@ function CyclingWord({ onDark }: { onDark: boolean }) {
     return () => clearInterval(t);
   }, []);
   return (
-    <span className="relative inline-flex items-end h-7 md:h-8 min-w-[120px] md:min-w-[150px] overflow-hidden leading-none">
+    <span className="relative inline-flex h-7 md:h-8 min-w-[148px] md:min-w-[170px] overflow-visible leading-none -ml-1.5 translate-y-[8px] md:translate-y-[9px]">
       <AnimatePresence mode="wait">
         <motion.span
           key={cyclingWords[i]}
@@ -25,9 +25,8 @@ function CyclingWord({ onDark }: { onDark: boolean }) {
           exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
           className={[
-            "absolute left-0 bottom-0 uppercase whitespace-nowrap transition-colors",
-            "text-[15px] md:text-[17px] leading-none tracking-[0.02em]",
-            "[font-family:'Outfit',system-ui,sans-serif] font-extrabold",
+            "tero-logo-cycle-text absolute left-0 bottom-0 whitespace-nowrap transition-colors",
+            "text-[19px] md:text-[21px]",
             onDark ? "text-white" : "text-ink",
           ].join(" ")}
         >
@@ -159,7 +158,7 @@ export function Nav() {
         <Link
           ref={logoRef}
           to="/"
-          className="flex items-center gap-2.5 group"
+          className="flex items-center gap-0 group"
           aria-label="Tero Studios home"
         >
           <img
