@@ -3,6 +3,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageLayout } from "@/components/tero/PageLayout";
 import { Reveal } from "@/components/tero/Reveal";
+import { LogoStrip } from "@/components/tero/LogoStrip";
+import { Testimonials } from "@/components/tero/Testimonials";
+import { KineticBand } from "@/components/tero/KineticBand";
 import { ArrowRight, ArrowLeft, Check, Calendar, Mail, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
