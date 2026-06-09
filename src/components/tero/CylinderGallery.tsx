@@ -68,10 +68,10 @@ export function CylinderGallery() {
         {/* Header */}
         <div className="absolute inset-x-0 top-[88px] md:top-[96px] z-20 flex flex-col items-center gap-2 px-8">
           <span className="font-mono text-[11px] uppercase tracking-[0.32em] text-cream/60">
-            Selected work
+            (01) Reel
           </span>
-          <h2 className="font-display text-[clamp(22px,2.4vw,32px)] leading-none text-cream">
-            Cylinder Reel
+          <h2 className="font-display font-bold text-[clamp(28px,4vw,56px)] leading-[0.95] text-cream text-center">
+            Stories that move.
           </h2>
         </div>
 
