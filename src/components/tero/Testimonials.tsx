@@ -29,7 +29,7 @@ const items: Testimonial[] = [
     role: "Brand Manager",
     company: "Bhima Gold",
     avatar: bhima.url,
-    logo: bhimaLogo.default.url,
+    logo: bhimaLogo.url,
     project: "Vara Mahalakshmi · Anamorphic",
   },
   {
@@ -39,7 +39,7 @@ const items: Testimonial[] = [
     role: "Senior Marketing Manager",
     company: "Forum Mall",
     avatar: forum.url,
-    logo: forumLogo.default.url,
+    logo: forumLogo.url,
     project: "Mall Experience · Campaign",
   },
   {
@@ -49,7 +49,7 @@ const items: Testimonial[] = [
     role: "General Manager",
     company: "Lulu Mall Kochi",
     avatar: lulu.url,
-    logo: luluLogo.default.url,
+    logo: luluLogo.url,
     project: "Onam · AR Broadcast",
   },
   {
@@ -59,7 +59,7 @@ const items: Testimonial[] = [
     role: "Marketing Head",
     company: "S&T Engineers",
     avatar: stEng.url,
-    logo: stEngLogo.default.url,
+    logo: stEngLogo.url,
     project: "IMTEX · ACMEE 2025",
   },
   {
@@ -69,7 +69,7 @@ const items: Testimonial[] = [
     role: "Producer",
     company: "Shot Ready",
     avatar: shot.url,
-    logo: shotLogo.default.url,
+    logo: shotLogo.url,
     project: "Campa Cola · TVC",
   },
 ];
