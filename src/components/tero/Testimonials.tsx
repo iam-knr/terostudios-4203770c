@@ -207,16 +207,14 @@ function BrandMark({
   large?: boolean;
 }) {
   return (
-    <div
-      className={`flex items-center rounded-xl border border-white/10 bg-cream px-4 ${
-        large ? "h-14 md:h-16" : "h-12"
-      }`}
-    >
+    <div className="flex items-center">
       <img
         src={logo}
         alt={`${company} logo`}
         loading="lazy"
-        className={`w-auto object-contain ${large ? "h-7 md:h-8" : "h-5"}`}
+        className={`w-auto object-contain ${
+          large ? "h-14 md:h-20" : "h-12 md:h-14"
+        }`}
       />
     </div>
   );
