@@ -123,7 +123,7 @@ export function StatsSection() {
             ▸ Reel · Stats 2024
           </div>
           <div className="absolute bottom-3 right-4 md:right-6 z-20 font-mono text-[10px] uppercase tracking-[0.3em] text-ink/40">
-            Independent since 2014 ●
+            Independent since 2016 ●
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 divide-x divide-y md:divide-y-0 divide-parchment border-x border-parchment">
