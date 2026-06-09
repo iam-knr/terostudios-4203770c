@@ -62,7 +62,8 @@ function LogoCell({ src }: { src: string }) {
       <img
         src={src}
         alt="Client logo"
-        loading="lazy"
+        loading="eager"
+        decoding="async"
         className="h-[56px] md:h-[80px] lg:h-[96px] w-auto object-contain opacity-60 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0"
       />
     </span>
