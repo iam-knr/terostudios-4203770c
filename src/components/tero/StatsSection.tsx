@@ -102,7 +102,7 @@ export function StatsSection() {
       <div className="container-tero pt-24 md:pt-32">
         <div className="flex items-end justify-between gap-6 border-b border-parchment pb-8">
           <div>
-            <p className="overline">— By the numbers / 2014–2026</p>
+            <p className="overline">— By the numbers / 2016–2026</p>
             <h2 className="mt-5 hero-headline text-[clamp(36px,5vw,72px)] max-w-3xl text-ink leading-[1.05]">
               A decade of frames,
               <br />
