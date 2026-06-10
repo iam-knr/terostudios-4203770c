@@ -1,5 +1,6 @@
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
+@import url("https://api.fontshare.com/v2/css?f[]=clash-display@600,700&display=swap");
 @source "../src";
 
 @custom-variant dark (&:is(.dark *));
@@ -144,10 +145,10 @@
   }
 
   .tero-logo-cycle-text {
-    font-family: "Anton", "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
-    font-weight: 400;
+    font-family: "Clash Display", "Anton", "Plus Jakarta Sans", system-ui, sans-serif;
+    font-weight: 700;
     line-height: 1;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.005em;
     text-transform: uppercase;
     display: inline-block;
     -webkit-font-smoothing: antialiased;
