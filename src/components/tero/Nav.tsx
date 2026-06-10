@@ -25,9 +25,10 @@ function CyclingWord({ onDark }: { onDark: boolean }) {
           exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
           className={[
-            "absolute left-0 top-1/2 -translate-y-1/2 translate-y-[1px] md:translate-y-[2px] whitespace-nowrap transition-colors",
+            "absolute left-0 top-1/2 whitespace-nowrap transition-colors",
             onDark ? "text-white" : "text-ink",
           ].join(" ")}
+          style={{ transform: "translateY(calc(-50% + 1px))" }}
         >
           <span className="tero-logo-cycle-text text-[13px] md:text-[15px]">{cyclingWords[i]}</span>
         </motion.span>
