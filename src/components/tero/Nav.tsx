@@ -16,23 +16,24 @@ function CyclingWord({ onDark }: { onDark: boolean }) {
     return () => clearInterval(t);
   }, []);
   return (
-    <span className="relative inline-flex items-center h-7 md:h-8 min-w-[80px] md:min-w-[100px] overflow-visible leading-none ml-2 md:ml-3">
-      <AnimatePresence mode="wait">
-        <motion.span
-          key={cyclingWords[i]}
-          initial={{ y: "100%", opacity: 0, filter: "blur(6px)" }}
-          animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
-          exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className={[
-            "absolute left-0 top-1/2 whitespace-nowrap transition-colors",
-            onDark ? "text-white" : "text-ink",
-          ].join(" ")}
-          style={{ transform: "translateY(calc(-50% + 1px))" }}
-        >
-          <span className="tero-logo-cycle-text text-[13px] md:text-[15px]">{cyclingWords[i]}</span>
-        </motion.span>
-      </AnimatePresence>
+    <span className="relative inline-flex items-center h-7 md:h-8 min-w-[80px] md:min-w-[100px] overflow-hidden leading-none ml-2 md:ml-3">
+      <span className="relative block h-full w-full" style={{ paddingTop: "1px" }}>
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={cyclingWords[i]}
+            initial={{ y: "100%", opacity: 0, filter: "blur(6px)" }}
+            animate={{ y: "0%", opacity: 1, filter: "blur(0px)" }}
+            exit={{ y: "-100%", opacity: 0, filter: "blur(4px)" }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className={[
+              "absolute inset-0 flex items-center whitespace-nowrap transition-colors",
+              onDark ? "text-white" : "text-ink",
+            ].join(" ")}
+          >
+            <span className="tero-logo-cycle-text text-[13px] md:text-[15px]">{cyclingWords[i]}</span>
+          </motion.span>
+        </AnimatePresence>
+      </span>
     </span>
   );
 }
