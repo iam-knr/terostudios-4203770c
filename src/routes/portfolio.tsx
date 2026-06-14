@@ -133,9 +133,9 @@ function PortfolioPage() {
             <p className="mt-3 font-body text-slate">Try a different combination.</p>
           </div>
         ) : view === "editorial" ? (
-          <EditorialView featured={featured} rest={rest} />
+          <EditorialView featured={featured} rest={rest} onOpen={openVideo} />
         ) : (
-          <GridView items={filtered} />
+          <GridView items={filtered} onOpen={openVideo} />
         )}
       </section>
 
