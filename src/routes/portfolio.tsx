@@ -3,12 +3,7 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { PageLayout } from "@/components/tero/PageLayout";
 import { Reveal } from "@/components/tero/Reveal";
-import p1 from "@/assets/portfolio-1.jpg";
-import p2 from "@/assets/portfolio-2.jpg";
-import p3 from "@/assets/portfolio-3.jpg";
-import p4 from "@/assets/portfolio-4.jpg";
-import p5 from "@/assets/portfolio-5.jpg";
-import p6 from "@/assets/portfolio-6.jpg";
+import { videos } from "@/data/videos";
 
 export const Route = createFileRoute("/portfolio")({
   component: PortfolioPage,
@@ -20,22 +15,10 @@ export const Route = createFileRoute("/portfolio")({
   }),
 });
 
-type P = { img: string; client: string; title: string; service: string; industry: string };
+const projects = videos;
 
-const projects: P[] = [
-  { img: p1, client: "GlassWorks", title: "Refraction", service: "3D Animation", industry: "Design" },
-  { img: p2, client: "Kinetic Type Co.", title: "Editorial Set", service: "Motion Graphics", industry: "Publishing" },
-  { img: p3, client: "Toy Atelier", title: "Mr. Sprout", service: "Character", industry: "Consumer" },
-  { img: p4, client: "Finlytics", title: "Onboarding Reel", service: "Explainer", industry: "Fintech" },
-  { img: p5, client: "Mirage Films", title: "Ember", service: "VFX", industry: "Entertainment" },
-  { img: p6, client: "Auraware", title: "Quiet Vessels", service: "Product 3D", industry: "Lifestyle" },
-  { img: p2, client: "Northwind", title: "Frequency", service: "Motion Graphics", industry: "Tech" },
-  { img: p1, client: "Lumen Labs", title: "Refract II", service: "3D Animation", industry: "Tech" },
-  { img: p4, client: "Routey", title: "First Mile", service: "Explainer", industry: "Logistics" },
-];
-
-const services = ["All", "3D Animation", "Motion Graphics", "Character", "Explainer", "VFX", "Product 3D"];
-const industries = ["All", "Design", "Publishing", "Consumer", "Fintech", "Entertainment", "Lifestyle", "Tech", "Logistics"];
+const services = ["All", ...Array.from(new Set(videos.map((v) => v.service)))];
+const industries = ["All", ...Array.from(new Set(videos.map((v) => v.industry)))];
 
 function PortfolioPage() {
   const [svc, setSvc] = useState("All");
