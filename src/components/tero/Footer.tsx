@@ -49,9 +49,9 @@ export function Footer() {
           </p>
           <div className="mt-8 flex items-center gap-3">
             {[
-              { Icon: Instagram, href: "https://instagram.com" },
-              { Icon: Linkedin, href: "https://linkedin.com" },
-              { Icon: Youtube, href: "https://youtube.com" },
+              { Icon: Instagram, href: "https://www.instagram.com/tero_studios/" },
+              { Icon: Linkedin, href: "https://www.linkedin.com/company/tero-studios/" },
+              { Icon: Youtube, href: "https://www.youtube.com/@TeroStudios-y2j" },
             ].map(({ Icon, href }, i) => (
               <a
                 key={i}
