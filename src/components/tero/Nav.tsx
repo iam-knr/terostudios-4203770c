@@ -68,7 +68,7 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [lightBg, setLightBg] = useState(false);
-  const [openMega, setOpenMega] = useState<"services" | "industries" | null>(null);
+  const [openMega, setOpenMega] = useState<"services" | null>(null);
   const { pathname } = useLocation();
   const logoRef = useRef<HTMLAnchorElement>(null);
 
