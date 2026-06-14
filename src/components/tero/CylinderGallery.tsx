@@ -14,7 +14,7 @@ export function CylinderGallery() {
   // Smooth the scroll for nicer motion
   const smooth = useSpring(scrollYProgress, { stiffness: 80, damping: 22, mass: 0.4 });
 
-  const N = images.length;
+  const N = items.length;
   const angleStep = 360 / N;
   const RADIUS = 460; // translateZ in px
 
