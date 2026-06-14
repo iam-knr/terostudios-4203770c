@@ -2,12 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageLayout } from "@/components/tero/PageLayout";
 import { Reveal } from "@/components/tero/Reveal";
 import { services } from "@/data/services";
-import { industries } from "@/data/industries";
 
 const tier1 = [
   { to: "/", label: "Home" },
   { to: "/services", label: "Services Hub" },
-  { to: "/industries", label: "Industries Hub" },
   { to: "/portfolio", label: "Portfolio" },
   { to: "/case-studies", label: "Case Studies" },
   { to: "/showreel", label: "Showreel" },
@@ -66,12 +64,12 @@ function Sitemap() {
             </ul>
           </div>
           <div>
-            <p className="overline">— Industries</p>
+            <p className="overline">— Services</p>
             <ul className="mt-5 space-y-3">
-              {industries.map((i) => (
-                <li key={i.slug}>
-                  <Link to="/industries/$slug" params={{ slug: i.slug }} className="link-underline">
-                    {i.name}
+              {services.map((s) => (
+                <li key={s.slug}>
+                  <Link to="/services/$slug" params={{ slug: s.slug }} className="link-underline">
+                    {s.name}
                   </Link>
                 </li>
               ))}

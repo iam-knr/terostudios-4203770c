@@ -4,7 +4,6 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import teroWordmark from "@/assets/tero-wordmark.png";
 import { servicesByCategory } from "@/data/services";
-import { industries } from "@/data/industries";
 
 const cyclingWords = ["Studio", "Create", "Visualize", "Immerse"];
 
@@ -44,12 +43,11 @@ function CyclingWord({ onDark }: { onDark: boolean }) {
 
 type Item =
   | { to: string; label: string; mega?: never }
-  | { to: string; label: string; mega: "services" | "industries" };
+  | { to: string; label: string; mega: "services" };
 
 const items: Item[] = [
   { to: "/", label: "Home" },
   { to: "/services", label: "Services", mega: "services" },
-  { to: "/industries", label: "Industries", mega: "industries" },
   { to: "/portfolio", label: "Portfolio" },
   { to: "/about", label: "About" },
   { to: "/blog", label: "Blog" },
@@ -70,7 +68,7 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [lightBg, setLightBg] = useState(false);
-  const [openMega, setOpenMega] = useState<"services" | "industries" | null>(null);
+  const [openMega, setOpenMega] = useState<"services" | null>(null);
   const { pathname } = useLocation();
   const logoRef = useRef<HTMLAnchorElement>(null);
 
@@ -276,28 +274,6 @@ export function Nav() {
         </div>
       )}
 
-      {/* Mega menu — industries */}
-      {openMega === "industries" && (
-        <div className="relative pointer-events-auto border-t border-ink/8 bg-cream/95 backdrop-blur-xl">
-          <div className="container-tero grid grid-cols-3 gap-x-8 gap-y-3 py-10">
-            {industries.map((i) => (
-              <Link
-                key={i.slug}
-                to="/industries/$slug"
-                params={{ slug: i.slug }}
-                className="flex items-baseline justify-between gap-4 border-b border-parchment py-2 font-body text-[14px] text-ink/80 hover:text-vermillion"
-              >
-                <span>{i.name}</span>
-                {i.badge && (
-                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-vermillion">
-                    {i.badge}
-                  </span>
-                )}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
 
       {open && (
         <div className="lg:hidden border-t border-parchment bg-cream pointer-events-auto max-h-[80vh] overflow-y-auto">

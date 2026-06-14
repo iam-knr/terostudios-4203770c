@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Instagram, Linkedin, Youtube } from "lucide-react";
 import logo from "@/assets/tero-mark.png";
 import { services } from "@/data/services";
-import { industries } from "@/data/industries";
 
 export function Footer() {
   return (
@@ -61,7 +60,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="col-span-1 md:col-span-3">
+        <div className="col-span-2 md:col-span-4">
           <p className="overline mb-5 text-cream/50">Services</p>
           <ul className="space-y-2.5">
             {services.slice(0, 8).map((s) => (
@@ -83,24 +82,8 @@ export function Footer() {
           </ul>
         </div>
 
-        <div className="col-span-1 md:col-span-3">
-          <p className="overline mb-5 text-cream/50">Industries</p>
-          <ul className="space-y-2.5">
-            {industries.map((i) => (
-              <li key={i.slug}>
-                <Link
-                  to="/industries/$slug"
-                  params={{ slug: i.slug }}
-                  className="font-body text-[13px] text-cream/70 hover:text-vermillion transition-colors"
-                >
-                  {i.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
 
-        <div className="col-span-2 md:col-span-3">
+        <div className="col-span-2 md:col-span-5">
           <p className="overline mb-5 text-cream/50">Studio</p>
           <ul className="space-y-2.5">
             {[
