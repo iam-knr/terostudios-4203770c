@@ -23,6 +23,8 @@ function PortfolioPage() {
   const [svc, setSvc] = useState("All");
   const [ind, setInd] = useState("All");
   const [view, setView] = useState<"editorial" | "grid">("editorial");
+  const [active, setActive] = useState<VideoItem | null>(null);
+  const openVideo = (v: VideoItem) => setActive(v);
 
   const filtered = useMemo(
     () =>
