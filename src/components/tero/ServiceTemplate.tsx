@@ -110,7 +110,7 @@ const whyPartner = [
 ];
 
 function buildBrief(service: ServiceEntry) {
-  const niche = service.name.toLowerCase();
+  const niche = service.name;
   const inds = service.industries.join(", ");
   return {
     intro: `${service.name} is the craft of turning brand intent into screen language. At Tero Studios we approach ${niche} as a senior-led discipline — every project begins with a written treatment, a locked visual direction and a production plan that protects the work all the way to delivery. That's why brands across ${inds} return to us for their most visible ${service.category.toLowerCase()} work.`,
