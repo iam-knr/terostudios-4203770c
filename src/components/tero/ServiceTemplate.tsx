@@ -365,24 +365,6 @@ export function ServiceTemplate({ service }: { service: ServiceEntry }) {
                   </li>
                 ))}
               </ul>
-              {relatedIndustries.length > 0 && (
-                <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {relatedIndustries.map((ind) => (
-                    <Link
-                      key={ind.slug}
-                      to="/industries/$slug"
-                      params={{ slug: ind.slug }}
-                      className="group flex items-center justify-between rounded-lg border border-parchment bg-card p-4 transition-all hover:border-vermillion/40"
-                    >
-                      <div>
-                        <p className="font-sans-display text-[15px] font-bold text-ink">{ind.name}</p>
-                        <p className="mt-0.5 font-body text-[12px] text-slate">{ind.short}</p>
-                      </div>
-                      <ArrowUpRight className="h-4 w-4 text-ink/40 transition-all group-hover:text-vermillion group-hover:-translate-y-1 group-hover:translate-x-1" strokeWidth={1.5} />
-                    </Link>
-                  ))}
-                </div>
-              )}
             </Reveal>
           </div>
         </div>
