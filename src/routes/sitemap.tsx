@@ -6,7 +6,6 @@ import { services } from "@/data/services";
 const tier1 = [
   { to: "/", label: "Home" },
   { to: "/services", label: "Services Hub" },
-  { to: "/industries", label: "Industries Hub" },
   { to: "/portfolio", label: "Portfolio" },
   { to: "/case-studies", label: "Case Studies" },
   { to: "/showreel", label: "Showreel" },
