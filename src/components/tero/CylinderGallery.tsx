@@ -1,19 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import { useScroll, useTransform, useSpring, motion, useMotionValue, useMotionValueEvent } from "framer-motion";
-import p1 from "@/assets/portfolio-1.jpg";
-import p2 from "@/assets/portfolio-2.jpg";
-import p3 from "@/assets/portfolio-3.jpg";
-import p4 from "@/assets/portfolio-4.jpg";
-import p5 from "@/assets/portfolio-5.jpg";
-import p6 from "@/assets/portfolio-6.jpg";
-import p7 from "@/assets/process-3dmodel.jpg";
-import p8 from "@/assets/process-lighting.jpg";
-import p9 from "@/assets/process-vfx.jpg";
-import p10 from "@/assets/process-storyboard.jpg";
-import p11 from "@/assets/process-animatics.jpg";
-import p12 from "@/assets/process-delivery.jpg";
+import { videos } from "@/data/videos";
 
-const images = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12];
+const items = videos.slice(0, 12);
 
 export function CylinderGallery() {
   const ref = useRef<HTMLDivElement>(null);
@@ -25,7 +14,7 @@ export function CylinderGallery() {
   // Smooth the scroll for nicer motion
   const smooth = useSpring(scrollYProgress, { stiffness: 80, damping: 22, mass: 0.4 });
 
-  const N = images.length;
+  const N = items.length;
   const angleStep = 360 / N;
   const RADIUS = 460; // translateZ in px
 
@@ -103,7 +92,7 @@ export function CylinderGallery() {
               rotateY,
             }}
           >
-            {images.map((src, i) => {
+            {items.map((item, i) => {
               const angle = i * angleStep;
               // Translate Z grows from 0 to RADIUS as fanOut goes 0 → 1
               const z = RADIUS * fanVal;
@@ -122,10 +111,13 @@ export function CylinderGallery() {
                     opacity: 0.55 + 0.45 * fanVal,
                   }}
                 >
-                  <img
-                    src={src}
-                    alt=""
-                    loading="lazy"
+                  <video
+                    src={item.url}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                   <div
@@ -138,7 +130,8 @@ export function CylinderGallery() {
                   />
                   <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-cream/90">
                     <span>0{(i + 1).toString().slice(-2)}</span>
-                    <span>Tero · Reel</span>
+                    <span>{item.client}</span>
+
                   </div>
                 </div>
               );
