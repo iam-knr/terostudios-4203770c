@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Instagram, Linkedin, Youtube } from "lucide-react";
 import logo from "@/assets/tero-mark.png";
 import { services } from "@/data/services";
-import { industries } from "@/data/industries";
 
 export function Footer() {
   return (
