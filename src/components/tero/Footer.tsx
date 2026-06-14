@@ -83,7 +83,7 @@ export function Footer() {
         </div>
 
 
-        <div className="col-span-2 md:col-span-3">
+        <div className="col-span-2 md:col-span-5">
           <p className="overline mb-5 text-cream/50">Studio</p>
           <ul className="space-y-2.5">
             {[
