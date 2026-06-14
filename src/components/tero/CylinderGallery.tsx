@@ -16,7 +16,13 @@ export function CylinderGallery() {
 
   const N = items.length;
   const angleStep = 360 / N;
-  const RADIUS = 460; // translateZ in px
+  // Card sizing caps (px). Cards fit within these while preserving aspect ratio.
+  const MAX_W = 260;
+  const MAX_H = 260;
+  // Radius derived so widest possible card + gap doesn't overlap its neighbour.
+  // chord = 2*R*sin(π/N) must be ≥ MAX_W + gap
+  const GAP = 28;
+  const RADIUS = Math.ceil((MAX_W + GAP) / (2 * Math.sin(Math.PI / N)));
 
   // Fan-out progress (0 → 1) drives spread + scroll rotation
   const fanOut = useTransform(smooth, [0, 0.18], [0, 1]);
