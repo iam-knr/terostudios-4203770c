@@ -123,7 +123,10 @@ export function CylinderGallery() {
                     loop
                     playsInline
                     preload="metadata"
-                    className="absolute inset-0 h-full w-full object-contain"
+                    controlsList="nodownload noremoteplayback"
+                    disablePictureInPicture
+                    onContextMenu={(e) => e.preventDefault()}
+                    className="absolute inset-0 h-full w-full object-contain pointer-events-none select-none"
                   />
 
 

@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageLayout } from "@/components/tero/PageLayout";
 import { Reveal } from "@/components/tero/Reveal";
-import { videos } from "@/data/videos";
+import { videos, type VideoItem } from "@/data/videos";
 
 export const Route = createFileRoute("/portfolio")({
   component: PortfolioPage,
@@ -23,6 +23,8 @@ function PortfolioPage() {
   const [svc, setSvc] = useState("All");
   const [ind, setInd] = useState("All");
   const [view, setView] = useState<"editorial" | "grid">("editorial");
+  const [active, setActive] = useState<VideoItem | null>(null);
+  const openVideo = (v: VideoItem) => setActive(v);
 
   const filtered = useMemo(
     () =>
@@ -131,9 +133,9 @@ function PortfolioPage() {
             <p className="mt-3 font-body text-slate">Try a different combination.</p>
           </div>
         ) : view === "editorial" ? (
-          <EditorialView featured={featured} rest={rest} />
+          <EditorialView featured={featured} rest={rest} onOpen={openVideo} />
         ) : (
-          <GridView items={filtered} />
+          <GridView items={filtered} onOpen={openVideo} />
         )}
       </section>
 
@@ -163,6 +165,8 @@ function PortfolioPage() {
           </div>
         </div>
       </section>
+
+      <Lightbox project={active} onClose={() => setActive(null)} />
     </PageLayout>
   );
 }
@@ -203,23 +207,32 @@ function FilterRow({
   );
 }
 
+/* Shared video protection props */
+const protectedVideoProps = {
+  controlsList: "nodownload noremoteplayback nofullscreen",
+  disablePictureInPicture: true,
+  onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
+} as const;
+
 /* ───────── Editorial: featured + asymmetric masonry ───────── */
 function EditorialView({
   featured,
   rest,
+  onOpen,
 }: {
-  featured: (typeof videos)[number];
-  rest: typeof videos;
+  featured: VideoItem;
+  rest: VideoItem[];
+  onOpen: (v: VideoItem) => void;
 }) {
   return (
     <div className="flex flex-col gap-16 md:gap-24">
-      {featured && <FeaturedCard project={featured} />}
+      {featured && <FeaturedCard project={featured} onOpen={onOpen} />}
 
       {rest.length > 0 && (
         <div className="columns-1 md:columns-2 lg:columns-3 gap-6 [column-fill:_balance]">
           <AnimatePresence>
             {rest.map((p, i) => (
-              <ProjectCard key={p.title + i} project={p} index={i + 2} />
+              <ProjectCard key={p.title + i} project={p} index={i + 2} onOpen={onOpen} />
             ))}
           </AnimatePresence>
         </div>
@@ -228,16 +241,21 @@ function EditorialView({
   );
 }
 
-function FeaturedCard({ project }: { project: (typeof videos)[number] }) {
+function FeaturedCard({
+  project,
+  onOpen,
+}: {
+  project: VideoItem;
+  onOpen: (v: VideoItem) => void;
+}) {
   return (
-    <motion.a
-      href={project.url}
-      target="_blank"
-      rel="noreferrer"
+    <motion.button
+      type="button"
+      onClick={() => onOpen(project)}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="group block"
+      className="group block w-full text-left"
     >
       <div className="flex items-center justify-between mb-4">
         <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-vermillion">
@@ -255,7 +273,8 @@ function FeaturedCard({ project }: { project: (typeof videos)[number] }) {
           loop
           playsInline
           preload="metadata"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.03]"
+          {...protectedVideoProps}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-[1.03] pointer-events-none select-none"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/0 to-ink/0" />
         <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-end text-cream">
@@ -264,35 +283,35 @@ function FeaturedCard({ project }: { project: (typeof videos)[number] }) {
           </h2>
           <p className="mt-2 font-body text-[14px] text-cream/70">{project.client}</p>
         </div>
-        <div className="absolute top-6 right-6 h-10 w-10 rounded-full bg-cream/15 backdrop-blur-md flex items-center justify-center text-cream transition group-hover:bg-vermillion">
-          ↗
+        <div className="absolute top-6 right-6 h-12 w-12 rounded-full bg-cream/15 backdrop-blur-md flex items-center justify-center text-cream transition group-hover:bg-vermillion group-hover:scale-110">
+          ▶
         </div>
       </div>
-    </motion.a>
+    </motion.button>
   );
 }
 
 function ProjectCard({
   project,
   index,
+  onOpen,
 }: {
-  project: (typeof videos)[number];
+  project: VideoItem;
   index: number;
+  onOpen: (v: VideoItem) => void;
 }) {
-  // Use real aspect ratio so the masonry feels alive
   const ratio = Math.max(0.5, Math.min(2.2, project.aspect));
 
   return (
-    <motion.a
+    <motion.button
+      type="button"
       layout
-      href={project.url}
-      target="_blank"
-      rel="noreferrer"
+      onClick={() => onOpen(project)}
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="group mb-6 break-inside-avoid block"
+      className="group mb-6 break-inside-avoid block w-full text-left"
     >
       <div
         className="relative overflow-hidden rounded-xl bg-ink"
@@ -305,12 +324,15 @@ function ProjectCard({
           loop
           playsInline
           preload="metadata"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          {...protectedVideoProps}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04] pointer-events-none select-none"
         />
-        {/* hover overlay */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         <div className="absolute top-3 left-3 font-mono text-[10px] uppercase tracking-[0.25em] text-cream/80 bg-ink/40 backdrop-blur-sm rounded-full px-2.5 py-1">
           {String(index).padStart(2, "0")}
+        </div>
+        <div className="absolute top-3 right-3 h-9 w-9 rounded-full bg-cream/15 backdrop-blur-md flex items-center justify-center text-cream opacity-0 group-hover:opacity-100 transition">
+          ▶
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 text-cream">
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-vermillion">
@@ -327,12 +349,18 @@ function ProjectCard({
           {project.client}
         </span>
       </div>
-    </motion.a>
+    </motion.button>
   );
 }
 
 /* ───────── Grid: dense uniform fallback ───────── */
-function GridView({ items }: { items: typeof videos }) {
+function GridView({
+  items,
+  onOpen,
+}: {
+  items: VideoItem[];
+  onOpen: (v: VideoItem) => void;
+}) {
   return (
     <motion.div
       layout
@@ -340,17 +368,16 @@ function GridView({ items }: { items: typeof videos }) {
     >
       <AnimatePresence>
         {items.map((p, i) => (
-          <motion.a
+          <motion.button
+            type="button"
             key={p.title + i}
             layout
-            href={p.url}
-            target="_blank"
-            rel="noreferrer"
+            onClick={() => onOpen(p)}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, delay: (i % 6) * 0.04 }}
-            className="group block"
+            className="group block text-left"
           >
             <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-ink">
               <video
@@ -360,8 +387,12 @@ function GridView({ items }: { items: typeof videos }) {
                 loop
                 playsInline
                 preload="metadata"
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                {...protectedVideoProps}
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 pointer-events-none select-none"
               />
+              <div className="absolute top-3 right-3 h-9 w-9 rounded-full bg-cream/15 backdrop-blur-md flex items-center justify-center text-cream opacity-0 group-hover:opacity-100 transition">
+                ▶
+              </div>
               <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-ink/85 to-transparent text-cream">
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-vermillion">
                   {p.service}
@@ -370,9 +401,89 @@ function GridView({ items }: { items: typeof videos }) {
                 <p className="font-body text-[12px] text-cream/70">{p.client}</p>
               </div>
             </div>
-          </motion.a>
+          </motion.button>
         ))}
       </AnimatePresence>
     </motion.div>
   );
 }
+
+/* ───────── Lightbox modal ───────── */
+function Lightbox({
+  project,
+  onClose,
+}: {
+  project: VideoItem | null;
+  onClose: () => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!project) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [project, onClose]);
+
+  return (
+    <AnimatePresence>
+      {project && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          onClick={onClose}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/90 backdrop-blur-xl p-4 md:p-10"
+        >
+          <button
+            onClick={onClose}
+            className="absolute top-5 right-5 z-10 h-11 w-11 rounded-full bg-cream/10 hover:bg-vermillion text-cream flex items-center justify-center transition"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+
+          <div className="absolute top-6 left-6 text-cream">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-vermillion">
+              {project.service} · {project.industry}
+            </p>
+            <p className="mt-1 font-display text-[18px] md:text-[22px]">
+              {project.title}{" "}
+              <span className="text-cream/50 font-body text-[13px]">— {project.client}</span>
+            </p>
+          </div>
+
+          <motion.div
+            initial={{ scale: 0.96, y: 12 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.96, y: 12 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-6xl rounded-2xl overflow-hidden bg-black shadow-2xl"
+            style={{ aspectRatio: Math.max(0.6, Math.min(2.4, project.aspect)) }}
+          >
+            <video
+              ref={videoRef}
+              src={project.url}
+              autoPlay
+              controls
+              playsInline
+              {...protectedVideoProps}
+              onContextMenu={(e) => e.preventDefault()}
+              className="absolute inset-0 h-full w-full object-contain select-none"
+            />
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
