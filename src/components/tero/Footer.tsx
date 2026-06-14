@@ -38,9 +38,9 @@ export function Footer() {
 
       <div className="container-tero grid grid-cols-2 gap-x-8 gap-y-12 py-20 md:grid-cols-12">
         <div className="col-span-2 md:col-span-3">
-          <div className="flex items-center">
+          <Link to="/" aria-label="Tero Studios — Home" className="flex items-center">
             <img src={logo} alt="Tero Studios" width={220} height={64} className="h-16 md:h-20 w-auto object-contain [filter:brightness(0)_invert(1)]" />
-          </div>
+          </Link>
           <p className="mt-6 max-w-xs font-body text-[14px] leading-relaxed text-cream/60">
             An animation and motion design studio building films, frames and
             stories that move. Chennai.
