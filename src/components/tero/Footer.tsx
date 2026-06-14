@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Instagram, Linkedin, Youtube } from "lucide-react";
 import logo from "@/assets/tero-mark.png";
 import { services } from "@/data/services";
+import { CyclingWord } from "./CyclingWord";
 
 export function Footer() {
   return (
@@ -40,6 +41,7 @@ export function Footer() {
         <div className="col-span-2 md:col-span-3">
           <Link to="/" aria-label="Tero Studios — Home" className="flex items-center">
             <img src={logo} alt="Tero Studios" width={220} height={64} className="h-16 md:h-20 w-auto object-contain [filter:brightness(0)_invert(1)]" />
+            <CyclingWord onDark={true} />
           </Link>
           <p className="mt-6 max-w-xs font-body text-[14px] leading-relaxed text-cream/60">
             An animation and motion design studio building films, frames and
