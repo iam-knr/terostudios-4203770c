@@ -8,7 +8,7 @@ import { Testimonials } from "./Testimonials";
 import { ArrowUpRight, Check, Play, Sparkles, Clock, Award, Users } from "lucide-react";
 import type { ServiceEntry } from "@/data/services";
 import { services as allServices } from "@/data/services";
-import { industries as allIndustries } from "@/data/industries";
+
 import procScript from "@/assets/process-script.jpg";
 import procStoryboard from "@/assets/process-storyboard.jpg";
 import procAnimatics from "@/assets/process-animatics.jpg";
