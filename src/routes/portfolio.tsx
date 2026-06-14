@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PageLayout } from "@/components/tero/PageLayout";
 import { Reveal } from "@/components/tero/Reveal";
-import { videos } from "@/data/videos";
+import { videos, type VideoItem } from "@/data/videos";
 
 export const Route = createFileRoute("/portfolio")({
   component: PortfolioPage,
