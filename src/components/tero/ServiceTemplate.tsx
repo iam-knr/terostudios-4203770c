@@ -265,7 +265,7 @@ export function ServiceTemplate({ service }: { service: ServiceEntry }) {
       <ExpandableSEO
         overline="Services brief"
         title="What good"
-        italic={`${service.name.toLowerCase()} looks like.`}
+        italic={`${service.name} looks like.`}
         intro={brief.intro}
         more={brief.more}
       />
