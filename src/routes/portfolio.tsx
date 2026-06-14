@@ -87,7 +87,9 @@ function PortfolioPage() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: (i % 3) * 0.05 }}
-              href="#"
+              href={p.url}
+              target="_blank"
+              rel="noreferrer"
               className="group block overflow-hidden rounded-2xl border border-parchment bg-card transition-all hover:border-vermillion/40 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
             >
               <div className="relative aspect-[5/4] overflow-hidden bg-ink">
