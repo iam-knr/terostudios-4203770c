@@ -165,6 +165,8 @@ function PortfolioPage() {
           </div>
         </div>
       </section>
+
+      <Lightbox project={active} onClose={() => setActive(null)} />
     </PageLayout>
   );
 }
