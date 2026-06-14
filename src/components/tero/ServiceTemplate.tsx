@@ -181,9 +181,6 @@ function ExpandableSEO({
 }
 
 export function ServiceTemplate({ service }: { service: ServiceEntry }) {
-  const relatedIndustries = allIndustries.filter((i) =>
-    service.industries.some((n) => i.name.toLowerCase().includes(n.toLowerCase())),
-  );
 
   const relatedServices = allServices
     .filter((s) => s.category === service.category && s.slug !== service.slug)
