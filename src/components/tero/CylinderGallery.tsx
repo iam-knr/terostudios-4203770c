@@ -92,7 +92,7 @@ export function CylinderGallery() {
               rotateY,
             }}
           >
-            {images.map((src, i) => {
+            {items.map((item, i) => {
               const angle = i * angleStep;
               // Translate Z grows from 0 to RADIUS as fanOut goes 0 → 1
               const z = RADIUS * fanVal;
@@ -111,10 +111,13 @@ export function CylinderGallery() {
                     opacity: 0.55 + 0.45 * fanVal,
                   }}
                 >
-                  <img
-                    src={src}
-                    alt=""
-                    loading="lazy"
+                  <video
+                    src={item.url}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                   <div
@@ -127,7 +130,8 @@ export function CylinderGallery() {
                   />
                   <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-cream/90">
                     <span>0{(i + 1).toString().slice(-2)}</span>
-                    <span>Tero · Reel</span>
+                    <span>{item.client}</span>
+
                   </div>
                 </div>
               );
