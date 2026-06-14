@@ -1,19 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import { useScroll, useTransform, useSpring, motion, useMotionValue, useMotionValueEvent } from "framer-motion";
-import p1 from "@/assets/portfolio-1.jpg";
-import p2 from "@/assets/portfolio-2.jpg";
-import p3 from "@/assets/portfolio-3.jpg";
-import p4 from "@/assets/portfolio-4.jpg";
-import p5 from "@/assets/portfolio-5.jpg";
-import p6 from "@/assets/portfolio-6.jpg";
-import p7 from "@/assets/process-3dmodel.jpg";
-import p8 from "@/assets/process-lighting.jpg";
-import p9 from "@/assets/process-vfx.jpg";
-import p10 from "@/assets/process-storyboard.jpg";
-import p11 from "@/assets/process-animatics.jpg";
-import p12 from "@/assets/process-delivery.jpg";
+import { videos } from "@/data/videos";
 
-const images = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12];
+const items = videos.slice(0, 12);
 
 export function CylinderGallery() {
   const ref = useRef<HTMLDivElement>(null);
