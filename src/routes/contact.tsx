@@ -28,6 +28,7 @@ function ContactPage() {
     budget: "",
     name: "",
     email: "",
+    phone: "",
     company: "",
     brief: "",
   });
@@ -219,13 +220,23 @@ function ContactPage() {
                               className="mt-4 w-full rounded-md border-[1.5px] border-parchment bg-white px-4 py-3 font-body text-[15px] text-ink focus:border-ink focus:outline-none"
                             />
                           </div>
-                          <div className="md:col-span-2">
+                          <div>
                             <label className="overline block">— Email</label>
                             <input
                               type="email"
                               value={data.email}
                               onChange={(e) => setData({ ...data, email: e.target.value })}
                               className="mt-4 w-full rounded-md border-[1.5px] border-parchment bg-white px-4 py-3 font-body text-[15px] text-ink focus:border-ink focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="overline block">— Phone</label>
+                            <input
+                              type="tel"
+                              value={data.phone}
+                              onChange={(e) => setData({ ...data, phone: e.target.value })}
+                              placeholder="+91 98765 43210"
+                              className="mt-4 w-full rounded-md border-[1.5px] border-parchment bg-white px-4 py-3 font-body text-[15px] text-ink placeholder:text-ink/30 focus:border-ink focus:outline-none"
                             />
                           </div>
                         </div>
