@@ -11,7 +11,6 @@ type Testimonial = {
   name: string;
   role: string;
   company: string;
-  avatar: string;
   logo: string;
   project: string;
 };
