@@ -221,26 +221,29 @@ function BrandMark({
 }
 
 function Avatar({
-  src,
   alt,
   small = false,
 }: {
-  src: string;
+  src?: string;
   alt: string;
   small?: boolean;
 }) {
+  const initials = alt
+    .split(" ")
+    .map((s) => s[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
   return (
     <div
-      className={`overflow-hidden rounded-full border border-cream/20 bg-ink ${
-        small ? "h-10 w-10" : "h-14 w-14"
+      aria-label={`${alt} avatar placeholder`}
+      className={`flex items-center justify-center overflow-hidden rounded-full border border-cream/20 bg-cream/[0.06] font-sans-display uppercase tracking-wider text-cream/70 ${
+        small ? "h-10 w-10 text-[11px]" : "h-14 w-14 text-[14px]"
       }`}
     >
-      <img
-        src={src}
-        alt={alt}
-        loading="lazy"
-        className="h-full w-full object-cover"
-      />
+      {initials}
     </div>
   );
 }
