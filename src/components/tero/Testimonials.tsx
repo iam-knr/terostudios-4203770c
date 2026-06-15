@@ -181,7 +181,7 @@ function SmallCard({ item }: { item: Testimonial }) {
       </blockquote>
 
       <div className="mt-8 flex items-center gap-3 border-t border-white/10 pt-5">
-        <Avatar src={item.avatar} alt={item.name} small />
+        <Avatar alt={item.name} small />
         <div>
           <p className="font-sans-display text-[12px] font-bold uppercase tracking-wider text-cream">
             {item.name}
