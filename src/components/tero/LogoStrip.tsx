@@ -32,9 +32,9 @@ export function LogoStrip() {
     return {
       rowA: [...a, ...a],
       rowB: [...b, ...b],
-      // Faster pass, with the track sized to content so the full logo set crosses before looping.
-      durationA: a.length * 0.65,
-      durationB: b.length * 0.65,
+      // Fast full pass; the inline width below ensures the whole logo set moves before looping.
+      durationA: a.length * 0.45,
+      durationB: b.length * 0.45,
     };
   }, []);
 
@@ -59,7 +59,7 @@ export function LogoStrip() {
             <div className="overflow-hidden border-y border-ink/10 py-6 md:py-8">
               <div
                 className="flex w-max items-center gap-16 md:gap-24 animate-marquee whitespace-nowrap will-change-transform"
-                style={{ animationDuration: `${durationA}s` }}
+                style={{ animationDuration: `${durationA}s`, width: "max-content" }}
               >
                 {rowA.map((src, i) => (
                   <LogoCell key={`a-${i}`} src={src} />
@@ -70,7 +70,7 @@ export function LogoStrip() {
             <div className="overflow-hidden border-b border-ink/10 py-6 md:py-8">
               <div
                 className="flex w-max items-center gap-16 md:gap-24 animate-marquee-reverse whitespace-nowrap will-change-transform"
-                style={{ animationDuration: `${durationB}s` }}
+                style={{ animationDuration: `${durationB}s`, width: "max-content" }}
               >
                 {rowB.map((src, i) => (
                   <LogoCell key={`b-${i}`} src={src} />
