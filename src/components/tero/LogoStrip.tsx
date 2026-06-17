@@ -57,7 +57,7 @@ export function LogoStrip() {
           <div className="space-y-2 md:space-y-4">
             <div className="overflow-hidden border-y border-ink/10 py-6 md:py-8">
               <div
-                className="flex w-max items-center gap-16 md:gap-24 animate-marquee whitespace-nowrap will-change-transform"
+                className="flex w-max items-center animate-marquee whitespace-nowrap will-change-transform"
                 style={{ animationDuration: `${durationA}s`, width: "max-content" }}
               >
                 <LogoGroup logos={rowA} row="a" />
@@ -67,7 +67,7 @@ export function LogoStrip() {
 
             <div className="overflow-hidden border-b border-ink/10 py-6 md:py-8">
               <div
-                className="flex w-max items-center gap-16 md:gap-24 animate-marquee-reverse whitespace-nowrap will-change-transform"
+                className="flex w-max items-center animate-marquee-reverse whitespace-nowrap will-change-transform"
                 style={{ animationDuration: `${durationB}s`, width: "max-content" }}
               >
                 <LogoGroup logos={rowB} row="b" />
@@ -107,7 +107,7 @@ function LogoGroup({
   return (
     <span
       aria-hidden={ariaHidden || undefined}
-      className="inline-flex shrink-0 items-center gap-16 md:gap-24"
+      className="inline-flex shrink-0 items-center gap-16 pr-16 md:gap-24 md:pr-24"
     >
       {logos.map((src, i) => (
         <LogoCell key={`${row}-${i}`} src={src} />
