@@ -32,9 +32,9 @@ export function LogoStrip() {
     return {
       rowA: [...a, ...a],
       rowB: [...b, ...b],
-      // ~2.5 s per logo keeps the scroll readable regardless of row length
-      durationA: a.length * 2.5,
-      durationB: b.length * 2.5,
+      // ~1.3 s per logo keeps the scroll moving while still letting each logo be seen
+      durationA: a.length * 1.3,
+      durationB: b.length * 1.3,
     };
   }, []);
 
