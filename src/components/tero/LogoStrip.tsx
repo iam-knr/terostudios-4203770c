@@ -10,24 +10,30 @@ const logoByName = (n: number) => {
   return logoModules[key]?.default.url;
 };
 
-// Curated set of globally / nationally well-known brands from the client list.
-const FEATURED = [
+// Globally / nationally well-known brands from the 67 client logos.
+const WELL_KNOWN = [
   2, 5, 7, 8, 9, 10, 11, 14, 16, 17, 18, 19, 21, 22, 23, 32,
   35, 36, 37, 38, 44, 46, 48, 49, 54, 55, 56, 58, 59, 61, 66, 67,
 ];
 
-const logoUrls = FEATURED.map(logoByName).filter((u): u is string => Boolean(u));
+// All 67 logos minus the well-known set.
+const REST = Array.from({ length: 67 }, (_, i) => i + 1).filter(
+  (n) => !WELL_KNOWN.includes(n)
+);
+
+const wellKnownUrls = WELL_KNOWN.map(logoByName).filter((u): u is string => Boolean(u));
+const restUrls = REST.map(logoByName).filter((u): u is string => Boolean(u));
 
 export function LogoStrip() {
   const { rowA, rowB } = useMemo(() => {
-    const half = Math.ceil(logoUrls.length / 2);
-    const a = logoUrls.slice(0, half);
-    const b = logoUrls.slice(half);
+    const a = wellKnownUrls;
+    const b = restUrls;
     return {
       rowA: [...a, ...a, ...a],
       rowB: [...b.slice().reverse(), ...b.slice().reverse(), ...b.slice().reverse()],
     };
   }, []);
+
 
   return (
     <section className="relative border-y border-parchment bg-cream overflow-hidden">
