@@ -25,12 +25,16 @@ const wellKnownUrls = WELL_KNOWN.map(logoByName).filter((u): u is string => Bool
 const restUrls = REST.map(logoByName).filter((u): u is string => Boolean(u));
 
 export function LogoStrip() {
-  const { rowA, rowB } = useMemo(() => {
+  const { rowA, rowB, durationA, durationB } = useMemo(() => {
     const a = wellKnownUrls;
     const b = restUrls;
+    // 2× duplication is enough for a seamless translateX(-50%) loop
     return {
-      rowA: [...a, ...a, ...a],
-      rowB: [...b.slice().reverse(), ...b.slice().reverse(), ...b.slice().reverse()],
+      rowA: [...a, ...a],
+      rowB: [...b, ...b],
+      // ~2.5 s per logo keeps the scroll readable regardless of row length
+      durationA: a.length * 2.5,
+      durationB: b.length * 2.5,
     };
   }, []);
 
@@ -53,7 +57,10 @@ export function LogoStrip() {
 
           <div className="space-y-2 md:space-y-4">
             <div className="overflow-hidden border-y border-ink/10 py-6 md:py-8">
-              <div className="flex items-center gap-16 md:gap-24 animate-marquee whitespace-nowrap will-change-transform">
+              <div
+                className="flex items-center gap-16 md:gap-24 animate-marquee whitespace-nowrap will-change-transform"
+                style={{ animationDuration: `${durationA}s` }}
+              >
                 {rowA.map((src, i) => (
                   <LogoCell key={`a-${i}`} src={src} />
                 ))}
@@ -61,7 +68,10 @@ export function LogoStrip() {
             </div>
 
             <div className="overflow-hidden border-b border-ink/10 py-6 md:py-8">
-              <div className="flex items-center gap-16 md:gap-24 animate-marquee-reverse whitespace-nowrap will-change-transform">
+              <div
+                className="flex items-center gap-16 md:gap-24 animate-marquee-reverse whitespace-nowrap will-change-transform"
+                style={{ animationDuration: `${durationB}s` }}
+              >
                 {rowB.map((src, i) => (
                   <LogoCell key={`b-${i}`} src={src} />
                 ))}
