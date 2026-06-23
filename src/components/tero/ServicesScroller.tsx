@@ -164,34 +164,42 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
     let particles: Particle[] = [];
     let pointSets: Point[][] = [];
 
-    const sampleIcon = async (svg: string, size: number) =>
+    const sampleIcon = async (src: string, size: number) =>
       new Promise<Point[]>((resolve) => {
-        const blob = new Blob([svg], { type: "image/svg+xml" });
-        const url = URL.createObjectURL(blob);
         const img = new Image();
+        img.crossOrigin = "anonymous";
         img.onload = () => {
           const sample = document.createElement("canvas");
           const sctx = sample.getContext("2d")!;
           sample.width = size;
           sample.height = size;
-          const glyph = size * 0.9;
-          const off = (size - glyph) / 2;
-          sctx.drawImage(img, off, off, glyph, glyph);
+          const glyph = size * 0.88;
+          // preserve aspect ratio
+          const ratio = img.width / img.height;
+          const gw = ratio >= 1 ? glyph : glyph * ratio;
+          const gh = ratio >= 1 ? glyph / ratio : glyph;
+          const ox = (size - gw) / 2;
+          const oy = (size - gh) / 2;
+          sctx.fillStyle = "#fff";
+          sctx.fillRect(0, 0, size, size);
+          sctx.drawImage(img, ox, oy, gw, gh);
           const data = sctx.getImageData(0, 0, size, size).data;
           const step = Math.max(2, Math.round(size / 136));
           const pts: Point[] = [];
           for (let y = 0; y < size; y += step) {
             for (let x = 0; x < size; x += step) {
               const i = (y * size + x) * 4;
-              if (data[i + 3] > 52) {
+              // dark pixel = part of glyph (JPEG with white bg)
+              const lum = (data[i] + data[i + 1] + data[i + 2]) / 3;
+              if (lum < 140) {
                 pts.push({ x: x - size / 2, y: y - size / 2 });
               }
             }
           }
-          URL.revokeObjectURL(url);
           resolve(pts);
         };
-        img.src = url;
+        img.onerror = () => resolve([]);
+        img.src = src;
       });
 
     const measure = async () => {
@@ -202,7 +210,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const box = Math.round(Math.min(h * 0.74, w * (w < 760 ? 0.82 : 0.56)));
-      pointSets = await Promise.all(ICONS.map((icon) => sampleIcon(icon, box)));
+      pointSets = await Promise.all(ICON_URLS.map((url) => sampleIcon(url, box)));
       if (run !== sampleRun) return;
       serviceNodes = Array.from(host.querySelectorAll<HTMLElement>("[data-service-index]"));
       const total = reduceMotion ? 640 : w < 760 ? 1600 : 3200;
