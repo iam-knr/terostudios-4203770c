@@ -436,7 +436,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
         const fieldY = (p.fy + sectionProgress * h * (1.25 + p.lane * 0.22) + driftY + h * 2) % h;
         const streamX = currentX + p.sx * (1.38 + Math.sin(t * 0.12 + p.phase) * 0.07);
         const streamY = currentY + p.sy * (1.22 + Math.cos(t * 0.1 + p.phase) * 0.06);
-        const scatterMix = clamp01(1 - formed);
+        const scatterMix = Math.pow(clamp01(1 - formed), 2.6);
         const cloudX = fieldX * fill + streamX * (1 - fill);
         const cloudY = fieldY * fill + streamY * (1 - fill);
         const tz = (p.fz * fill + p.sz * (1 - fill)) * scatterMix + rz2 * formed;
@@ -459,9 +459,9 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
           }
         }
 
-        const lock = 0.12 + formed * 0.16;
-        p.vx = (p.vx + (screenX - p.x) * 0.012) * 0.72;
-        p.vy = (p.vy + (screenY - p.y) * 0.012) * 0.72;
+        const lock = 0.14 + formed * 0.36;
+        p.vx = (p.vx + (screenX - p.x) * 0.018) * (0.72 - formed * 0.18);
+        p.vy = (p.vy + (screenY - p.y) * 0.018) * (0.72 - formed * 0.18);
         p.vz = (p.vz + (tz - p.z) * 0.02) * 0.78;
         p.x += (screenX - p.x) * lock + p.vx;
         p.y += (screenY - p.y) * lock + p.vy;
