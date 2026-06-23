@@ -216,7 +216,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       const mobile = w < 760;
       const objectOnRight = active % 2 === 0;
       targetX = mobile ? w / 2 : objectOnRight ? w * 0.72 : w * 0.28;
-      targetY = mobile ? h * (0.32 + serviceTravel * 0.38) : h * (0.2 + serviceTravel * 0.6);
+      targetY = mobile ? h * (0.26 + serviceTravel * 0.48) : h * (0.14 + serviceTravel * 0.72);
     };
 
     const onMove = (event: PointerEvent) => {
@@ -231,7 +231,10 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
 
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
-      if (!visible || !ready) return;
+      if (!visible || !ready) {
+        if (ready) ctx.clearRect(0, 0, w, h);
+        return;
+      }
       update();
       currentX += (targetX - currentX) * 0.055;
       currentY += (targetY - currentY) * 0.055;
@@ -268,14 +271,14 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
         const rz2 = rz * cosP + pt.y * sinP;
         const dust = 1 + Math.sin(t * 0.18 + p.phase) * 0.025;
         const streamX = p.sx * dust + Math.sin(t * 0.34 + p.phase) * 24;
-        const streamY = p.sy * dust + Math.cos(t * 0.29 + p.phase) * 18 + sectionProgress * h * 0.16;
+        const streamY = p.sy * dust + Math.cos(t * 0.29 + p.phase) * 18 + sectionProgress * h * 0.22;
         const tx = streamX * (1 - formed) + rx * formed;
         const ty = streamY * (1 - formed) + ry * formed;
         const tz = p.sz * (1 - formed) + rz2 * formed;
         const perspective = 720 / (720 - tz);
 
         let screenX = currentX + tx * perspective;
-        let screenY = currentY + ty * perspective + scrollVelocity * 0.45;
+        let screenY = currentY + ty * perspective + scrollVelocity * 0.58;
         if (smx > -9000) {
           const dx = screenX - smx;
           const dy = screenY - smy;
