@@ -8,19 +8,22 @@ import {
 } from "framer-motion";
 import { videos } from "@/data/videos";
 
-
 /**
  * Two-act anamorphic stage:
- *   Act 1 (scroll 0 → 0.55): a swarm of video cards bursts toward the camera
- *     in 3D space — anamorphic pop-in. Cards orbit, tilt, and rush forward.
- *   Act 2 (scroll 0.55 → 1): the swarm settles into a curved 4-row reel wall
- *     where each row scrolls left/right (alternating).
- * Heading is fixed at the top of the sticky viewport throughout.
+ *   Act 1 (scroll 0 → 0.55): a deck of video cards RISES UP from below the
+ *     viewport and FANS OUT into a wide anamorphic arc — each card tilts on
+ *     its own axis (rotateY/rotateZ) like cards being dealt in 3D.
+ *   Act 2 (scroll 0.55 → 1): the fan dissolves and a curved 4-row reel wall
+ *     settles in; rows pan left/right (alternating) forever.
+ * Heading stays pinned at the top of the sticky viewport throughout.
  */
 
-const SWARM_COUNT = 14;
+const FAN_COUNT = 13; // odd → true center card
+const FAN_SPREAD_X = 720; // half-width of the fan spread (px from center)
+const FAN_SPREAD_Y = 80; // arc droop (px below center at edges)
+const FAN_ROT = 38; // max card rotation (deg) at the fan edges
 
-// Wall config
+// Wall config (Act 2)
 const ROWS = 4;
 const TILES_PER_ROW = 7;
 const TILE_W = 220;
@@ -29,18 +32,19 @@ const GAP = 14;
 const CURVE = 60;
 const DEPTH = 380;
 
-// Pre-computed scatter positions for the swarm (deterministic, looks random)
-const SCATTER = Array.from({ length: SWARM_COUNT }, (_, i) => {
-  const a = (i * 137.508) % 360; // golden-angle spread
-  const rad = (a * Math.PI) / 180;
-  const radius = 280 + ((i * 53) % 220); // 280..500
-  const x = Math.cos(rad) * radius;
-  const y = Math.sin(rad) * radius * 0.55; // flatter ellipse
-  const z = -800 - ((i * 71) % 600); // start far away
-  const rotY = ((i * 47) % 60) - 30; // -30..30
-  const rotX = ((i * 31) % 24) - 12; // -12..12
-  const rotZ = ((i * 19) % 18) - 9;
-  return { x, y, z, rotY, rotX, rotZ, w: 280 + ((i * 23) % 120) };
+// Pre-computed fan layout (deterministic).
+const FAN = Array.from({ length: FAN_COUNT }, (_, i) => {
+  const halfN = (FAN_COUNT - 1) / 2;
+  const t = (i - halfN) / halfN; // -1..1
+  return {
+    t,
+    finalX: t * FAN_SPREAD_X,
+    finalY: Math.abs(t) * FAN_SPREAD_Y, // arc droops at edges
+    finalRotZ: t * FAN_ROT,
+    finalRotY: -t * 18, // anamorphic facing inward
+    z: -Math.abs(t) * 220, // edge cards recede
+    w: 300 - Math.abs(t) * 60, // edge cards a bit smaller
+  };
 });
 
 export function CylinderGallery() {
@@ -49,23 +53,28 @@ export function CylinderGallery() {
     target: sectionRef,
     offset: ["start start", "end end"],
   });
-  const p = useSpring(scrollYProgress, { stiffness: 90, damping: 28, mass: 0.5 });
+  const p = useSpring(scrollYProgress, {
+    stiffness: 90,
+    damping: 28,
+    mass: 0.5,
+  });
 
-  // Act split — 0..0.55 swarm, 0.55..1 wall
-  const swarmOpacity = useTransform(p, [0, 0.45, 0.6], [1, 1, 0]);
+  const fanOpacity = useTransform(p, [0, 0.45, 0.6], [1, 1, 0]);
   const wallOpacity = useTransform(p, [0.45, 0.6, 1], [0, 1, 1]);
-  const wallScale = useTransform(p, [0.45, 0.7], [0.9, 1]);
+  const wallScale = useTransform(p, [0.45, 0.7], [0.92, 1]);
 
-  // Stable per-row tiles for the wall, duplicated for marquee.
-  const rows = useMemo(() => {
-    return Array.from({ length: ROWS }, (_, r) => {
-      const base = Array.from({ length: TILES_PER_ROW }, (_, c) => {
-        const idx = (r * TILES_PER_ROW + c) % videos.length;
-        return videos[idx];
-      });
-      return [...base, ...base];
-    });
-  }, []);
+  // Stable row tiles for the wall, duplicated for seamless marquee.
+  const rows = useMemo(
+    () =>
+      Array.from({ length: ROWS }, (_, r) => {
+        const base = Array.from({ length: TILES_PER_ROW }, (_, c) => {
+          const idx = (r * TILES_PER_ROW + c) % videos.length;
+          return videos[idx];
+        });
+        return [...base, ...base];
+      }),
+    [],
+  );
 
   const halfC = (TILES_PER_ROW - 1) / 2;
 
@@ -73,7 +82,7 @@ export function CylinderGallery() {
     <section
       ref={sectionRef}
       className="relative bg-ink text-cream"
-      style={{ height: "320vh" }}
+      style={{ height: "300vh" }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         {/* Backdrop glow */}
@@ -86,7 +95,7 @@ export function CylinderGallery() {
           }}
         />
 
-        {/* ── Fixed heading on top ── */}
+        {/* Heading pinned on top */}
         <div className="absolute inset-x-0 top-0 z-40 px-6 pt-10 md:pt-14 text-center">
           <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-cream/60">
             Reel Wall · Anamorphic Theatre
@@ -99,38 +108,33 @@ export function CylinderGallery() {
           </p>
         </div>
 
-        {/* ── ACT 1: Swarm of anamorphic cards bursting toward viewer ── */}
+        {/* ── ACT 1: Deck rising from below, fanning out ── */}
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center"
           style={{
-            perspective: "1400px",
+            perspective: "1600px",
             perspectiveOrigin: "50% 55%",
-            opacity: swarmOpacity,
+            opacity: fanOpacity,
           }}
         >
           <div
             className="relative"
             style={{ transformStyle: "preserve-3d", width: 1, height: 1 }}
           >
-            {SCATTER.map((s, i) => (
-              <SwarmCard key={i} s={s} progress={p} url={videos[i % videos.length].url} />
+            {FAN.map((f, i) => (
+              <FanCard
+                key={i}
+                f={f}
+                index={i}
+                total={FAN_COUNT}
+                progress={p}
+                url={videos[i % videos.length].url}
+              />
             ))}
-
           </div>
-
-          {/* Center scan-line shimmer */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-1/2 h-px"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, rgba(232,57,14,0.55), transparent)",
-              transform: "translateY(-0.5px)",
-            }}
-          />
         </motion.div>
 
-        {/* ── ACT 2: Curved 4-row reel wall (rows scroll left/right) ── */}
+        {/* ── ACT 2: Curved 4-row reel wall (rows pan left/right) ── */}
         <motion.div
           className="absolute inset-0 z-20 flex items-center justify-center"
           style={{
@@ -250,45 +254,60 @@ export function CylinderGallery() {
   );
 }
 
-type Scatter = (typeof SCATTER)[number];
+type FanItem = (typeof FAN)[number];
 
-function SwarmCard({
-  s,
+function FanCard({
+  f,
+  index,
+  total,
   progress,
   url,
 }: {
-  s: Scatter;
+  f: FanItem;
+  index: number;
+  total: number;
   progress: MotionValue<number>;
   url: string;
 }) {
-  const z = useTransform(progress, [0, 0.5], [s.z, 120]);
-  const scl = useTransform(progress, [0, 0.5], [0.6, 1.05]);
-  const op = useTransform(progress, [0, 0.08, 0.5, 0.55], [0, 1, 1, 0.85]);
-  const driftX = useTransform(progress, [0, 0.5], [s.x * 0.4, s.x]);
-  const driftY = useTransform(progress, [0, 0.5], [s.y * 0.4, s.y]);
-  const rotYv = useTransform(progress, [0, 0.5], [s.rotY * 0.4, s.rotY]);
+  // Stagger: each card emerges in sequence from center outward.
+  const order = Math.abs(index - (total - 1) / 2); // 0 = center first
+  const delay = order * 0.025; // 0..~0.15
+  const start = delay;
+  const end = delay + 0.42;
+
+  // Phase 1 only — settle by ~p=0.45, then Act 2 takes over.
+  const y = useTransform(progress, [start, end], [900, f.finalY]);
+  const x = useTransform(progress, [start, end], [0, f.finalX]);
+  const rotZ = useTransform(progress, [start, end], [0, f.finalRotZ]);
+  const rotY = useTransform(progress, [start, end], [0, f.finalRotY]);
+  const scl = useTransform(progress, [start, end], [0.55, 1]);
+  const op = useTransform(
+    progress,
+    [start, start + 0.04, end, 0.55],
+    [0, 1, 1, 0.85],
+  );
 
   return (
     <motion.div
-      className="absolute overflow-hidden rounded-[10px] ring-1 ring-cream/15 bg-black"
+      className="absolute overflow-hidden rounded-[12px] ring-1 ring-cream/15 bg-black"
       style={{
         left: 0,
         top: 0,
-        width: s.w,
-        height: s.w * 0.56,
-        x: driftX,
-        y: driftY,
-        z,
+        width: f.w,
+        height: f.w * 0.6,
+        x,
+        y,
+        z: f.z,
         scale: scl,
-        rotateY: rotYv,
-        rotateX: s.rotX,
-        rotateZ: s.rotZ,
+        rotateY: rotY,
+        rotateZ: rotZ,
         opacity: op,
         transformStyle: "preserve-3d",
         translateX: "-50%",
         translateY: "-50%",
+        zIndex: 100 - Math.round(Math.abs(f.t) * 50),
         boxShadow:
-          "0 50px 100px -40px rgba(232,57,14,0.35), 0 30px 60px -30px rgba(0,0,0,0.8), inset 0 0 40px rgba(0,0,0,0.4)",
+          "0 60px 120px -40px rgba(232,57,14,0.4), 0 30px 70px -30px rgba(0,0,0,0.85), inset 0 0 40px rgba(0,0,0,0.4)",
       }}
     >
       <video
@@ -305,10 +324,9 @@ function SwarmCard({
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.4) 100%)",
+            "linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.45) 100%)",
         }}
       />
     </motion.div>
   );
 }
-
