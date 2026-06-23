@@ -209,6 +209,23 @@
   animation: tero-marquee-reverse 14s linear infinite;
 }
 
+/* Slow vertical drift for logo grid */
+@keyframes tero-drift-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+@keyframes tero-drift-down {
+  from { transform: translateY(-50%); }
+  to { transform: translateY(0); }
+}
+.animate-drift-up {
+  animation: tero-drift-up linear infinite;
+}
+.animate-drift-down {
+  animation: tero-drift-down linear infinite;
+}
+
+
 /* Vermillion underline link */
 .link-underline {
   position: relative;
