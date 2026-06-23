@@ -315,7 +315,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
     };
   }, [hostRef]);
 
-  return <canvas ref={canvasRef} className="pointer-events-none sticky top-0 z-[3] -mb-screen block h-screen w-full" />;
+  return <canvas ref={canvasRef} className="pointer-events-none sticky top-0 z-[3] -mb-[100vh] block h-screen w-full" />;
 }
 
 function SpaceField({ hostRef }: { hostRef: React.RefObject<HTMLElement | null> }) {
@@ -404,6 +404,7 @@ export function ServicesScroller() {
         style={{ background: "linear-gradient(180deg, #020309 0%, #07080d 45%, #020309 100%)" }}
       />
       <SpaceField hostRef={sectionRef} />
+      <ParticleJourney hostRef={sectionRef} />
       <div className="relative z-10 mx-auto max-w-[1440px] px-6 pb-[18vh] pt-[18vh] md:px-12">
         <header className="mb-[10vh] max-w-[920px]">
           <div className="mb-5 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.32em] text-[#e8390e]">
@@ -422,6 +423,7 @@ export function ServicesScroller() {
           return (
             <article
               key={service.n}
+              data-service-index={i}
               className="grid min-h-screen items-center gap-10 py-[8vh] md:grid-cols-2 md:gap-16"
             >
               <div className={textLeft ? "md:order-1" : "md:order-2 md:text-right"}>
@@ -443,9 +445,7 @@ export function ServicesScroller() {
                   {service.desc}
                 </p>
               </div>
-              <div className={textLeft ? "md:order-2" : "md:order-1"}>
-                <ParticleObject icon={ICONS[i]} align={textLeft ? "right" : "left"} />
-              </div>
+              <div aria-hidden className={textLeft ? "hidden md:order-2 md:block" : "hidden md:order-1 md:block"} />
             </article>
           );
         })}
