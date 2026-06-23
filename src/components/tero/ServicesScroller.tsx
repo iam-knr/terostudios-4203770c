@@ -492,7 +492,7 @@ export function ServicesScroller() {
                   {service.desc}
                 </p>
               </div>
-              <div aria-hidden className={textLeft ? "hidden md:order-2 md:block" : "hidden md:order-1 md:block"} />
+              <div aria-hidden className={textLeft ? "min-h-[52vh] md:order-2" : "min-h-[52vh] md:order-1"} />
             </article>
           );
         })}
