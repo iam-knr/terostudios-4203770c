@@ -62,10 +62,10 @@ export function LogoStrip() {
           </h2>
         </header>
 
-        {/* Anamorphic tunnel floor */}
+        {/* Anamorphic tunnel floor — overflow-hidden clips the tilted plane so it can't bleed up into the heading */}
         <div
-          className="relative mx-auto h-[460px] md:h-[560px] lg:h-[620px] w-full max-w-[1280px]"
-          style={{ perspective: "1400px", perspectiveOrigin: "50% 18%" }}
+          className="relative mx-auto h-[460px] md:h-[560px] lg:h-[620px] w-full max-w-[1280px] overflow-hidden"
+          style={{ perspective: "1400px", perspectiveOrigin: "50% 10%" }}
         >
           {/* Tilted floor plane */}
           <div
