@@ -67,13 +67,13 @@ export function LogoStrip() {
           className="relative mx-auto h-[460px] md:h-[560px] lg:h-[620px] w-full max-w-[1280px] overflow-hidden"
           style={{ perspective: "1400px", perspectiveOrigin: "50% 10%" }}
         >
-          {/* Tilted floor plane */}
+          {/* Tilted floor plane — pushed down inside the clipped frame */}
           <div
-            className="absolute inset-0 flex items-start justify-center"
+            className="absolute inset-x-0 top-[18%] bottom-0 flex items-start justify-center"
             style={{
-              transform: "rotateX(58deg) rotateZ(-14deg) translateY(-6%)",
+              transform: "rotateX(58deg) rotateZ(-14deg)",
               transformStyle: "preserve-3d",
-              transformOrigin: "50% 35%",
+              transformOrigin: "50% 0%",
             }}
           >
             {/* Scrolling rail — duplicated for seamless loop */}
