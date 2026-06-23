@@ -49,15 +49,15 @@ export function Hero() {
     let formProgress = 0;
     const start = performance.now();
 
-    // Match ServicesScroller dust palette: warm cream dominant, amber embers, rare cool accent.
+    // Warm dark palette — visible on cream background, matches site vermillion/ink tones.
     const palette = [
-      "rgba(252,244,228,0.82)",
-      "rgba(252,244,228,0.82)",
-      "rgba(248,232,206,0.78)",
-      "rgba(248,232,206,0.78)",
-      "rgba(255,176,92,0.85)",
-      "rgba(238,118,42,0.78)",
-      "rgba(140,178,214,0.55)",
+      "rgba(232,57,14,0.92)",
+      "rgba(232,57,14,0.85)",
+      "rgba(196,80,30,0.9)",
+      "rgba(255,120,50,0.85)",
+      "rgba(196,154,60,0.88)",
+      "rgba(60,40,30,0.78)",
+      "rgba(26,26,31,0.72)",
     ];
 
     function resize() {
@@ -137,11 +137,11 @@ export function Hero() {
       const w = canvas!.clientWidth;
       const h = canvas!.clientHeight;
 
-      // Motion trail: fade prior frame instead of wiping, matching the ServicesScroller look.
+      // Motion trail: fade prior frame instead of wiping. Use source-over so dark grains stay visible on cream.
       ctx!.globalCompositeOperation = "destination-out";
-      ctx!.fillStyle = `rgba(0,0,0,${0.18 + formProgress * 0.55})`;
+      ctx!.fillStyle = `rgba(0,0,0,${0.22 + formProgress * 0.5})`;
       ctx!.fillRect(0, 0, w, h);
-      ctx!.globalCompositeOperation = "lighter";
+      ctx!.globalCompositeOperation = "source-over";
 
       const t = (now - start) / 1000;
       formProgress = Math.min(1, t / 2.6);
