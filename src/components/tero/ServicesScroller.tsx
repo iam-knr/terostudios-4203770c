@@ -275,8 +275,21 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       my = -9999;
     };
 
+    let lastFrame = performance.now();
     const tick = (now: number) => {
       raf = requestAnimationFrame(tick);
+      const dt = now - lastFrame;
+      lastFrame = now;
+      motionDebugState.fps = dt > 0 ? 1000 / dt : 0;
+      motionDebugState.formed = formed;
+      motionDebugState.targetFormed = targetFormed;
+      motionDebugState.fill = fill;
+      motionDebugState.targetFill = targetFill;
+      motionDebugState.active = active;
+      motionDebugState.serviceTravel = serviceTravel;
+      motionDebugState.targetTravel = targetTravel;
+      motionDebugState.sectionProgress = sectionProgress;
+      motionDebugState.scrollVelocity = scrollVelocity;
       if (!visible || !ready) {
         if (ready) ctx.clearRect(0, 0, w, h);
         return;
