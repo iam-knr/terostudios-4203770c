@@ -266,6 +266,10 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
               }
             }
           }
+          for (let i = pts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pts[i], pts[j]] = [pts[j], pts[i]];
+          }
           URL.revokeObjectURL(url);
           resolve(pts);
         };
