@@ -119,7 +119,7 @@ function ParticleObject({ icon, align }: { icon: string; align: "left" | "right"
           const off = (size - glyph) / 2;
           sctx.drawImage(img, off, off, glyph, glyph);
           const data = sctx.getImageData(0, 0, size, size).data;
-          const step = Math.max(4, Math.round(size / 64));
+          const step = Math.max(3, Math.round(size / 92));
           const pts: Point[] = [];
           for (let y = 0; y < size; y += step) {
             for (let x = 0; x < size; x += step) {
