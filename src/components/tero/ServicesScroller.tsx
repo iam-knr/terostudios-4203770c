@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import xrTrainingReferenceMask from "@/assets/xr-training-reference-mask.png";
 
 type MotionDebug = {
   formed: number;
@@ -159,6 +160,8 @@ const ICONS: string[] = [
   </svg>`,
 ];
 
+const XR_TRAINING_ICON_INDEX = 2;
+
 // Reference dust palette: warm cream dominant, soft amber embers, sparse cool accent.
 const COLORS = [
   "rgba(252,244,228,0.78)", // cream (dominant)
@@ -242,6 +245,42 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
     let particles: Particle[] = [];
     let pointSets: Point[][] = [];
 
+    const sampleImage = async (src: string, size: number) =>
+      new Promise<Point[]>((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const sample = document.createElement("canvas");
+          const sctx = sample.getContext("2d")!;
+          sample.width = size;
+          sample.height = size;
+          const glyph = size * 1.06;
+          const ratio = img.width / img.height;
+          const drawW = glyph;
+          const drawH = glyph / ratio;
+          const offX = (size - drawW) / 2;
+          const offY = (size - drawH) / 2;
+          sctx.drawImage(img, offX, offY, drawW, drawH);
+          const data = sctx.getImageData(0, 0, size, size).data;
+          const step = Math.max(2, Math.round(size / 150));
+          const pts: Point[] = [];
+          for (let y = 0; y < size; y += step) {
+            for (let x = 0; x < size; x += step) {
+              const i = (y * size + x) * 4;
+              if (data[i + 3] > 46) {
+                pts.push({ x: x - size / 2, y: y - size / 2 });
+              }
+            }
+          }
+          for (let i = pts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pts[i], pts[j]] = [pts[j], pts[i]];
+          }
+          resolve(pts);
+        };
+        img.onerror = () => resolve([]);
+        img.src = src;
+      });
+
     const sampleIcon = async (svg: string, size: number) =>
       new Promise<Point[]>((resolve) => {
         const blob = new Blob([svg], { type: "image/svg+xml" });
@@ -288,7 +327,9 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const box = Math.round(Math.min(h * 0.62, w * (w < 760 ? 0.78 : 0.44)));
-      pointSets = await Promise.all(ICONS.map((icon) => sampleIcon(icon, box)));
+      pointSets = await Promise.all(
+        ICONS.map((icon, index) => (index === XR_TRAINING_ICON_INDEX ? sampleImage(xrTrainingReferenceMask, box) : sampleIcon(icon, box))),
+      );
       if (run !== sampleRun) return;
       serviceNodes = Array.from(host.querySelectorAll<HTMLElement>("[data-service-index]"));
       const total = reduceMotion ? 640 : w < 760 ? 1600 : 3200;
