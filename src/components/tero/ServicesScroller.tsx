@@ -206,7 +206,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
         if (score > best) {
           best = score;
           bestIndex = index;
-          bestTravel = clamp01((viewportCenter - rect.top) / Math.max(1, rect.height));
+          bestTravel = clamp01((rect.top + rect.height / 2) / window.innerHeight);
         }
       }
 
@@ -216,7 +216,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       const mobile = w < 760;
       const objectOnRight = active % 2 === 0;
       targetX = mobile ? w / 2 : objectOnRight ? w * 0.72 : w * 0.28;
-      targetY = mobile ? h * (0.26 + serviceTravel * 0.48) : h * (0.14 + serviceTravel * 0.72);
+      targetY = mobile ? h * (0.18 + serviceTravel * 0.64) : h * (0.1 + serviceTravel * 0.8);
     };
 
     const onMove = (event: PointerEvent) => {
@@ -330,7 +330,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
     };
   }, [hostRef]);
 
-  return <canvas ref={canvasRef} className="pointer-events-none sticky top-0 z-[3] -mb-[100vh] block h-screen w-full" />;
+  return <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-[3] block h-screen w-full" />;
 }
 
 function SpaceField({ hostRef }: { hostRef: React.RefObject<HTMLElement | null> }) {
