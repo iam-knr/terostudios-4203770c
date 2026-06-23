@@ -49,7 +49,7 @@ export function LogoStrip() {
 
       <div className="container-tero py-20 md:py-28 relative">
         {/* Editorial header */}
-        <header className="relative z-20 mb-12 md:mb-16 text-center">
+        <header className="relative z-20 mb-20 md:mb-28 text-center">
           <div className="mb-4 flex items-center justify-center gap-3">
             <span className="h-px w-8 bg-vermillion/60" />
             <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-vermillion">
@@ -62,18 +62,18 @@ export function LogoStrip() {
           </h2>
         </header>
 
-        {/* Anamorphic tunnel floor */}
+        {/* Anamorphic tunnel floor — overflow-hidden clips the tilted plane so it can't bleed up into the heading */}
         <div
-          className="relative mx-auto h-[460px] md:h-[560px] lg:h-[620px] w-full max-w-[1280px]"
-          style={{ perspective: "1400px", perspectiveOrigin: "50% 18%" }}
+          className="relative mx-auto h-[460px] md:h-[560px] lg:h-[620px] w-full max-w-[1280px] overflow-hidden"
+          style={{ perspective: "1400px", perspectiveOrigin: "50% 10%" }}
         >
-          {/* Tilted floor plane */}
+          {/* Tilted floor plane — pushed down inside the clipped frame */}
           <div
-            className="absolute inset-0 flex items-start justify-center"
+            className="absolute inset-x-0 top-[18%] bottom-0 flex items-start justify-center"
             style={{
-              transform: "rotateX(58deg) rotateZ(-14deg) translateY(-6%)",
+              transform: "rotateX(58deg) rotateZ(-14deg)",
               transformStyle: "preserve-3d",
-              transformOrigin: "50% 35%",
+              transformOrigin: "50% 0%",
             }}
           >
             {/* Scrolling rail — duplicated for seamless loop */}
