@@ -229,7 +229,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       serviceTravel += (targetTravel - serviceTravel) * 0.085;
       const mobile = w < 760;
       const objectOnRight = active % 2 === 0;
-      targetX = mobile ? w / 2 : objectOnRight ? w * 0.72 : w * 0.28;
+      targetX = mobile ? w / 2 : objectOnRight ? w * 0.78 : w * 0.22;
       targetY = mobile ? h * (0.18 + serviceTravel * 0.56) : h * (0.18 + serviceTravel * 0.52);
     };
 
@@ -250,8 +250,8 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
         return;
       }
       update();
-      currentX += (targetX - currentX) * 0.11;
-      currentY += (targetY - currentY) * 0.11;
+      currentX += (targetX - currentX) * 0.18;
+      currentY += (targetY - currentY) * 0.13;
       formed += (targetFormed - formed) * 0.12;
       if (mx > -9000) {
         if (smx < -9000) {
