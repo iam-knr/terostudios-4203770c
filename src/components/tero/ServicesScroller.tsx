@@ -73,64 +73,73 @@ const services = [
 // 4 Event & Immersive Hardware — holographic projector cube with dashed beams
 // 5 AI Content Creation — AI chip with pins
 const ICONS: string[] = [
-  // 0 — Brand Storytelling: bold filled TV/monitor + megaphone silhouette
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="black" stroke="none">
-    <path d="M2 12 H44 a2 2 0 0 1 2 2 V38 a2 2 0 0 1 -2 2 H2 a2 2 0 0 1 -2 -2 V14 a2 2 0 0 1 2 -2 Z M4 16 V36 H42 V16 Z" fill-rule="evenodd"/>
-    <rect x="18" y="44" width="14" height="3" rx="1"/>
-    <rect x="22" y="40" width="6" height="6"/>
-    <path d="M18 26 L30 18 L30 34 Z"/>
-    <path d="M44 18 L62 10 L62 42 L44 34 Z"/>
-    <path d="M46 20 V32 L42 30 V22 Z" fill="white"/>
+  // 0 — Brand Storytelling: TV/monitor + megaphone (kept)
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
+    <path d="M10 20 H54 a2 2 0 0 1 2 2 V46 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 V22 a2 2 0 0 1 2 -2 Z M12 24 V44 H52 V24 Z" fill-rule="evenodd"/>
+    <rect x="24" y="52" width="16" height="3" rx="1"/>
+    <rect x="28" y="48" width="8" height="6"/>
+    <path d="M22 34 L36 26 L36 42 Z"/>
+    <path d="M52 26 L72 18 L72 50 L52 42 Z"/>
+    <path d="M54 28 V40 L50 38 V30 Z" fill="white"/>
   </svg>`,
-  // 1 — Anamorphic & DOOH: bold filled billboard on pole
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="black" stroke="none">
-    <rect x="2" y="8" width="60" height="26" rx="2"/>
-    <rect x="6" y="12" width="52" height="18" fill="white"/>
-    <rect x="28" y="34" width="8" height="22"/>
-    <rect x="18" y="56" width="28" height="4" rx="1"/>
+  // 1 — Anamorphic & DOOH: big billboard frame with image bars, on a pole
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
+    <rect x="6" y="10" width="68" height="36" rx="2"/>
+    <rect x="10" y="14" width="60" height="28" fill="white"/>
+    <rect x="14" y="18" width="22" height="20" fill="black"/>
+    <rect x="40" y="18" width="26" height="6" fill="black"/>
+    <rect x="40" y="28" width="20" height="4" fill="black"/>
+    <rect x="40" y="34" width="16" height="4" fill="black"/>
+    <rect x="36" y="46" width="8" height="22"/>
+    <rect x="22" y="68" width="36" height="5" rx="1"/>
+    <rect x="4" y="6" width="3" height="6"/><rect x="20" y="4" width="3" height="6"/>
+    <rect x="38" y="4" width="3" height="6"/><rect x="56" y="4" width="3" height="6"/>
+    <rect x="73" y="6" width="3" height="6"/>
   </svg>`,
-  // 2 — Immersive XR: bold filled VR headset silhouette
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="black" stroke="none">
-    <path d="M8 22 H56 a4 4 0 0 1 4 4 V44 a4 4 0 0 1 -4 4 H42 L36 40 a4 4 0 0 0 -8 0 L22 48 H8 a4 4 0 0 1 -4 -4 V26 a4 4 0 0 1 4 -4 Z"/>
-    <ellipse cx="20" cy="35" rx="7" ry="6" fill="white"/>
-    <ellipse cx="44" cy="35" rx="7" ry="6" fill="white"/>
-    <rect x="26" y="14" width="12" height="8" rx="1"/>
+  // 2 — Immersive XR Training: chunky VR headset with strap loop + lenses
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
+    <path d="M6 32 a8 8 0 0 1 8 -8 H66 a8 8 0 0 1 8 8 V52 a8 8 0 0 1 -8 8 H52 L46 50 a6 6 0 0 0 -12 0 L28 60 H14 a8 8 0 0 1 -8 -8 Z"/>
+    <ellipse cx="24" cy="42" rx="9" ry="7" fill="white"/>
+    <ellipse cx="56" cy="42" rx="9" ry="7" fill="white"/>
+    <circle cx="24" cy="42" r="3"/>
+    <circle cx="56" cy="42" r="3"/>
+    <path d="M14 30 Q40 8 66 30 L66 34 Q40 14 14 34 Z"/>
   </svg>`,
-  // 3 — PropViz: bold filled buildings cluster
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="black" stroke="none">
-    <path d="M4 28 L4 60 L22 60 L22 28 L13 20 Z"/>
-    <path d="M20 8 L40 8 L40 60 L20 60 Z"/>
-    <path d="M40 18 L60 18 L60 60 L40 60 Z"/>
+  // 3 — PropViz: house with roof and windows (property visualization)
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
+    <path d="M40 8 L72 32 L72 36 L66 36 L66 70 L14 70 L14 36 L8 36 L8 32 Z"/>
     <g fill="white">
-      <rect x="8" y="34" width="4" height="4"/><rect x="14" y="34" width="4" height="4"/>
-      <rect x="8" y="42" width="4" height="4"/><rect x="14" y="42" width="4" height="4"/>
-      <rect x="8" y="50" width="4" height="4"/><rect x="14" y="50" width="4" height="4"/>
-      <rect x="24" y="14" width="4" height="4"/><rect x="32" y="14" width="4" height="4"/>
-      <rect x="24" y="22" width="4" height="4"/><rect x="32" y="22" width="4" height="4"/>
-      <rect x="24" y="30" width="4" height="4"/><rect x="32" y="30" width="4" height="4"/>
-      <rect x="24" y="38" width="4" height="4"/><rect x="32" y="38" width="4" height="4"/>
-      <rect x="24" y="46" width="4" height="4"/><rect x="32" y="46" width="4" height="4"/>
-      <rect x="44" y="24" width="4" height="4"/><rect x="52" y="24" width="4" height="4"/>
-      <rect x="44" y="32" width="4" height="4"/><rect x="52" y="32" width="4" height="4"/>
-      <rect x="44" y="40" width="4" height="4"/><rect x="52" y="40" width="4" height="4"/>
-      <rect x="44" y="48" width="4" height="4"/><rect x="52" y="48" width="4" height="4"/>
+      <rect x="22" y="42" width="10" height="10"/>
+      <rect x="48" y="42" width="10" height="10"/>
+      <path d="M34 56 H46 V70 H34 Z"/>
     </g>
+    <rect x="56" y="14" width="6" height="12"/>
   </svg>`,
-  // 4 — Event & Immersive Hardware: bold filled 3D cube
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="black" stroke="none">
-    <path d="M32 4 L58 16 L58 42 L32 54 L6 42 L6 16 Z"/>
-    <path d="M32 4 L58 16 L32 28 L6 16 Z" fill="white" opacity="0.18"/>
-    <path d="M32 28 L58 16 L58 42 L32 54 Z" fill="white" opacity="0.32"/>
-    <ellipse cx="32" cy="58" rx="22" ry="3"/>
+  // 4 — Event & Immersive Hardware: LED screen wall on stage with spotlights
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
+    <rect x="10" y="14" width="60" height="40" rx="2"/>
+    <g fill="white">
+      <rect x="14" y="18" width="14" height="14"/>
+      <rect x="30" y="18" width="14" height="14"/>
+      <rect x="46" y="18" width="14" height="14"/>
+      <rect x="62" y="18" width="4" height="14"/>
+      <rect x="14" y="34" width="14" height="14"/>
+      <rect x="30" y="34" width="14" height="14"/>
+      <rect x="46" y="34" width="14" height="14"/>
+      <rect x="62" y="34" width="4" height="14"/>
+    </g>
+    <rect x="36" y="54" width="8" height="10"/>
+    <rect x="14" y="64" width="52" height="6" rx="1"/>
+    <path d="M6 6 L14 14 L10 14 L4 8 Z M74 6 L66 14 L70 14 L76 8 Z"/>
   </svg>`,
-  // 5 — AI Content Creation: bold filled AI chip block with "AI"
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="black" stroke="none">
-    <rect x="12" y="12" width="40" height="40" rx="4"/>
-    <text x="32" y="42" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="22" fill="white">AI</text>
-    <rect x="20" y="4" width="4" height="8"/><rect x="30" y="4" width="4" height="8"/><rect x="40" y="4" width="4" height="8"/>
-    <rect x="20" y="52" width="4" height="8"/><rect x="30" y="52" width="4" height="8"/><rect x="40" y="52" width="4" height="8"/>
-    <rect x="4" y="20" width="8" height="4"/><rect x="4" y="30" width="8" height="4"/><rect x="4" y="40" width="8" height="4"/>
-    <rect x="52" y="20" width="8" height="4"/><rect x="52" y="30" width="8" height="4"/><rect x="52" y="40" width="8" height="4"/>
+  // 5 — AI Content Creation: chip with pins on all four sides, "AI" label, fits inside frame
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
+    <rect x="22" y="22" width="36" height="36" rx="4"/>
+    <text x="40" y="49" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="20" fill="white">AI</text>
+    <rect x="27" y="14" width="4" height="8"/><rect x="38" y="14" width="4" height="8"/><rect x="49" y="14" width="4" height="8"/>
+    <rect x="27" y="58" width="4" height="8"/><rect x="38" y="58" width="4" height="8"/><rect x="49" y="58" width="4" height="8"/>
+    <rect x="14" y="27" width="8" height="4"/><rect x="14" y="38" width="8" height="4"/><rect x="14" y="49" width="8" height="4"/>
+    <rect x="58" y="27" width="8" height="4"/><rect x="58" y="38" width="8" height="4"/><rect x="58" y="49" width="8" height="4"/>
   </svg>`,
 ];
 
@@ -258,7 +267,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const box = Math.round(Math.min(h * 0.74, w * (w < 760 ? 0.82 : 0.56)));
+      const box = Math.round(Math.min(h * 0.62, w * (w < 760 ? 0.78 : 0.44)));
       pointSets = await Promise.all(ICONS.map((icon) => sampleIcon(icon, box)));
       if (run !== sampleRun) return;
       serviceNodes = Array.from(host.querySelectorAll<HTMLElement>("[data-service-index]"));
@@ -329,7 +338,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       serviceTravel += (targetTravel - serviceTravel) * 0.085;
       const mobile = w < 760;
       const objectOnRight = active % 2 === 0;
-      targetX = mobile ? w / 2 : objectOnRight ? w * 0.76 : w * 0.24;
+      targetX = mobile ? w / 2 : objectOnRight ? w * 0.7 : w * 0.3;
       targetY = mobile ? h * (0.14 + serviceTravel * 0.72) : h * (0.16 + serviceTravel * 0.64);
     };
 
