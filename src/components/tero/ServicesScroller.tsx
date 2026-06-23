@@ -96,19 +96,31 @@ const ICONS: string[] = [
     <path d="M6 44 L18 50 L18 46 Z"/>
     <path d="M74 44 L62 50 L62 46 Z"/>
   </svg>`,
-  // 2 — Immersive XR Training: side-profile head wearing VR headset (matches reference)
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
-    <!-- head + hair + neck silhouette, face pointing left -->
-    <path d="M34 6 C20 6 10 16 9 30 C8 36 10 40 11 44 L9 50 L13 52 L11 58 L16 60 L16 66 L20 70 L20 78 L42 78 L42 64 C56 62 64 52 64 36 C64 18 52 6 34 6 Z"/>
-    <!-- VR headset band across the face -->
-    <path d="M2 30 H48 a3 3 0 0 1 3 3 V45 a3 3 0 0 1 -3 3 H38 a2 2 0 0 1 -2 -1 L33 43 a3 3 0 0 0 -6 0 L24 47 a2 2 0 0 1 -2 1 H2 a3 3 0 0 1 -3 -3 V33 a3 3 0 0 1 3 -3 Z"/>
-    <!-- lens cutouts -->
-    <rect x="5" y="33" width="15" height="11" rx="2" fill="white"/>
-    <rect x="28" y="33" width="18" height="11" rx="2" fill="white"/>
-    <circle cx="12" cy="38" r="2.4"/>
-    <circle cx="37" cy="38" r="2.4"/>
-    <!-- head strap wrapping around back of head -->
-    <path d="M48 32 Q62 30 64 38 Q62 46 48 46 L48 42 Q58 42 59 38 Q58 34 48 36 Z"/>
+  // 2 — Immersive XR Training: reference-style dotted profile with oversized VR visor
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" stroke="black" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M39 6 C51 6 62 14 67 25 C73 40 66 58 51 66 C42 71 30 69 22 63"/>
+    <path d="M31 9 C22 12 16 20 14 29"/>
+    <path d="M21 49 C17 47 14 42 13 36" stroke-width="4.2"/>
+    <path d="M21 49 C17 53 18 58 24 62 C29 65 36 66 43 64" stroke-width="4.2"/>
+    <path d="M24 62 C23 68 20 72 18 78" stroke-width="4.2"/>
+    <path d="M45 66 C43 71 42 75 42 80" stroke-width="4.2"/>
+    <path d="M12 30 C8 30 5 33 4 37 C3 41 5 45 9 47 C18 51 39 51 51 48 C57 46 60 43 60 38 C60 32 55 29 48 29 C36 28 22 29 12 30 Z"/>
+    <path d="M7 36 C17 34 33 34 47 35"/>
+    <path d="M9 43 C20 45 38 45 51 43"/>
+    <path d="M51 30 C59 29 66 32 70 38 C66 44 59 47 51 47"/>
+    <path d="M58 18 C65 24 69 32 69 40"/>
+    <path d="M55 57 C59 53 62 48 63 43"/>
+    <path d="M35 13 C45 11 55 16 61 25" stroke-width="2.1"/>
+    <path d="M49 59 C41 64 31 62 24 56" stroke-width="3"/>
+    <path d="M31 52 C25 52 21 55 19 60" stroke-width="3"/>
+    <path d="M33 44 C30 48 26 50 21 49" stroke-width="3"/>
+    <path d="M22 57 C26 58 30 58 35 57" stroke-width="2.4"/>
+    <path d="M48 66 C52 64 55 61 58 57" stroke-width="2.4"/>
+    <circle cx="36" cy="21" r="1.8" fill="black" stroke="none"/>
+    <circle cx="42" cy="18" r="1.4" fill="black" stroke="none"/>
+    <circle cx="50" cy="21" r="1.5" fill="black" stroke="none"/>
+    <circle cx="60" cy="30" r="1.5" fill="black" stroke="none"/>
+    <circle cx="60" cy="50" r="1.4" fill="black" stroke="none"/>
   </svg>`,
   // 3 — PropViz: house with roof and windows (property visualization)
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
@@ -152,6 +164,8 @@ const ICONS: string[] = [
     <rect x="58" y="27" width="8" height="4"/><rect x="58" y="38" width="8" height="4"/><rect x="58" y="49" width="8" height="4"/>
   </svg>`,
 ];
+
+const XR_TRAINING_ICON_INDEX = 2;
 
 // Reference dust palette: warm cream dominant, soft amber embers, sparse cool accent.
 const COLORS = [
@@ -260,6 +274,10 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
               }
             }
           }
+          for (let i = pts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pts[i], pts[j]] = [pts[j], pts[i]];
+          }
           URL.revokeObjectURL(url);
           resolve(pts);
         };
@@ -342,8 +360,10 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
 
       active = bestIndex;
       const profile = motionWindow(bestTravel);
-      targetFormed = best > 0.05 ? profile : 0;
-      targetFill = clamp01(1 - profile * 1.15);
+      const activeLock = ramp(0.12, 0.56, best) * 0.98;
+      const formation = Math.max(profile, activeLock);
+      targetFormed = best > 0.05 ? Math.max(0.96, formation) : 0;
+      targetFill = best > 0.05 ? 0 : clamp01(1 - formation * 1.15);
       targetTravel = bestTravel;
       serviceTravel += (targetTravel - serviceTravel) * 0.085;
       const mobile = w < 760;
@@ -402,8 +422,10 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       ctx.globalCompositeOperation = "lighter";
       const t = now / 1000;
       const objectOnRight = active % 2 === 0;
-      const yaw = Math.sin(t * 0.6 + sectionProgress * 2.4) * 0.7 + (objectOnRight ? 0.35 : -0.35);
-      const pitch = Math.sin(t * 0.45 + active * 0.9) * 0.32;
+      const easedOsc = (phase: number) => ease((Math.sin(phase) + 1) / 2) * 2 - 1;
+      const tumblePhase = t * 0.74 + sectionProgress * 3.65 + active * 0.42;
+      const yaw = easedOsc(tumblePhase) * 0.92 + easedOsc(t * 0.22 + active) * 0.14 + (objectOnRight ? 0.18 : -0.18);
+      const pitch = easedOsc(tumblePhase * 0.78 + active * 0.9) * 0.58;
       const cosY = Math.cos(yaw);
       const sinY = Math.sin(yaw);
       const cosP = Math.cos(pitch);
@@ -415,7 +437,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
         const volume = 0.8 + (p.idx % 11) * 0.12;
         const px = pt.x + Math.sin(p.phase * 2.1 + t * 0.5) * volume;
         const py = pt.y + Math.cos(p.phase * 1.7 + t * 0.4) * volume;
-        const depth = Math.sin(p.idx * 0.77) * 4 + Math.sin(p.phase + t * 0.3) * 6;
+        const depth = Math.sin(p.idx * 1.37) * 11 + Math.cos(pt.x * 0.08 + pt.y * 0.055 + p.phase) * 14 + Math.sin(p.phase + t * 0.28) * 4;
         const rx = px * cosY + depth * sinY;
         const rz = depth * cosY - px * sinY;
         const ry = py * cosP - rz * sinP;
@@ -426,11 +448,12 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
         const fieldY = (p.fy + sectionProgress * h * (1.25 + p.lane * 0.22) + driftY + h * 2) % h;
         const streamX = currentX + p.sx * (1.38 + Math.sin(t * 0.12 + p.phase) * 0.07);
         const streamY = currentY + p.sy * (1.22 + Math.cos(t * 0.1 + p.phase) * 0.06);
-        const scatterMix = clamp01(1 - formed);
+        const scatterMix = Math.pow(clamp01(1 - formed), 2.6);
         const cloudX = fieldX * fill + streamX * (1 - fill);
         const cloudY = fieldY * fill + streamY * (1 - fill);
         const tz = (p.fz * fill + p.sz * (1 - fill)) * scatterMix + rz2 * formed;
-        const perspectiveScale = 720 / (720 - tz);
+        const perspective = 620;
+        const perspectiveScale = Math.max(0.62, Math.min(1.72, perspective / (perspective - tz)));
         const shapeX = currentX + rx * perspectiveScale;
         const shapeY = currentY + ry * perspectiveScale;
 
@@ -448,9 +471,9 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
           }
         }
 
-        const lock = 0.12 + formed * 0.16;
-        p.vx = (p.vx + (screenX - p.x) * 0.012) * 0.72;
-        p.vy = (p.vy + (screenY - p.y) * 0.012) * 0.72;
+        const lock = 0.14 + formed * 0.36;
+        p.vx = (p.vx + (screenX - p.x) * 0.018) * (0.72 - formed * 0.18);
+        p.vy = (p.vy + (screenY - p.y) * 0.018) * (0.72 - formed * 0.18);
         p.vz = (p.vz + (tz - p.z) * 0.02) * 0.78;
         p.x += (screenX - p.x) * lock + p.vx;
         p.y += (screenY - p.y) * lock + p.vy;
