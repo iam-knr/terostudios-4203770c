@@ -112,60 +112,10 @@ export function CylinderGallery() {
             className="relative"
             style={{ transformStyle: "preserve-3d", width: 1, height: 1 }}
           >
-            {SCATTER.map((s, i) => {
-              const vid = videos[i % videos.length];
-              // Each card flies from z=s.z (far) → z=120 (in front of viewer)
-              const z = useTransform(p, [0, 0.5], [s.z, 120]);
-              const scl = useTransform(p, [0, 0.5], [0.6, 1.05]);
-              const op = useTransform(p, [0, 0.08, 0.5, 0.55], [0, 1, 1, 0.85]);
-              // Slight orbital drift as they approach
-              const driftX = useTransform(p, [0, 0.5], [s.x * 0.4, s.x]);
-              const driftY = useTransform(p, [0, 0.5], [s.y * 0.4, s.y]);
-              const rotYv = useTransform(p, [0, 0.5], [s.rotY * 0.4, s.rotY]);
-              return (
-                <motion.div
-                  key={i}
-                  className="absolute overflow-hidden rounded-[10px] ring-1 ring-cream/15 bg-black"
-                  style={{
-                    left: 0,
-                    top: 0,
-                    width: s.w,
-                    height: s.w * 0.56,
-                    x: driftX,
-                    y: driftY,
-                    z,
-                    scale: scl,
-                    rotateY: rotYv,
-                    rotateX: s.rotX,
-                    rotateZ: s.rotZ,
-                    opacity: op,
-                    transformStyle: "preserve-3d",
-                    translateX: "-50%",
-                    translateY: "-50%",
-                    boxShadow:
-                      "0 50px 100px -40px rgba(232,57,14,0.35), 0 30px 60px -30px rgba(0,0,0,0.8), inset 0 0 40px rgba(0,0,0,0.4)",
-                  }}
-                >
-                  <video
-                    src={vid.url}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
-                  />
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.4) 100%)",
-                    }}
-                  />
-                </motion.div>
-              );
-            })}
+            {SCATTER.map((s, i) => (
+              <SwarmCard key={i} s={s} progress={p} url={videos[i % videos.length].url} />
+            ))}
+
           </div>
 
           {/* Center scan-line shimmer */}
