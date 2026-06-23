@@ -172,7 +172,8 @@ const ease = (n: number) => {
 };
 
 const ramp = (from: number, to: number, value: number) => ease((value - from) / (to - from));
-const motionWindow = (value: number) => ramp(0.12, 0.38, value) * (1 - ramp(0.82, 1, value));
+// Tighter window: scatter longer at edges, snap and hold the formed icon across the middle.
+const motionWindow = (value: number) => ramp(0.22, 0.44, value) * (1 - ramp(0.6, 0.82, value));
 
 type Point = { x: number; y: number };
 
@@ -393,8 +394,10 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       update();
       currentX += (targetX - currentX) * 0.18;
       currentY += (targetY - currentY) * 0.13;
-      formed += (targetFormed - formed) * 0.12;
-      fill += (targetFill - fill) * 0.08;
+      // Asymmetric easing: snap quickly into form, dissolve slowly back to scatter.
+      const formedLerp = targetFormed > formed ? 0.22 : 0.07;
+      formed += (targetFormed - formed) * formedLerp;
+      fill += (targetFill - fill) * (targetFill > fill ? 0.06 : 0.14);
       if (mx > -9000) {
         if (smx < -9000) {
           smx = mx;
@@ -407,7 +410,11 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
         smy = -9999;
       }
 
-      ctx.clearRect(0, 0, w, h);
+      // Motion trail: fade prior frame instead of wiping. Stronger fade when formed
+      // (crisp icon), lighter fade while scattering (longer streaks during tumble).
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.fillStyle = `rgba(0,0,0,${0.22 + formed * 0.55})`;
+      ctx.fillRect(0, 0, w, h);
       ctx.globalCompositeOperation = "lighter";
       const t = now / 1000;
       const objectOnRight = active % 2 === 0;
