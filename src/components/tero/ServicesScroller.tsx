@@ -410,7 +410,11 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
         smy = -9999;
       }
 
-      ctx.clearRect(0, 0, w, h);
+      // Motion trail: fade prior frame instead of wiping. Stronger fade when formed
+      // (crisp icon), lighter fade while scattering (longer streaks during tumble).
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.fillStyle = `rgba(0,0,0,${0.22 + formed * 0.55})`;
+      ctx.fillRect(0, 0, w, h);
       ctx.globalCompositeOperation = "lighter";
       const t = now / 1000;
       const objectOnRight = active % 2 === 0;
