@@ -1,4 +1,30 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+type MotionDebug = {
+  formed: number;
+  targetFormed: number;
+  fill: number;
+  targetFill: number;
+  active: number;
+  serviceTravel: number;
+  targetTravel: number;
+  sectionProgress: number;
+  scrollVelocity: number;
+  fps: number;
+};
+
+const motionDebugState: MotionDebug = {
+  formed: 0,
+  targetFormed: 0,
+  fill: 1,
+  targetFill: 1,
+  active: 0,
+  serviceTravel: 0,
+  targetTravel: 0,
+  sectionProgress: 0,
+  scrollVelocity: 0,
+  fps: 0,
+};
 
 const services = [
   {
