@@ -346,11 +346,13 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       }
 
       active = bestIndex;
+      // Form near the center of each service slot, scatter between slots.
+      // motionWindow peaks ~1 around bestTravel 0.5 and falls to 0 near edges,
+      // so particles cloud apart while transitioning and snap into the icon mid-slot.
       const profile = motionWindow(bestTravel);
-      const activeLock = ramp(0.12, 0.56, best) * 0.98;
-      const formation = Math.max(profile, activeLock);
-      targetFormed = best > 0.05 ? Math.max(0.96, formation) : 0;
-      targetFill = best > 0.05 ? 0 : clamp01(1 - formation * 1.15);
+      const formation = ease(profile) * ramp(0.18, 0.62, best);
+      targetFormed = formation;
+      targetFill = clamp01(1 - formation);
       targetTravel = bestTravel;
       serviceTravel += (targetTravel - serviceTravel) * 0.085;
       const mobile = w < 760;
