@@ -348,7 +348,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
 
       active = bestIndex;
       const profile = motionWindow(bestTravel);
-      const activeLock = Math.pow(clamp01(best), 1.55) * 0.94;
+      const activeLock = ramp(0.12, 0.56, best) * 0.98;
       const formation = Math.max(profile, activeLock);
       targetFormed = best > 0.05 ? formation : 0;
       targetFill = clamp01(1 - formation * 1.15);
@@ -425,7 +425,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
         const volume = 0.8 + (p.idx % 11) * 0.12;
         const px = pt.x + Math.sin(p.phase * 2.1 + t * 0.5) * volume;
         const py = pt.y + Math.cos(p.phase * 1.7 + t * 0.4) * volume;
-        const depth = Math.sin(p.idx * 1.37) * 28 + Math.cos(pt.x * 0.08 + pt.y * 0.055 + p.phase) * 34 + Math.sin(p.phase + t * 0.28) * 10;
+        const depth = Math.sin(p.idx * 1.37) * 11 + Math.cos(pt.x * 0.08 + pt.y * 0.055 + p.phase) * 14 + Math.sin(p.phase + t * 0.28) * 4;
         const rx = px * cosY + depth * sinY;
         const rz = depth * cosY - px * sinY;
         const ry = py * cosP - rz * sinP;
