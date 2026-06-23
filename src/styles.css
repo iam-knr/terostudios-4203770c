@@ -225,6 +225,17 @@
   animation: tero-drift-down linear infinite;
 }
 
+/* Anamorphic tunnel floor — slow forward drift along the tilted plane */
+@keyframes tero-tunnel-drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+.animate-tunnel-drift {
+  animation: tero-tunnel-drift 70s linear infinite;
+  will-change: transform;
+}
+
+
 
 /* Vermillion underline link */
 .link-underline {
