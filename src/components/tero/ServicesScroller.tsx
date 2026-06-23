@@ -480,6 +480,129 @@ function SpaceField({ hostRef }: { hostRef: React.RefObject<HTMLElement | null> 
   return <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 z-0 block h-full w-full" />;
 }
 
+function MotionDebugOverlay({ hostRef }: { hostRef: React.RefObject<HTMLElement | null> }) {
+  const [enabled, setEnabled] = useState(false);
+  const [, force] = useState(0);
+  const [scrub, setScrub] = useState<number | null>(null);
+
+  useEffect(() => {
+    const check = () => {
+      const q = new URLSearchParams(window.location.search);
+      const on =
+        q.get("debug") === "motion" ||
+        (typeof localStorage !== "undefined" && localStorage.getItem("servicesDebug") === "1");
+      setEnabled(on);
+    };
+    check();
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "d") {
+        const next = localStorage.getItem("servicesDebug") === "1" ? "0" : "1";
+        localStorage.setItem("servicesDebug", next);
+        setEnabled(next === "1");
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return;
+    let raf = 0;
+    const loop = () => {
+      raf = requestAnimationFrame(loop);
+      force((n) => (n + 1) % 1000000);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [enabled]);
+
+  if (!enabled) return null;
+
+  const s = motionDebugState;
+  const host = hostRef.current;
+  const rect = host?.getBoundingClientRect();
+  const scrollable = rect ? rect.height - window.innerHeight : 0;
+
+  const onScrub = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = Number(e.target.value);
+    setScrub(v);
+    if (!host) return;
+    const top = window.scrollY + host.getBoundingClientRect().top;
+    window.scrollTo({ top: top + scrollable * v, behavior: "auto" });
+  };
+
+  const fmt = (n: number) => n.toFixed(3);
+  const bar = (v: number, color = "#ff9a00") => (
+    <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+      <div className="h-full rounded-full" style={{ width: `${clamp01(v) * 100}%`, background: color }} />
+    </div>
+  );
+
+  return (
+    <div className="pointer-events-auto fixed bottom-4 left-4 right-4 z-[60] mx-auto max-w-[440px] rounded-2xl border border-white/15 bg-black/82 p-3 font-mono text-[11px] text-white/85 shadow-2xl backdrop-blur md:left-auto md:right-4 md:max-w-[360px]">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-[0.24em] text-[#ff9a00]">Motion Debug</span>
+        <button
+          onClick={() => {
+            localStorage.setItem("servicesDebug", "0");
+            setEnabled(false);
+          }}
+          className="rounded border border-white/20 px-2 py-0.5 text-[10px] hover:bg-white/10"
+        >
+          close
+        </button>
+      </div>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+        <div>active: {s.active}</div>
+        <div>fps: {s.fps.toFixed(0)}</div>
+        <div>
+          formed: {fmt(s.formed)} → {fmt(s.targetFormed)}
+        </div>
+        <div>
+          fill: {fmt(s.fill)} → {fmt(s.targetFill)}
+        </div>
+        <div>
+          travel: {fmt(s.serviceTravel)} / {fmt(s.targetTravel)}
+        </div>
+        <div>section: {fmt(s.sectionProgress)}</div>
+        <div className="col-span-2">vel: {s.scrollVelocity.toFixed(1)}px/f</div>
+      </div>
+      <div className="mt-2 space-y-1.5">
+        <div>{bar(s.formed, "#ff9a00")}</div>
+        <div>{bar(s.fill, "#149eff")}</div>
+        <div>{bar(s.serviceTravel, "#fdfaf6")}</div>
+      </div>
+      <div className="mt-3">
+        <div className="mb-1 flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-white/55">
+          <span>scrub section</span>
+          <span>{scrub === null ? "live" : `${(scrub * 100).toFixed(1)}%`}</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.001}
+          value={scrub ?? clamp01(s.sectionProgress)}
+          onChange={onScrub}
+          className="w-full accent-[#ff9a00]"
+        />
+        <div className="mt-1 flex gap-1">
+          {[0, 0.1, 0.25, 0.5, 0.75, 0.9, 1].map((v) => (
+            <button
+              key={v}
+              onClick={() => onScrub({ target: { value: String(v) } } as React.ChangeEvent<HTMLInputElement>)}
+              className="flex-1 rounded border border-white/15 px-1 py-0.5 text-[10px] hover:bg-white/10"
+            >
+              {Math.round(v * 100)}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="mt-2 text-[10px] text-white/45">⌘/Ctrl+Shift+D toggles. ?debug=motion forces on.</div>
+    </div>
+  );
+}
+
 export function ServicesScroller() {
   const sectionRef = useRef<HTMLElement>(null);
   return (
