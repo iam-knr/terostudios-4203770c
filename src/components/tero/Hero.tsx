@@ -137,11 +137,11 @@ export function Hero() {
       const w = canvas!.clientWidth;
       const h = canvas!.clientHeight;
 
-      // Motion trail: fade prior frame instead of wiping, matching the ServicesScroller look.
+      // Motion trail: fade prior frame instead of wiping. Use source-over so dark grains stay visible on cream.
       ctx!.globalCompositeOperation = "destination-out";
-      ctx!.fillStyle = `rgba(0,0,0,${0.18 + formProgress * 0.55})`;
+      ctx!.fillStyle = `rgba(0,0,0,${0.22 + formProgress * 0.5})`;
       ctx!.fillRect(0, 0, w, h);
-      ctx!.globalCompositeOperation = "lighter";
+      ctx!.globalCompositeOperation = "source-over";
 
       const t = (now - start) / 1000;
       formProgress = Math.min(1, t / 2.6);
