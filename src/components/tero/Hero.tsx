@@ -241,7 +241,7 @@ export function Hero() {
       wrap.removeEventListener("mousemove", onMove);
       wrap.removeEventListener("mouseleave", onLeave);
     };
-  }, [formed]);
+  }, []);
 
   return (
     <section
@@ -274,7 +274,7 @@ export function Hero() {
       />
 
       {/* Particle stage */}
-      <div ref={wrapRef} className="absolute inset-0 z-10">
+      <div ref={wrapRef} className="absolute inset-0 z-10 overflow-hidden" style={{ contain: "paint" }}>
         <canvas ref={canvasRef} className="block w-full h-full" />
       </div>
 
