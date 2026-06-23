@@ -92,7 +92,7 @@ const ease = (n: number) => {
 };
 
 const ramp = (from: number, to: number, value: number) => ease((value - from) / (to - from));
-const motionWindow = (value: number) => ramp(0.18, 0.46, value) * (1 - ramp(0.74, 0.96, value));
+const motionWindow = (value: number) => ramp(0.12, 0.38, value) * (1 - ramp(0.82, 1, value));
 
 type Point = { x: number; y: number };
 
