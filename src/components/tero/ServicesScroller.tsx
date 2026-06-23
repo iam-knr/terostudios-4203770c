@@ -393,10 +393,10 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
 
       for (const p of particles) {
         const pt = points[p.idx % Math.max(1, points.length)] || { x: 0, y: 0 };
-        const volume = 6 + (p.idx % 11) * 1.1;
-        const px = pt.x * 1.12 + Math.sin(p.phase * 2.1 + t * 0.5) * volume;
-        const py = pt.y * 1.12 + Math.cos(p.phase * 1.7 + t * 0.4) * volume;
-        const depth = ((p.idx % 37) - 18) * 4 + Math.sin(p.idx * 0.77) * 18 + Math.sin(p.phase + t * 0.3) * 42;
+        const volume = 2.2 + (p.idx % 11) * 0.45;
+        const px = pt.x * 1.08 + Math.sin(p.phase * 2.1 + t * 0.5) * volume;
+        const py = pt.y * 1.08 + Math.cos(p.phase * 1.7 + t * 0.4) * volume;
+        const depth = ((p.idx % 37) - 18) * 2.2 + Math.sin(p.idx * 0.77) * 10 + Math.sin(p.phase + t * 0.3) * 22;
         const rx = px * cosY + depth * sinY;
         const rz = depth * cosY - px * sinY;
         const ry = py * cosP - rz * sinP;
