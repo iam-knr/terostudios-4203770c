@@ -74,7 +74,7 @@ function ParticleObject({ icon, align }: { icon: string; align: "left" | "right"
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     let raf = 0;
     let w = 0;
     let h = 0;
@@ -84,6 +84,8 @@ function ParticleObject({ icon, align }: { icon: string; align: "left" | "right"
     let my = -9999;
     let smx = -9999;
     let smy = -9999;
+    let visible = false;
+    let ready = false;
 
     type Particle = {
       x: number;
@@ -117,7 +119,7 @@ function ParticleObject({ icon, align }: { icon: string; align: "left" | "right"
           const off = (size - glyph) / 2;
           sctx.drawImage(img, off, off, glyph, glyph);
           const data = sctx.getImageData(0, 0, size, size).data;
-          const step = Math.max(3, Math.round(size / 92));
+          const step = Math.max(4, Math.round(size / 64));
           const pts: Point[] = [];
           for (let y = 0; y < size; y += step) {
             for (let x = 0; x < size; x += step) {
@@ -141,7 +143,7 @@ function ParticleObject({ icon, align }: { icon: string; align: "left" | "right"
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const box = Math.round(Math.min(w, h) * 0.68);
       points = await sampleIcon(icon, box);
-      const total = Math.min(820, Math.max(520, points.length));
+      const total = Math.min(420, Math.max(260, points.length));
       particles = new Array(total).fill(0).map((_, i) => {
         const a = Math.random() * Math.PI * 2;
         const r = Math.min(w, h) * (0.28 + Math.random() * 0.42);
@@ -163,6 +165,7 @@ function ParticleObject({ icon, align }: { icon: string; align: "left" | "right"
           phase: Math.random() * Math.PI * 2,
         };
       });
+      ready = true;
     };
 
     const update = () => {
@@ -184,6 +187,8 @@ function ParticleObject({ icon, align }: { icon: string; align: "left" | "right"
     };
 
     const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      if (!visible || !ready) return;
       update();
       if (mx > -9000) {
         if (smx < -9000) {
@@ -254,19 +259,25 @@ function ParticleObject({ icon, align }: { icon: string; align: "left" | "right"
       }
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = "source-over";
-      raf = requestAnimationFrame(tick);
     };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        visible = entries[0]?.isIntersecting ?? false;
+      },
+      { rootMargin: "200px 0px" },
+    );
+    io.observe(wrap);
 
     measure();
     raf = requestAnimationFrame(tick);
     window.addEventListener("resize", measure);
-    window.addEventListener("scroll", update, { passive: true });
     canvas.addEventListener("pointermove", onMove, { passive: true });
     canvas.addEventListener("pointerleave", onLeave);
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       window.removeEventListener("resize", measure);
-      window.removeEventListener("scroll", update);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerleave", onLeave);
     };
@@ -279,19 +290,21 @@ function ParticleObject({ icon, align }: { icon: string; align: "left" | "right"
   );
 }
 
-function SpaceField() {
+function SpaceField({ hostRef }: { hostRef: React.RefObject<HTMLElement | null> }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const host = hostRef.current;
+    if (!canvas || !host) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     let raf = 0;
     let w = 0;
     let h = 0;
     let scroll = 0;
+    let visible = false;
     type Star = { x: number; y: number; z: number; r: number; a: number };
     let stars: Star[] = [];
 
@@ -301,7 +314,7 @@ function SpaceField() {
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      stars = new Array(Math.floor((w * h) / 2500)).fill(0).map(() => ({
+      stars = new Array(Math.floor((w * h) / 6000)).fill(0).map(() => ({
         x: Math.random() * w,
         y: Math.random() * h,
         z: Math.random() * 1 + 0.2,
@@ -315,6 +328,8 @@ function SpaceField() {
     };
 
     const tick = () => {
+      raf = requestAnimationFrame(tick);
+      if (!visible) return;
       ctx.clearRect(0, 0, w, h);
       for (const s of stars) {
         const y = (s.y + scroll * 0.16 * s.z) % h;
@@ -325,8 +340,15 @@ function SpaceField() {
         ctx.fill();
       }
       ctx.globalAlpha = 1;
-      raf = requestAnimationFrame(tick);
     };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        visible = entries[0]?.isIntersecting ?? false;
+      },
+      { rootMargin: "100px 0px" },
+    );
+    io.observe(host);
 
     resize();
     update();
@@ -335,23 +357,25 @@ function SpaceField() {
     window.addEventListener("scroll", update, { passive: true });
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("scroll", update);
     };
-  }, []);
+  }, [hostRef]);
 
-  return <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0 block h-full w-full" />;
+  return <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 z-0 block h-full w-full" />;
 }
 
 export function ServicesScroller() {
+  const sectionRef = useRef<HTMLElement>(null);
   return (
-    <section data-nav-theme="dark" className="relative isolate overflow-hidden bg-[#030509] text-[#fdfaf6]">
+    <section ref={sectionRef} data-nav-theme="dark" className="relative isolate overflow-hidden bg-[#030509] text-[#fdfaf6]">
       <div
         aria-hidden
         className="absolute inset-0 z-0"
         style={{ background: "linear-gradient(180deg, #020309 0%, #07080d 45%, #020309 100%)" }}
       />
-      <SpaceField />
+      <SpaceField hostRef={sectionRef} />
       <div className="relative z-10 mx-auto max-w-[1440px] px-6 pb-[18vh] pt-0 md:px-12">
         {services.map((service, i) => {
           const textLeft = i % 2 === 0;
