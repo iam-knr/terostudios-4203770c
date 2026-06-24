@@ -73,12 +73,12 @@ const WALL_CONFIGS: Record<"mobile" | "tablet" | "desktop", WallConfig> = {
   tablet: {
     rows: 4,
     tilesPerRow: 11,
-    tileW: 274,
-    tileH: 116,
+    tileW: 248,
+    tileH: 104,
     colGap: 14,
     perspective: 1120,
-    rowGap: 15,
-    wallTop: "3vh",
+    rowGap: 13,
+    wallTop: "1vh",
     wallWidth: "232vw",
     wallTilt: 3.5,
     edgeTilt: 18,
@@ -161,11 +161,9 @@ function useResolvedVideoUrl(url: string) {
   const resolveForPlayback = (value: string) => {
     if (typeof window === "undefined") return resolveAssetUrl(value);
     const isLocal = ["localhost", "127.0.0.1", "0.0.0.0"].includes(window.location.hostname);
-    const resolved = isLocal && value.includes("/__l5e/")
-      ? value.replace(/^https?:\/\/[^/]+/i, "")
-      : resolveAssetUrl(value);
-    if (!isLocal) return resolved;
+    const resolved = resolveAssetUrl(value);
     const parsed = new URL(resolved, window.location.origin);
+    if (!isLocal) return resolved;
     return parsed.pathname.startsWith("/__l5e/")
       ? `https://id-preview--12ac4244-7645-4fb2-a900-5ab683320d3c.lovable.app${parsed.pathname}${parsed.search}${parsed.hash}`
       : resolved;
