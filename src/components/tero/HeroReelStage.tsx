@@ -35,14 +35,76 @@ type CardSeed = {
   delay: number;
 };
 
-const WALL_ROWS = 5;
-const TILES_PER_ROW = 10;
-const TILE_W = 330;
-const TILE_H = 148;
-const ROW_GAP = 10;
-const COL_GAP = 12;
-const CURVE = 42;
-const DEPTH = 235;
+type WallConfig = {
+  rows: number;
+  tilesPerRow: number;
+  tileW: number;
+  tileH: number;
+  colGap: number;
+  curve: number;
+  depth: number;
+  perspective: number;
+  rowSpacingPct: number;
+  rowTopStartPct: number;
+};
+
+const WALL_CONFIGS: Record<"mobile" | "tablet" | "desktop", WallConfig> = {
+  mobile: {
+    rows: 6,
+    tilesPerRow: 7,
+    tileW: 168,
+    tileH: 96,
+    colGap: 8,
+    curve: 36,
+    depth: 160,
+    perspective: 720,
+    rowSpacingPct: 9.5,
+    rowTopStartPct: -3,
+  },
+  tablet: {
+    rows: 5,
+    tilesPerRow: 8,
+    tileW: 240,
+    tileH: 130,
+    colGap: 10,
+    curve: 40,
+    depth: 200,
+    perspective: 900,
+    rowSpacingPct: 10.5,
+    rowTopStartPct: -2,
+  },
+  desktop: {
+    rows: 5,
+    tilesPerRow: 10,
+    tileW: 330,
+    tileH: 148,
+    colGap: 12,
+    curve: 42,
+    depth: 235,
+    perspective: 1050,
+    rowSpacingPct: 10.5,
+    rowTopStartPct: -2,
+  },
+};
+
+function useWallConfig(): WallConfig {
+  const [cfg, setCfg] = useState<WallConfig>(WALL_CONFIGS.desktop);
+
+  useEffect(() => {
+    const pick = () => {
+      const w = window.innerWidth;
+      if (w < 640) return WALL_CONFIGS.mobile;
+      if (w < 1024) return WALL_CONFIGS.tablet;
+      return WALL_CONFIGS.desktop;
+    };
+    const update = () => setCfg(pick());
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  return cfg;
+}
 
 function useCardSeeds(): CardSeed[] {
   return useMemo(() => {
@@ -294,19 +356,20 @@ function CurvedWallSection() {
   const wallY = useTransform(p, [0, 1], ["-18vh", "-18vh"]);
   const panelOpacity = useTransform(p, [0.22, 0.36, 0.9, 1], [0, 1, 1, 0.85]);
   const sidebarOpacity = useTransform(p, [0.18, 0.32], [0, 1]);
+  const cfg = useWallConfig();
 
   const rows = useMemo(
     () =>
-      Array.from({ length: WALL_ROWS }, (_, r) => {
-        const base = Array.from({ length: TILES_PER_ROW }, (_, c) => {
+      Array.from({ length: cfg.rows }, (_, r) => {
+        const base = Array.from({ length: cfg.tilesPerRow }, (_, c) => {
           const idx = (r * 4 + c * 2) % videos.length;
           return videos[idx];
         });
         return [...base, ...base];
       }),
-    [],
+    [cfg.rows, cfg.tilesPerRow],
   );
-  const halfC = (TILES_PER_ROW - 1) / 2;
+  const halfC = (cfg.tilesPerRow - 1) / 2;
 
   return (
     <section ref={sectionRef} className="relative h-[260vh] bg-black text-cream">
@@ -319,9 +382,9 @@ function CurvedWallSection() {
           className="absolute inset-0 z-10 overflow-hidden"
         >
           <div
-            className="absolute left-1/2 top-1/2 h-[118vh] w-[min(3200px,205vw)]"
+            className="absolute left-1/2 top-1/2 h-[118vh] w-[min(3200px,205vw)] sm:w-[min(3200px,180vw)] lg:w-[min(3200px,205vw)]"
             style={{
-              perspective: "1050px",
+              perspective: `${cfg.perspective}px`,
               perspectiveOrigin: "50% 44%",
               transform: "translate(-50%, -50%)",
               transformStyle: "preserve-3d",
@@ -330,10 +393,10 @@ function CurvedWallSection() {
             {rows.map((rowTiles, r) => {
               const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
               const duration = 34 + r * 6;
-              const rowCenter = (WALL_ROWS - 1) / 2;
+              const rowCenter = (cfg.rows - 1) / 2;
               const rowOffset = (r - rowCenter) / rowCenter;
               const rowDepth = Math.abs(rowOffset);
-              const rowTop = -2 + r * 10.5;
+              const rowTop = cfg.rowTopStartPct + r * cfg.rowSpacingPct;
               const rowZ = -rowDepth * 150;
               const rowRotateX = -rowOffset * 4.5;
               const rowScale = 1 - rowDepth * 0.03;
@@ -344,7 +407,7 @@ function CurvedWallSection() {
                   className="absolute left-1/2 overflow-visible"
                   style={{
                     top: `${rowTop}%`,
-                    height: TILE_H,
+                    height: cfg.tileH,
                     width: "100%",
                     transform: `translateX(-50%) translateZ(${rowZ}px) rotateX(${rowRotateX}deg) scale(${rowScale})`,
                     transformStyle: "preserve-3d",
@@ -354,18 +417,27 @@ function CurvedWallSection() {
                     className="absolute top-0 left-0 flex"
                     style={{
                       left: r % 2 === 0 ? "-9%" : "-28%",
-                      gap: COL_GAP,
+                      gap: cfg.colGap,
                       animation: `${dir} ${duration}s linear infinite`,
                       transformStyle: "preserve-3d",
                     }}
                   >
                     {rowTiles.map((vid, c) => {
-                      const cMod = c % TILES_PER_ROW;
+                      const cMod = c % cfg.tilesPerRow;
                       const t = (cMod - halfC) / halfC;
-                      const rotY = -t * CURVE;
-                      const tz = -Math.abs(t) * DEPTH;
+                      const rotY = -t * cfg.curve;
+                      const tz = -Math.abs(t) * cfg.depth;
 
-                      return <WallTile key={`${r}-${c}`} url={vid.url} rotY={rotY} tz={tz} />;
+                      return (
+                        <WallTile
+                          key={`${r}-${c}`}
+                          url={vid.url}
+                          rotY={rotY}
+                          tz={tz}
+                          w={cfg.tileW}
+                          h={cfg.tileH}
+                        />
+                      );
                     })}
                   </div>
                 </div>
@@ -373,6 +445,7 @@ function CurvedWallSection() {
             })}
           </div>
         </motion.div>
+
 
         <div
           aria-hidden
@@ -452,15 +525,15 @@ function CurvedWallSection() {
   );
 }
 
-function WallTile({ url, rotY, tz }: { url: string; rotY: number; tz: number }) {
+function WallTile({ url, rotY, tz, w, h }: { url: string; rotY: number; tz: number; w: number; h: number }) {
   const videoUrl = useResolvedVideoUrl(url);
 
   return (
     <div
       className="relative shrink-0 overflow-hidden rounded-[18px] ring-1 ring-cream/10 bg-black"
       style={{
-        width: TILE_W,
-        height: TILE_H,
+        width: w,
+        height: h,
         transform: `rotateY(${rotY}deg) translateZ(${tz}px)`,
         transformStyle: "preserve-3d",
         boxShadow:
