@@ -1,4 +1,4 @@
-import { useMemo, useRef, type RefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import {
   motion,
   useScroll,
@@ -82,6 +82,16 @@ function useSectionProgress(ref: RefObject<HTMLElement | null>) {
     damping: 26,
     mass: 0.42,
   });
+}
+
+function useResolvedVideoUrl(url: string) {
+  const [resolvedUrl, setResolvedUrl] = useState(url);
+
+  useEffect(() => {
+    setResolvedUrl(resolveAssetUrl(url));
+  }, [url]);
+
+  return resolvedUrl;
 }
 
 export function HeroReelStage() {
