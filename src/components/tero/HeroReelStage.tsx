@@ -307,7 +307,7 @@ function CurvedWallSection() {
           className="absolute inset-0 z-10 flex items-center justify-center"
         >
           <div
-            className="relative w-[min(1700px,112vw)]"
+            className="relative w-[min(2200px,140vw)]"
             style={{
               perspective: "1700px",
               perspectiveOrigin: "50% 50%",
