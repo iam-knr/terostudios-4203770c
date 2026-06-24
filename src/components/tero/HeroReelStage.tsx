@@ -34,14 +34,14 @@ type CardSeed = {
   delay: number;
 };
 
-const WALL_ROWS = 3;
+const WALL_ROWS = 5;
 const TILES_PER_ROW = 9;
-const TILE_W = 215;
-const TILE_H = 135;
-const ROW_GAP = 30;
-const COL_GAP = 20;
-const CURVE = 55;
-const DEPTH = 260;
+const TILE_W = 260;
+const TILE_H = 165;
+const ROW_GAP = 22;
+const COL_GAP = 18;
+const CURVE = 62;
+const DEPTH = 320;
 
 function useCardSeeds(): CardSeed[] {
   return useMemo(() => {
@@ -226,14 +226,10 @@ function SnakeSection({ seeds }: { seeds: CardSeed[] }) {
           className="absolute inset-0 z-10 flex items-center pointer-events-none"
         >
           <h2
-            className="font-display tracking-[-0.035em] text-cream/95 leading-[0.9] pl-6 md:pl-14"
-            style={{ fontSize: "clamp(4.5rem, 12vw, 11rem)" }}
+            className="font-display tracking-[-0.035em] text-cream/95 leading-[0.95] pl-6 md:pl-14 whitespace-nowrap"
+            style={{ fontSize: "clamp(3.5rem, 11vw, 10rem)" }}
           >
-            Revolutionizing
-            <br />
-            <span className="italic font-light text-cream/85">Product</span>
-            <br />
-            Visualization
+            Visualization, <span className="italic font-light text-cream/85">revolutionized.</span>
           </h2>
         </motion.div>
 
@@ -311,7 +307,7 @@ function CurvedWallSection() {
           className="absolute inset-0 z-10 flex items-center justify-center"
         >
           <div
-            className="relative w-[min(1700px,112vw)]"
+            className="relative w-[min(2200px,140vw)]"
             style={{
               perspective: "1700px",
               perspectiveOrigin: "50% 50%",
@@ -393,7 +389,15 @@ function CurvedWallSection() {
           className="absolute inset-0 z-20 pointer-events-none"
           style={{
             background:
-              "radial-gradient(44% 38% at 50% 50%, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.25) 58%, transparent 100%)",
+              "radial-gradient(50% 42% at 50% 48%, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.3) 58%, transparent 100%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-[42%] z-30 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(0deg, #000 18%, rgba(0,0,0,0.85) 38%, rgba(0,0,0,0.45) 65%, transparent 100%)",
           }}
         />
 
