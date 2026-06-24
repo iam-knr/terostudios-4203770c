@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, type RefObject } from "react";
 import {
   motion,
   useScroll,
@@ -10,211 +10,159 @@ import { Link } from "@tanstack/react-router";
 import { videos } from "@/data/videos";
 
 /**
- * HeroReelStage — 3 clearly separated acts over ~700vh of sticky scroll.
- * Modeled directly after the reference recording.
- *
- *   ACT 1 (0.00 → 0.30)  Black void. Small thumbnails pop forward and
- *                        cluster around the center where the brand
- *                        wordmark "TERO" reveals between them. Corner
- *                        captions fade in.
- *
- *   ACT 2 (0.28 → 0.62)  Thumbnails break formation and drift across
- *                        the screen in a flowing snake while a massive
- *                        headline "Revolutionizing motion." passes
- *                        BEHIND them.
- *
- *   ACT 3 (0.60 → 1.00)  Snake dissolves into a FLAT full-bleed grid
- *                        wall of playing reels. Sidebar nav, center
- *                        glass headline, prompt bar with chip filters.
+ * Three separate scroll sections:
+ * 1. cards punch out through the screen
+ * 2. cards race in a snake path over the headline
+ * 3. a curved wall of playing reels appears
  */
 
-const CARD_COUNT = 12;
+const CARD_COUNT = 16;
 
 type CardSeed = {
   id: number;
   url: string;
-  // cluster (act 1) — small ring around wordmark
-  cx: number;
-  cy: number;
-  cscale: number;
-  // snake (act 2) — across the screen
-  nx: number;
-  ny: number;
-  nrot: number;
-  // size
+  popX: number;
+  popY: number;
+  popZ: number;
+  popRotX: number;
+  popRotY: number;
+  popRotZ: number;
+  snakeY: number;
+  snakeRot: number;
   w: number;
   h: number;
   delay: number;
 };
 
+const WALL_ROWS = 3;
+const TILES_PER_ROW = 9;
+const TILE_W = 215;
+const TILE_H = 135;
+const ROW_GAP = 30;
+const COL_GAP = 20;
+const CURVE = 42;
+const DEPTH = 185;
+
 function useCardSeeds(): CardSeed[] {
   return useMemo(() => {
-    const seeds: CardSeed[] = [];
-    for (let i = 0; i < CARD_COUNT; i++) {
-      const t = i / CARD_COUNT;
-      const v = videos[i % videos.length];
-      // cluster: small ring of thumbnails close to center, varying radii
-      const ang = t * Math.PI * 2 + 0.25;
-      const r = 170 + (i % 3) * 70;
-      const cx = Math.cos(ang) * r * 1.3;
-      const cy = Math.sin(ang) * r * 0.55;
-      // snake: long arc across viewport
+    return Array.from({ length: CARD_COUNT }, (_, i) => {
       const u = (i - (CARD_COUNT - 1) / 2) / ((CARD_COUNT - 1) / 2);
-      const nx = u * 760;
-      const ny = Math.sin(u * Math.PI * 1.2) * 130;
+      const angle = (i / CARD_COUNT) * Math.PI * 2 + 0.4;
+      const radius = 290 + (i % 4) * 95;
       const portrait = i % 3 === 0;
-      const w = portrait ? 130 : 180 - Math.abs(u) * 20;
-      const h = portrait ? 180 : 120;
-      seeds.push({
+
+      return {
         id: i,
-        url: v.url,
-        cx,
-        cy,
-        cscale: 0.85 + (i % 3) * 0.08,
-        nx,
-        ny,
-        nrot: u * 6,
-        w,
-        h,
-        delay: (i % 6) * 0.012,
-      });
-    }
-    return seeds;
+        url: videos[i % videos.length].url,
+        popX: Math.cos(angle) * radius * 1.45,
+        popY: Math.sin(angle) * radius * 0.78,
+        popZ: 120 + (i % 5) * 80,
+        popRotX: -18 + (i % 5) * 9,
+        popRotY: -34 + (i % 7) * 11,
+        popRotZ: -12 + (i % 6) * 5,
+        snakeY: Math.sin(u * Math.PI * 1.35) * 170,
+        snakeRot: u * 12,
+        w: portrait ? 128 : 184 - Math.abs(u) * 18,
+        h: portrait ? 178 : 118,
+        delay: (i % 8) * 0.018,
+      };
+    });
   }, []);
 }
 
-// Flat grid wall
-const WALL_ROWS = 4;
-const TILES_PER_ROW = 7;
-const TILE_W = 230;
-const TILE_H = 145;
-const ROW_GAP = 14;
-const COL_GAP = 14;
-
-export function HeroReelStage() {
-  const sectionRef = useRef<HTMLElement>(null);
+function useSectionProgress(ref: RefObject<HTMLElement | null>) {
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
+    target: ref,
     offset: ["start start", "end end"],
   });
-  const p = useSpring(scrollYProgress, {
-    stiffness: 110,
-    damping: 28,
-    mass: 0.45,
-  });
 
+  return useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 26,
+    mass: 0.42,
+  });
+}
+
+export function HeroReelStage() {
   const seeds = useCardSeeds();
 
-  // Top chrome always on
-  const chromeOpacity = useTransform(p, [0, 0.03, 0.97, 1], [0, 1, 1, 0.7]);
+  return (
+    <div className="relative bg-black text-cream">
+      <PopOutSection seeds={seeds} />
+      <SnakeSection seeds={seeds} />
+      <CurvedWallSection />
+    </div>
+  );
+}
 
-  // ── ACT 1 — cluster + wordmark
-  const cardsClusterOpacity = useTransform(
-    p,
-    [0.04, 0.12, 0.28, 0.34],
-    [0, 1, 1, 0],
+function Backdrop() {
+  return (
+    <>
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(78% 58% at 50% 48%, #0b0c12 0%, #04050a 58%, #000 100%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none opacity-45"
+        style={{
+          backgroundImage: `
+            radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.8), transparent 60%),
+            radial-gradient(1px 1px at 27% 72%, rgba(255,255,255,0.55), transparent 60%),
+            radial-gradient(1.5px 1.5px at 41% 34%, rgba(255,255,255,0.8), transparent 60%),
+            radial-gradient(1px 1px at 58% 80%, rgba(255,255,255,0.5), transparent 60%),
+            radial-gradient(1px 1px at 67% 22%, rgba(255,255,255,0.75), transparent 60%),
+            radial-gradient(1.2px 1.2px at 78% 58%, rgba(255,255,255,0.6), transparent 60%),
+            radial-gradient(1px 1px at 89% 11%, rgba(255,255,255,0.75), transparent 60%),
+            radial-gradient(1px 1px at 8% 88%, rgba(255,255,255,0.55), transparent 60%)
+          `,
+        }}
+      />
+    </>
   );
-  const wordmarkOpacity = useTransform(
-    p,
-    [0.08, 0.16, 0.28, 0.34],
-    [0, 1, 1, 0],
-  );
-  const captionsOpacity = useTransform(
-    p,
-    [0.14, 0.2, 0.28, 0.34],
-    [0, 1, 1, 0],
-  );
+}
 
-  // ── ACT 2 — snake + massive headline
-  const cardsSnakeOpacity = useTransform(
-    p,
-    [0.3, 0.4, 0.58, 0.66],
-    [0, 1, 1, 0],
+function TopChrome() {
+  return (
+    <div className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 md:px-10 pt-6 md:pt-7 pointer-events-none">
+      <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-cream/70 flex items-center gap-2.5">
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-vermillion animate-pulse" />
+        Tero Studios
+      </span>
+      <div className="hidden md:flex items-center gap-1 rounded-full bg-cream/10 backdrop-blur-md ring-1 ring-cream/15 p-1">
+        <span className="px-4 py-1.5 rounded-full bg-cream text-black text-[10px] font-mono uppercase tracking-[0.22em]">
+          Create
+        </span>
+        <span className="px-4 py-1.5 rounded-full text-cream/70 text-[10px] font-mono uppercase tracking-[0.22em]">
+          Explore
+        </span>
+      </div>
+      <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-cream/55">
+        Smart Editing Tools
+      </span>
+    </div>
   );
-  // Headline scrolls horizontally behind the snake
-  const headlineX = useTransform(p, [0.28, 0.62], ["20%", "-30%"]);
-  const headlineOpacity = useTransform(
-    p,
-    [0.3, 0.4, 0.58, 0.66],
-    [0, 1, 1, 0],
-  );
+}
 
-  // ── ACT 3 — flat grid wall + hero panel
-  const wallOpacity = useTransform(p, [0.6, 0.72, 1], [0, 1, 1]);
-  const wallScale = useTransform(p, [0.6, 0.78], [1.08, 1]);
-  const heroPanelOpacity = useTransform(p, [0.72, 0.84], [0, 1]);
-  const sidebarOpacity = useTransform(p, [0.7, 0.82], [0, 1]);
-
-  const rows = useMemo(
-    () =>
-      Array.from({ length: WALL_ROWS }, (_, r) => {
-        const base = Array.from({ length: TILES_PER_ROW }, (_, c) => {
-          const idx = (r * 3 + c * 2) % videos.length;
-          return videos[idx];
-        });
-        return [...base, ...base];
-      }),
-    [],
-  );
+function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const p = useSectionProgress(sectionRef);
+  const titleScale = useTransform(p, [0, 0.35, 0.82, 1], [0.82, 1, 1.08, 1.18]);
+  const titleOpacity = useTransform(p, [0, 0.22, 0.82, 1], [0, 1, 1, 0]);
+  const captionOpacity = useTransform(p, [0.28, 0.45, 0.82, 1], [0, 1, 1, 0]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative bg-black text-cream"
-      style={{ height: "700vh" }}
-    >
+    <section ref={sectionRef} className="relative h-[260vh] bg-black text-cream">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* Deep space backdrop */}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(80% 60% at 50% 50%, #0a0b10 0%, #04050a 60%, #000 100%)",
-          }}
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none opacity-40"
-          style={{
-            backgroundImage: `
-              radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.8), transparent 60%),
-              radial-gradient(1px 1px at 27% 72%, rgba(255,255,255,0.55), transparent 60%),
-              radial-gradient(1.5px 1.5px at 41% 34%, rgba(255,255,255,0.8), transparent 60%),
-              radial-gradient(1px 1px at 58% 80%, rgba(255,255,255,0.5), transparent 60%),
-              radial-gradient(1px 1px at 67% 22%, rgba(255,255,255,0.75), transparent 60%),
-              radial-gradient(1.2px 1.2px at 78% 58%, rgba(255,255,255,0.6), transparent 60%),
-              radial-gradient(1px 1px at 89% 11%, rgba(255,255,255,0.75), transparent 60%),
-              radial-gradient(1px 1px at 8% 88%, rgba(255,255,255,0.55), transparent 60%)
-            `,
-          }}
-        />
+        <Backdrop />
+        <TopChrome />
 
-        {/* Top chrome */}
         <motion.div
-          style={{ opacity: chromeOpacity }}
-          className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 md:px-10 pt-6 md:pt-7 pointer-events-none"
-        >
-          <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-cream/70 flex items-center gap-2.5">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-vermillion animate-pulse" />
-            Tero Studios
-          </span>
-          <div className="hidden md:flex items-center gap-1 rounded-full bg-cream/10 backdrop-blur-md ring-1 ring-cream/15 p-1">
-            <span className="px-4 py-1.5 rounded-full bg-cream text-black text-[10px] font-mono uppercase tracking-[0.22em]">
-              Create
-            </span>
-            <span className="px-4 py-1.5 rounded-full text-cream/70 text-[10px] font-mono uppercase tracking-[0.22em]">
-              Explore
-            </span>
-          </div>
-          <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-cream/55">
-            Smart Editing Tools
-          </span>
-        </motion.div>
-
-        {/* ─────────── ACT 1 — cluster + wordmark ─────────── */}
-        <motion.div
-          style={{ opacity: wordmarkOpacity }}
+          style={{ opacity: titleOpacity, scale: titleScale }}
           className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
         >
           <h1
@@ -225,29 +173,25 @@ export function HeroReelStage() {
           </h1>
         </motion.div>
 
-        <motion.div
-          style={{ opacity: cardsClusterOpacity }}
-          className="absolute inset-0 z-20 flex items-center justify-center"
-        >
+        <div className="absolute inset-0 z-20 flex items-center justify-center">
           <div
             className="relative"
             style={{
-              perspective: "1500px",
-              perspectiveOrigin: "50% 50%",
+              perspective: "1200px",
+              perspectiveOrigin: "50% 52%",
               width: 1,
               height: 1,
               transformStyle: "preserve-3d",
             }}
           >
             {seeds.map((s) => (
-              <ClusterCard key={s.id} seed={s} progress={p} />
+              <PopOutCard key={s.id} seed={s} progress={p} />
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        {/* Act 1 corner captions */}
         <motion.div
-          style={{ opacity: captionsOpacity }}
+          style={{ opacity: captionOpacity }}
           className="absolute inset-0 z-30 pointer-events-none"
         >
           <div className="absolute left-6 md:left-10 top-1/3 text-cream/85">
@@ -259,57 +203,62 @@ export function HeroReelStage() {
               Stories
             </p>
           </div>
-          <div className="absolute right-1/2 translate-x-[180px] top-1/3 text-cream/85 hidden md:block">
-            <p className="text-[13px] md:text-[14px] leading-tight">
-              Cinematic
-              <br />
-              brand
-              <br />
-              worlds
-            </p>
-          </div>
           <div className="absolute right-6 md:right-10 top-1/3">
             <Link
               to="/contact"
               className="inline-flex items-center gap-2 rounded-full bg-cream/10 ring-1 ring-cream/20 backdrop-blur-md px-4 py-2 text-[10px] font-mono uppercase tracking-[0.22em] text-cream hover:bg-cream hover:text-black transition-colors pointer-events-auto"
             >
-              Get started with Tero ↗
+              Start a project ↗
             </Link>
           </div>
           <div className="absolute left-6 md:left-10 bottom-10 flex flex-wrap gap-1.5">
-            <span className="rounded-full bg-cream/8 ring-1 ring-cream/15 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/70">
-              + Creativity
-            </span>
-            <span className="rounded-full bg-cream/8 ring-1 ring-cream/15 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/70">
-              Quality
-            </span>
-            <span className="rounded-full bg-cream/8 ring-1 ring-cream/15 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/70">
-              Endless Customization
-            </span>
+            {["+ Creativity", "Quality", "Endless Customization"].map((label) => (
+              <span
+                key={label}
+                className="rounded-full bg-cream/8 ring-1 ring-cream/15 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/70"
+              >
+                {label}
+              </span>
+            ))}
           </div>
         </motion.div>
 
-        {/* ─────────── ACT 2 — snake + huge headline ─────────── */}
+        <SectionFade />
+      </div>
+    </section>
+  );
+}
+
+function SnakeSection({ seeds }: { seeds: CardSeed[] }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const p = useSectionProgress(sectionRef);
+  const headlineX = useTransform(p, [0, 1], ["10%", "-38%"]);
+  const headlineOpacity = useTransform(p, [0, 0.12, 0.88, 1], [0, 1, 1, 0]);
+  const microOpacity = useTransform(p, [0.15, 0.28, 0.8, 1], [0, 1, 1, 0]);
+
+  return (
+    <section ref={sectionRef} className="relative h-[240vh] bg-black text-cream">
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <Backdrop />
+        <TopChrome />
+
         <motion.div
           style={{ opacity: headlineOpacity, x: headlineX }}
           className="absolute inset-0 z-10 flex items-center pointer-events-none"
         >
           <h2
             className="font-display whitespace-nowrap tracking-[-0.04em] text-cream/95 leading-[0.85]"
-            style={{ fontSize: "clamp(6rem, 16vw, 14rem)" }}
+            style={{ fontSize: "clamp(6rem, 17vw, 15rem)" }}
           >
             Revolutionizing <span className="italic font-light text-cream/80">motion.</span>
           </h2>
         </motion.div>
 
-        <motion.div
-          style={{ opacity: cardsSnakeOpacity }}
-          className="absolute inset-0 z-20 flex items-center justify-center"
-        >
+        <div className="absolute inset-0 z-20 flex items-center justify-center">
           <div
             className="relative"
             style={{
-              perspective: "1600px",
+              perspective: "1700px",
               perspectiveOrigin: "50% 50%",
               width: 1,
               height: 1,
@@ -320,11 +269,10 @@ export function HeroReelStage() {
               <SnakeCard key={s.id} seed={s} progress={p} />
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        {/* Act 2 corner micro labels */}
         <motion.div
-          style={{ opacity: cardsSnakeOpacity }}
+          style={{ opacity: microOpacity }}
           className="absolute inset-0 z-30 pointer-events-none"
         >
           <p className="absolute left-6 md:left-10 top-24 text-[11px] tracking-[0.18em] uppercase text-cream/55 max-w-[160px] leading-snug">
@@ -341,23 +289,66 @@ export function HeroReelStage() {
           </p>
         </motion.div>
 
-        {/* ─────────── ACT 3 — FLAT grid wall + hero panel ─────────── */}
+        <SectionFade />
+      </div>
+    </section>
+  );
+}
+
+function CurvedWallSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const p = useSectionProgress(sectionRef);
+  const wallOpacity = useTransform(p, [0, 0.16, 1], [0, 1, 1]);
+  const wallScale = useTransform(p, [0, 0.28, 1], [1.18, 1, 1.03]);
+  const wallRotateX = useTransform(p, [0, 0.28], [7, 0]);
+  const panelOpacity = useTransform(p, [0.22, 0.36, 0.9, 1], [0, 1, 1, 0.85]);
+  const sidebarOpacity = useTransform(p, [0.18, 0.32], [0, 1]);
+
+  const rows = useMemo(
+    () =>
+      Array.from({ length: WALL_ROWS }, (_, r) => {
+        const base = Array.from({ length: TILES_PER_ROW }, (_, c) => {
+          const idx = (r * 4 + c * 2) % videos.length;
+          return videos[idx];
+        });
+        return [...base, ...base];
+      }),
+    [],
+  );
+  const halfC = (TILES_PER_ROW - 1) / 2;
+
+  return (
+    <section ref={sectionRef} className="relative h-[260vh] bg-black text-cream">
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <Backdrop />
+        <TopChrome />
+
         <motion.div
-          style={{ opacity: wallOpacity, scale: wallScale }}
-          className="absolute inset-0 z-10"
+          style={{ opacity: wallOpacity, scale: wallScale, rotateX: wallRotateX }}
+          className="absolute inset-0 z-10 flex items-center justify-center"
         >
-          <div className="absolute inset-0 flex flex-col items-stretch justify-center gap-3 px-2">
+          <div
+            className="relative w-[min(1700px,112vw)]"
+            style={{
+              perspective: "1700px",
+              perspectiveOrigin: "50% 50%",
+              transformStyle: "preserve-3d",
+            }}
+          >
             {rows.map((rowTiles, r) => {
               const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
-              const duration = 70 + r * 12;
+              const duration = 38 + r * 9;
+
               return (
                 <div
                   key={r}
-                  className="relative w-full overflow-hidden"
+                  className="relative mx-auto overflow-hidden"
                   style={{
+                    marginTop: r === 0 ? 0 : ROW_GAP,
                     height: TILE_H,
+                    width: "100%",
                     maskImage:
-                      "linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%)",
+                      "linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%)",
                   }}
                 >
                   <div
@@ -365,165 +356,179 @@ export function HeroReelStage() {
                     style={{
                       gap: COL_GAP,
                       animation: `${dir} ${duration}s linear infinite`,
+                      transformStyle: "preserve-3d",
                     }}
                   >
-                    {rowTiles.map((vid, c) => (
-                      <div
-                        key={`${r}-${c}`}
-                        className="relative shrink-0 overflow-hidden rounded-[10px] ring-1 ring-cream/10 bg-black"
-                        style={{
-                          width: TILE_W,
-                          height: TILE_H,
-                          boxShadow:
-                            "0 18px 40px -20px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.35)",
-                        }}
-                      >
-                        <video
-                          src={vid.url}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          preload="metadata"
-                          className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
-                        />
-                      </div>
-                    ))}
+                    {rowTiles.map((vid, c) => {
+                      const cMod = c % TILES_PER_ROW;
+                      const t = (cMod - halfC) / halfC;
+                      const rotY = -t * CURVE;
+                      const tz = -Math.abs(t) * DEPTH;
+
+                      return (
+                        <div
+                          key={`${r}-${c}`}
+                          className="relative shrink-0 overflow-hidden rounded-[10px] ring-1 ring-cream/10 bg-black"
+                          style={{
+                            width: TILE_W,
+                            height: TILE_H,
+                            transform: `rotateY(${rotY}deg) translateZ(${tz}px)`,
+                            transformStyle: "preserve-3d",
+                            boxShadow:
+                              "0 30px 70px -30px rgba(0,0,0,0.9), inset 0 0 35px rgba(0,0,0,0.35)",
+                          }}
+                        >
+                          <video
+                            src={vid.url}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            preload="metadata"
+                            className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
+                          />
+                          <div
+                            aria-hidden
+                            className="absolute inset-0 pointer-events-none"
+                            style={{
+                              background:
+                                "linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.38) 100%)",
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
             })}
           </div>
-
-          {/* Center dim for legibility */}
-          <div
-            aria-hidden
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(45% 40% at 50% 50%, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.25) 60%, transparent 100%)",
-            }}
-          />
-
-          {/* Sidebar nav */}
-          <motion.aside
-            style={{ opacity: sidebarOpacity }}
-            className="absolute left-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-2"
-          >
-            {[
-              { label: "Home", icon: "◐" },
-              { label: "Creations", icon: "✦" },
-              { label: "Canvas", icon: "◇" },
-              { label: "Plans", icon: "◎" },
-            ].map((it) => (
-              <button
-                key={it.label}
-                className="flex items-center gap-3 rounded-full bg-black/45 backdrop-blur-md ring-1 ring-cream/12 pl-2.5 pr-5 py-2 text-[11px] font-mono uppercase tracking-[0.18em] text-cream/85 hover:text-cream hover:bg-black/65 transition-colors"
-              >
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-cream/10 ring-1 ring-cream/15 text-cream">
-                  {it.icon}
-                </span>
-                {it.label}
-              </button>
-            ))}
-          </motion.aside>
-
-          {/* Center glass headline + prompt bar */}
-          <motion.div
-            style={{ opacity: heroPanelOpacity }}
-            className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center justify-center px-6 text-center"
-          >
-            <h2 className="font-display text-[clamp(2rem,5vw,4rem)] leading-[1] tracking-[-0.025em] text-cream drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
-              Your Next Big
-              <br />
-              Idea Starts Here
-            </h2>
-            <p className="mt-3 text-[11px] md:text-[12px] tracking-[0.22em] uppercase text-cream/70">
-              Imagination is the first step to creation
-            </p>
-
-            <div className="mt-7 w-full max-w-[640px] pointer-events-auto">
-              <div className="flex items-center gap-2 rounded-full bg-black/55 backdrop-blur-md ring-1 ring-cream/15 pl-5 pr-1.5 py-1.5">
-                <input
-                  type="text"
-                  placeholder="A cinematic anamorphic spot for our brand…"
-                  className="flex-1 bg-transparent text-cream placeholder:text-cream/55 text-[13px] md:text-[14px] py-2.5 outline-none"
-                />
-                <Link
-                  to="/contact"
-                  className="rounded-full bg-cream text-black px-5 py-2.5 text-[11px] font-mono font-bold uppercase tracking-[0.22em] hover:bg-vermillion hover:text-cream transition-colors"
-                >
-                  Create →
-                </Link>
-              </div>
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-                {["3D", "Quality", "Style", "Color"].map((t) => (
-                  <span
-                    key={t}
-                    className="rounded-full bg-black/50 backdrop-blur-md ring-1 ring-cream/15 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/80"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </motion.div>
         </motion.div>
 
-        {/* Edge vignettes */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 w-[10%] z-40"
+          className="absolute inset-0 z-20 pointer-events-none"
           style={{
             background:
-              "linear-gradient(90deg, #000 8%, rgba(0,0,0,0.4) 60%, transparent 100%)",
-          }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 w-[10%] z-40"
-          style={{
-            background:
-              "linear-gradient(-90deg, #000 8%, rgba(0,0,0,0.4) 60%, transparent 100%)",
-          }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[14%] z-40"
-          style={{
-            background: "linear-gradient(0deg, #000 6%, transparent 100%)",
+              "radial-gradient(44% 38% at 50% 50%, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.25) 58%, transparent 100%)",
           }}
         />
 
-        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-50 font-mono text-[10px] uppercase tracking-[0.3em] text-cream/40">
-          scroll ↓
-        </div>
+        <motion.aside
+          style={{ opacity: sidebarOpacity }}
+          className="absolute left-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-2"
+        >
+          {[
+            { label: "Home", icon: "◐" },
+            { label: "Creations", icon: "✦" },
+            { label: "Canvas", icon: "◇" },
+            { label: "Plans", icon: "◎" },
+          ].map((it) => (
+            <button
+              key={it.label}
+              className="flex items-center gap-3 rounded-full bg-black/45 backdrop-blur-md ring-1 ring-cream/12 pl-2.5 pr-5 py-2 text-[11px] font-mono uppercase tracking-[0.18em] text-cream/85 hover:text-cream hover:bg-black/65 transition-colors"
+            >
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-cream/10 ring-1 ring-cream/15 text-cream">
+                {it.icon}
+              </span>
+              {it.label}
+            </button>
+          ))}
+        </motion.aside>
+
+        <motion.div
+          style={{ opacity: panelOpacity }}
+          className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center justify-center px-6 text-center"
+        >
+          <h2 className="font-display text-[clamp(2rem,5vw,4rem)] leading-[1] tracking-[-0.025em] text-cream drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
+            Your Next Big
+            <br />
+            Idea Starts Here
+          </h2>
+          <p className="mt-3 text-[11px] md:text-[12px] tracking-[0.22em] uppercase text-cream/70">
+            Imagination is the first step to creation
+          </p>
+
+          <div className="mt-7 w-full max-w-[640px] pointer-events-auto">
+            <div className="flex items-center gap-2 rounded-full bg-black/55 backdrop-blur-md ring-1 ring-cream/15 pl-5 pr-1.5 py-1.5">
+              <input
+                type="text"
+                placeholder="A cinematic anamorphic spot for our brand…"
+                className="flex-1 min-w-0 bg-transparent text-cream placeholder:text-cream/55 text-[13px] md:text-[14px] py-2.5 outline-none"
+              />
+              <Link
+                to="/contact"
+                className="shrink-0 rounded-full bg-cream text-black px-5 py-2.5 text-[11px] font-mono font-bold uppercase tracking-[0.22em] hover:bg-vermillion hover:text-cream transition-colors"
+              >
+                Create →
+              </Link>
+            </div>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              {["3D", "Quality", "Style", "Color"].map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full bg-black/50 backdrop-blur-md ring-1 ring-cream/15 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/80"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        <SectionFade />
       </div>
     </section>
   );
 }
 
-// ACT 1 cluster card — pops forward from far Z, lands at cx/cy near center
-function ClusterCard({
+function SectionFade() {
+  return (
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0 w-[10%] z-40"
+        style={{
+          background:
+            "linear-gradient(90deg, #000 8%, rgba(0,0,0,0.4) 60%, transparent 100%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 right-0 w-[10%] z-40"
+        style={{
+          background:
+            "linear-gradient(-90deg, #000 8%, rgba(0,0,0,0.4) 60%, transparent 100%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[16%] z-40"
+        style={{ background: "linear-gradient(0deg, #000 8%, transparent 100%)" }}
+      />
+    </>
+  );
+}
+
+function PopOutCard({
   seed,
   progress,
 }: {
   seed: CardSeed;
   progress: MotionValue<number>;
 }) {
-  const a = 0.04 + seed.delay;
-  const b = 0.18;
-  const c = 0.28;
+  const start = 0.04 + seed.delay;
+  const hit = 0.35 + seed.delay * 0.35;
+  const hold = 0.8;
 
-  const x = useTransform(progress, [a, b, c], [0, seed.cx, seed.cx]);
-  const y = useTransform(progress, [a, b, c], [0, seed.cy, seed.cy]);
-  const z = useTransform(progress, [a, b, c], [-700, 0, 0]);
-  const scale = useTransform(
-    progress,
-    [a, b, c],
-    [0.2, seed.cscale, seed.cscale],
-  );
-  const op = useTransform(progress, [a, a + 0.04, c, c + 0.04], [0, 1, 1, 0]);
+  const x = useTransform(progress, [start, hit, hold, 1], [0, seed.popX, seed.popX * 1.08, seed.popX * 1.22]);
+  const y = useTransform(progress, [start, hit, hold, 1], [0, seed.popY, seed.popY * 1.05, seed.popY * 1.16]);
+  const z = useTransform(progress, [start, hit, 1], [-980, seed.popZ, seed.popZ + 160]);
+  const scale = useTransform(progress, [start, hit, 1], [0.08, 1, 1.12]);
+  const opacity = useTransform(progress, [start, start + 0.05, 0.86, 1], [0, 1, 1, 0]);
+  const rotateX = useTransform(progress, [start, hit], [0, seed.popRotX]);
+  const rotateY = useTransform(progress, [start, hit], [0, seed.popRotY]);
+  const rotateZ = useTransform(progress, [start, hit], [0, seed.popRotZ]);
 
   return (
     <motion.div
@@ -531,13 +536,16 @@ function ClusterCard({
       style={{
         left: 0,
         top: 0,
-        width: 130,
-        height: 90,
+        width: seed.w + 28,
+        height: seed.h,
         x,
         y,
         z,
         scale,
-        opacity: op,
+        opacity,
+        rotateX,
+        rotateY,
+        rotateZ,
         transformStyle: "preserve-3d",
         translateX: "-50%",
         translateY: "-50%",
@@ -558,7 +566,6 @@ function ClusterCard({
   );
 }
 
-// ACT 2 snake card — flows across viewport along arc
 function SnakeCard({
   seed,
   progress,
@@ -566,23 +573,29 @@ function SnakeCard({
   seed: CardSeed;
   progress: MotionValue<number>;
 }) {
-  // Each card enters from left, follows snake path, exits right
-  const enterAt = 0.3 + (seed.id / CARD_COUNT) * 0.18;
-  const exitAt = 0.5 + (seed.id / CARD_COUNT) * 0.16;
+  const shift = (seed.id / CARD_COUNT) * 0.34;
+  const enterAt = 0.02 + shift;
+  const midAt = 0.36 + shift * 0.45;
+  const exitAt = 0.74 + shift * 0.25;
 
   const x = useTransform(
     progress,
-    [enterAt, exitAt],
-    [-900, 900],
+    [enterAt, midAt, exitAt],
+    [-980, seed.id % 2 === 0 ? 40 : -60, 980],
   );
-  // y oscillates as a wave
-  const y = useTransform(progress, [enterAt, exitAt], [seed.ny - 30, seed.ny + 30]);
-  const op = useTransform(
+  const y = useTransform(
     progress,
-    [enterAt - 0.02, enterAt + 0.04, exitAt - 0.04, exitAt],
+    [enterAt, midAt, exitAt],
+    [seed.snakeY - 180, seed.snakeY, seed.snakeY + 120],
+  );
+  const z = useTransform(progress, [enterAt, midAt, exitAt], [-240, 150, -180]);
+  const opacity = useTransform(
+    progress,
+    [enterAt - 0.03, enterAt + 0.04, exitAt - 0.08, exitAt],
     [0, 1, 1, 0],
   );
-  const rot = useTransform(progress, [enterAt, exitAt], [-seed.nrot, seed.nrot]);
+  const rotateZ = useTransform(progress, [enterAt, midAt, exitAt], [-18, seed.snakeRot, 16]);
+  const rotateY = useTransform(progress, [enterAt, midAt, exitAt], [-30, 0, 28]);
 
   return (
     <motion.div
@@ -594,8 +607,11 @@ function SnakeCard({
         height: seed.h,
         x,
         y,
-        rotateZ: rot,
-        opacity: op,
+        z,
+        rotateZ,
+        rotateY,
+        opacity,
+        transformStyle: "preserve-3d",
         translateX: "-50%",
         translateY: "-50%",
         boxShadow:
