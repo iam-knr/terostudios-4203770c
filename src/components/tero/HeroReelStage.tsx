@@ -368,7 +368,7 @@ function SnakeSection({ seeds }: { seeds: CardSeed[] }) {
 function CurvedWallSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const p = useSectionProgress(sectionRef);
-  const wallOpacity = useTransform(p, [0, 0.1, 1], [0, 1, 1]);
+  const wallOpacity = useTransform(p, [0, 1], [1, 1]);
   const wallScale = useTransform(p, [0, 0.28, 1], [1.01, 1, 1]);
   const wallY = useTransform(p, [0, 1], ["0vh", "0vh"]);
   const cfg = useWallConfig();
