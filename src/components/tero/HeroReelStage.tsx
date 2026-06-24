@@ -8,6 +8,7 @@ import {
 } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { videos } from "@/data/videos";
+import { resolveAssetUrl } from "@/lib/asset-url";
 
 /**
  * Three separate scroll sections:
@@ -35,13 +36,13 @@ type CardSeed = {
 };
 
 const WALL_ROWS = 5;
-const TILES_PER_ROW = 9;
-const TILE_W = 260;
-const TILE_H = 165;
-const ROW_GAP = 22;
-const COL_GAP = 18;
-const CURVE = 62;
-const DEPTH = 320;
+const TILES_PER_ROW = 10;
+const TILE_W = 330;
+const TILE_H = 148;
+const ROW_GAP = 10;
+const COL_GAP = 12;
+const CURVE = 42;
+const DEPTH = 235;
 
 function useCardSeeds(): CardSeed[] {
   return useMemo(() => {
@@ -280,6 +281,7 @@ function CurvedWallSection() {
   const wallOpacity = useTransform(p, [0, 0.16, 1], [0, 1, 1]);
   const wallScale = useTransform(p, [0, 0.28, 1], [1.18, 1, 1.03]);
   const wallRotateX = useTransform(p, [0, 0.28], [7, 0]);
+  const wallY = useTransform(p, [0, 1], ["-18vh", "-18vh"]);
   const panelOpacity = useTransform(p, [0.22, 0.36, 0.9, 1], [0, 1, 1, 0.85]);
   const sidebarOpacity = useTransform(p, [0.18, 0.32], [0, 1]);
 
@@ -303,36 +305,45 @@ function CurvedWallSection() {
         <TopChrome />
 
         <motion.div
-          style={{ opacity: wallOpacity, scale: wallScale, rotateX: wallRotateX }}
-          className="absolute inset-0 z-10 flex items-center justify-center"
+          style={{ opacity: wallOpacity, scale: wallScale, rotateX: wallRotateX, y: wallY }}
+          className="absolute inset-0 z-10 overflow-hidden"
         >
           <div
-            className="relative w-[min(2200px,140vw)]"
+            className="absolute left-1/2 top-1/2 h-[118vh] w-[min(3200px,205vw)]"
             style={{
-              perspective: "1700px",
-              perspectiveOrigin: "50% 50%",
+              perspective: "1050px",
+              perspectiveOrigin: "50% 44%",
+              transform: "translate(-50%, -50%)",
               transformStyle: "preserve-3d",
             }}
           >
             {rows.map((rowTiles, r) => {
               const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
-              const duration = 38 + r * 9;
+              const duration = 34 + r * 6;
+              const rowCenter = (WALL_ROWS - 1) / 2;
+              const rowOffset = (r - rowCenter) / rowCenter;
+              const rowDepth = Math.abs(rowOffset);
+              const rowTop = -2 + r * 10.5;
+              const rowZ = -rowDepth * 150;
+              const rowRotateX = -rowOffset * 4.5;
+              const rowScale = 1 - rowDepth * 0.03;
 
               return (
                 <div
                   key={r}
-                  className="relative mx-auto overflow-hidden"
+                  className="absolute left-1/2 overflow-visible"
                   style={{
-                    marginTop: r === 0 ? 0 : ROW_GAP,
+                    top: `${rowTop}%`,
                     height: TILE_H,
                     width: "100%",
-                    maskImage:
-                      "linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%)",
+                    transform: `translateX(-50%) translateZ(${rowZ}px) rotateX(${rowRotateX}deg) scale(${rowScale})`,
+                    transformStyle: "preserve-3d",
                   }}
                 >
                   <div
                     className="absolute top-0 left-0 flex"
                     style={{
+                      left: r % 2 === 0 ? "-9%" : "-28%",
                       gap: COL_GAP,
                       animation: `${dir} ${duration}s linear infinite`,
                       transformStyle: "preserve-3d",
@@ -347,18 +358,18 @@ function CurvedWallSection() {
                       return (
                         <div
                           key={`${r}-${c}`}
-                          className="relative shrink-0 overflow-hidden rounded-[10px] ring-1 ring-cream/10 bg-black"
+                          className="relative shrink-0 overflow-hidden rounded-[18px] ring-1 ring-cream/10 bg-black"
                           style={{
                             width: TILE_W,
                             height: TILE_H,
                             transform: `rotateY(${rotY}deg) translateZ(${tz}px)`,
                             transformStyle: "preserve-3d",
                             boxShadow:
-                              "0 30px 70px -30px rgba(0,0,0,0.9), inset 0 0 35px rgba(0,0,0,0.35)",
+                              "0 28px 80px -34px rgba(0,0,0,0.95), inset 0 0 38px rgba(0,0,0,0.28)",
                           }}
                         >
                           <video
-                            src={vid.url}
+                            src={resolveAssetUrl(vid.url)}
                             autoPlay
                             muted
                             loop
@@ -389,15 +400,15 @@ function CurvedWallSection() {
           className="absolute inset-0 z-20 pointer-events-none"
           style={{
             background:
-              "radial-gradient(50% 42% at 50% 48%, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.3) 58%, transparent 100%)",
+              "radial-gradient(74% 52% at 50% 39%, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.68) 100%)",
           }}
         />
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-[42%] z-30 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 h-[56%] z-30 pointer-events-none"
           style={{
             background:
-              "linear-gradient(0deg, #000 18%, rgba(0,0,0,0.85) 38%, rgba(0,0,0,0.45) 65%, transparent 100%)",
+              "linear-gradient(0deg, #000 18%, rgba(0,0,0,0.96) 42%, rgba(0,0,0,0.62) 70%, transparent 100%)",
           }}
         />
 
@@ -425,25 +436,34 @@ function CurvedWallSection() {
 
         <motion.div
           style={{ opacity: panelOpacity }}
-          className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center justify-center px-6 text-center pointer-events-none"
+          className="absolute inset-x-0 top-[42%] -translate-y-1/2 z-40 flex flex-col items-center justify-center px-6 text-center pointer-events-none"
         >
-          <h2 className="font-display text-[clamp(2rem,5vw,4rem)] leading-[1] tracking-[-0.025em] text-cream drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
+          <h2 className="font-display text-[clamp(2.5rem,5.6vw,5rem)] leading-[0.95] tracking-[-0.025em] text-cream drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
             A decade of stories,
             <br />
             built frame by frame.
           </h2>
-          <p className="mt-3 text-[11px] md:text-[12px] tracking-[0.22em] uppercase text-cream/70">
-            300+ films · 120+ brands · since 2015
-          </p>
-
-          <div className="mt-7 pointer-events-auto">
+          <div className="mt-5 flex w-[min(680px,88vw)] items-center justify-between gap-4 rounded-full bg-cream/18 py-2 pl-6 pr-2 ring-1 ring-cream/25 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.38)] pointer-events-auto">
+            <span className="min-w-0 truncate text-left text-[12px] md:text-[14px] text-cream/82">
+              Animation, VFX and CGI crafted for films and brands
+            </span>
             <Link
               to="/portfolio"
-              className="inline-flex items-center gap-3 rounded-full bg-cream text-black px-6 py-3 text-[11px] font-mono font-bold uppercase tracking-[0.22em] hover:bg-vermillion hover:text-cream transition-colors"
+              className="shrink-0 inline-flex items-center gap-2 rounded-full bg-cream text-black px-5 py-2.5 text-[10px] font-mono font-bold uppercase tracking-[0.16em] hover:bg-vermillion hover:text-cream transition-colors"
             >
-              View the reel
+              View reel
               <span aria-hidden>→</span>
             </Link>
+          </div>
+          <div className="mt-3 flex items-center justify-center gap-2 pointer-events-auto">
+            {['3D', 'VFX', 'CGI', 'DOOH'].map((label) => (
+              <span
+                key={label}
+                className="rounded-full bg-black/35 px-4 py-2 text-[10px] font-mono uppercase tracking-[0.14em] text-cream/80 ring-1 ring-cream/18 backdrop-blur-md"
+              >
+                {label}
+              </span>
+            ))}
           </div>
         </motion.div>
 
@@ -525,7 +545,7 @@ function PopOutCard({
       }}
     >
       <video
-        src={seed.url}
+        src={resolveAssetUrl(seed.url)}
         autoPlay
         muted
         loop
@@ -590,7 +610,7 @@ function SnakeCard({
       }}
     >
       <video
-        src={seed.url}
+        src={resolveAssetUrl(seed.url)}
         autoPlay
         muted
         loop
