@@ -356,19 +356,20 @@ function CurvedWallSection() {
   const wallY = useTransform(p, [0, 1], ["-18vh", "-18vh"]);
   const panelOpacity = useTransform(p, [0.22, 0.36, 0.9, 1], [0, 1, 1, 0.85]);
   const sidebarOpacity = useTransform(p, [0.18, 0.32], [0, 1]);
+  const cfg = useWallConfig();
 
   const rows = useMemo(
     () =>
-      Array.from({ length: WALL_ROWS }, (_, r) => {
-        const base = Array.from({ length: TILES_PER_ROW }, (_, c) => {
+      Array.from({ length: cfg.rows }, (_, r) => {
+        const base = Array.from({ length: cfg.tilesPerRow }, (_, c) => {
           const idx = (r * 4 + c * 2) % videos.length;
           return videos[idx];
         });
         return [...base, ...base];
       }),
-    [],
+    [cfg.rows, cfg.tilesPerRow],
   );
-  const halfC = (TILES_PER_ROW - 1) / 2;
+  const halfC = (cfg.tilesPerRow - 1) / 2;
 
   return (
     <section ref={sectionRef} className="relative h-[260vh] bg-black text-cream">
@@ -381,9 +382,9 @@ function CurvedWallSection() {
           className="absolute inset-0 z-10 overflow-hidden"
         >
           <div
-            className="absolute left-1/2 top-1/2 h-[118vh] w-[min(3200px,205vw)]"
+            className="absolute left-1/2 top-1/2 h-[118vh] w-[min(3200px,205vw)] sm:w-[min(3200px,180vw)] lg:w-[min(3200px,205vw)]"
             style={{
-              perspective: "1050px",
+              perspective: `${cfg.perspective}px`,
               perspectiveOrigin: "50% 44%",
               transform: "translate(-50%, -50%)",
               transformStyle: "preserve-3d",
@@ -392,10 +393,10 @@ function CurvedWallSection() {
             {rows.map((rowTiles, r) => {
               const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
               const duration = 34 + r * 6;
-              const rowCenter = (WALL_ROWS - 1) / 2;
+              const rowCenter = (cfg.rows - 1) / 2;
               const rowOffset = (r - rowCenter) / rowCenter;
               const rowDepth = Math.abs(rowOffset);
-              const rowTop = -2 + r * 10.5;
+              const rowTop = cfg.rowTopStartPct + r * cfg.rowSpacingPct;
               const rowZ = -rowDepth * 150;
               const rowRotateX = -rowOffset * 4.5;
               const rowScale = 1 - rowDepth * 0.03;
@@ -406,7 +407,7 @@ function CurvedWallSection() {
                   className="absolute left-1/2 overflow-visible"
                   style={{
                     top: `${rowTop}%`,
-                    height: TILE_H,
+                    height: cfg.tileH,
                     width: "100%",
                     transform: `translateX(-50%) translateZ(${rowZ}px) rotateX(${rowRotateX}deg) scale(${rowScale})`,
                     transformStyle: "preserve-3d",
@@ -416,18 +417,27 @@ function CurvedWallSection() {
                     className="absolute top-0 left-0 flex"
                     style={{
                       left: r % 2 === 0 ? "-9%" : "-28%",
-                      gap: COL_GAP,
+                      gap: cfg.colGap,
                       animation: `${dir} ${duration}s linear infinite`,
                       transformStyle: "preserve-3d",
                     }}
                   >
                     {rowTiles.map((vid, c) => {
-                      const cMod = c % TILES_PER_ROW;
+                      const cMod = c % cfg.tilesPerRow;
                       const t = (cMod - halfC) / halfC;
-                      const rotY = -t * CURVE;
-                      const tz = -Math.abs(t) * DEPTH;
+                      const rotY = -t * cfg.curve;
+                      const tz = -Math.abs(t) * cfg.depth;
 
-                      return <WallTile key={`${r}-${c}`} url={vid.url} rotY={rotY} tz={tz} />;
+                      return (
+                        <WallTile
+                          key={`${r}-${c}`}
+                          url={vid.url}
+                          rotY={rotY}
+                          tz={tz}
+                          w={cfg.tileW}
+                          h={cfg.tileH}
+                        />
+                      );
                     })}
                   </div>
                 </div>
@@ -435,6 +445,7 @@ function CurvedWallSection() {
             })}
           </div>
         </motion.div>
+
 
         <div
           aria-hidden
