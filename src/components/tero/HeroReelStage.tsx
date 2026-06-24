@@ -35,14 +35,76 @@ type CardSeed = {
   delay: number;
 };
 
-const WALL_ROWS = 5;
-const TILES_PER_ROW = 10;
-const TILE_W = 330;
-const TILE_H = 148;
-const ROW_GAP = 10;
-const COL_GAP = 12;
-const CURVE = 42;
-const DEPTH = 235;
+type WallConfig = {
+  rows: number;
+  tilesPerRow: number;
+  tileW: number;
+  tileH: number;
+  colGap: number;
+  curve: number;
+  depth: number;
+  perspective: number;
+  rowSpacingPct: number;
+  rowTopStartPct: number;
+};
+
+const WALL_CONFIGS: Record<"mobile" | "tablet" | "desktop", WallConfig> = {
+  mobile: {
+    rows: 6,
+    tilesPerRow: 7,
+    tileW: 168,
+    tileH: 96,
+    colGap: 8,
+    curve: 36,
+    depth: 160,
+    perspective: 720,
+    rowSpacingPct: 9.5,
+    rowTopStartPct: -3,
+  },
+  tablet: {
+    rows: 5,
+    tilesPerRow: 8,
+    tileW: 240,
+    tileH: 130,
+    colGap: 10,
+    curve: 40,
+    depth: 200,
+    perspective: 900,
+    rowSpacingPct: 10.5,
+    rowTopStartPct: -2,
+  },
+  desktop: {
+    rows: 5,
+    tilesPerRow: 10,
+    tileW: 330,
+    tileH: 148,
+    colGap: 12,
+    curve: 42,
+    depth: 235,
+    perspective: 1050,
+    rowSpacingPct: 10.5,
+    rowTopStartPct: -2,
+  },
+};
+
+function useWallConfig(): WallConfig {
+  const [cfg, setCfg] = useState<WallConfig>(WALL_CONFIGS.desktop);
+
+  useEffect(() => {
+    const pick = () => {
+      const w = window.innerWidth;
+      if (w < 640) return WALL_CONFIGS.mobile;
+      if (w < 1024) return WALL_CONFIGS.tablet;
+      return WALL_CONFIGS.desktop;
+    };
+    const update = () => setCfg(pick());
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  return cfg;
+}
 
 function useCardSeeds(): CardSeed[] {
   return useMemo(() => {
