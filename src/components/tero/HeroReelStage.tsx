@@ -50,40 +50,40 @@ type WallConfig = {
 
 const WALL_CONFIGS: Record<"mobile" | "tablet" | "desktop", WallConfig> = {
   mobile: {
-    rows: 7,
+    rows: 6,
     tilesPerRow: 7,
-    tileW: 194,
-    tileH: 90,
-    colGap: 9,
-    curve: 58,
-    depth: 330,
-    perspective: 570,
-    rowSpacingPct: 11.2,
-    rowTopStartPct: 8,
+    tileW: 176,
+    tileH: 82,
+    colGap: 10,
+    curve: 34,
+    depth: 72,
+    perspective: 1200,
+    rowSpacingPct: 13.2,
+    rowTopStartPct: 1,
   },
   tablet: {
-    rows: 7,
+    rows: 6,
     tilesPerRow: 9,
-    tileW: 270,
-    tileH: 116,
-    colGap: 10,
-    curve: 62,
-    depth: 410,
-    perspective: 660,
-    rowSpacingPct: 11.7,
-    rowTopStartPct: 8,
+    tileW: 248,
+    tileH: 108,
+    colGap: 12,
+    curve: 36,
+    depth: 88,
+    perspective: 1400,
+    rowSpacingPct: 13.8,
+    rowTopStartPct: 0,
   },
   desktop: {
-    rows: 7,
-    tilesPerRow: 11,
-    tileW: 332,
-    tileH: 142,
-    colGap: 12,
-    curve: 66,
-    depth: 500,
-    perspective: 720,
-    rowSpacingPct: 12.2,
-    rowTopStartPct: 8,
+    rows: 6,
+    tilesPerRow: 10,
+    tileW: 318,
+    tileH: 124,
+    colGap: 14,
+    curve: 38,
+    depth: 96,
+    perspective: 1500,
+    rowSpacingPct: 14,
+    rowTopStartPct: -1,
   },
 };
 
@@ -361,10 +361,10 @@ function SnakeSection({ seeds }: { seeds: CardSeed[] }) {
 function CurvedWallSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const p = useSectionProgress(sectionRef);
-  const wallOpacity = useTransform(p, [0, 0.12, 1], [0, 1, 1]);
-  const wallScale = useTransform(p, [0, 0.28, 1], [1.12, 1, 1.02]);
-  const wallRotateX = useTransform(p, [0, 0.28], [5, 0]);
-  const wallY = useTransform(p, [0, 1], ["2vh", "2vh"]);
+  const wallOpacity = useTransform(p, [0, 0.1, 1], [0, 1, 1]);
+  const wallScale = useTransform(p, [0, 0.28, 1], [1.04, 1, 1]);
+  const wallRotateX = useTransform(p, [0, 0.28], [0, 0]);
+  const wallY = useTransform(p, [0, 1], ["-1vh", "-1vh"]);
   const cfg = useWallConfig();
 
   const rows = useMemo(
@@ -390,10 +390,10 @@ function CurvedWallSection() {
           className="absolute inset-0 z-10 overflow-visible"
         >
           <div
-            className="absolute left-1/2 top-1/2 h-[128vh] w-[232vw] sm:w-[214vw] lg:w-[224vw]"
+            className="absolute left-1/2 top-[44%] h-[104vh] w-[205vw] sm:w-[192vw] lg:w-[188vw]"
             style={{
               perspective: `${cfg.perspective}px`,
-              perspectiveOrigin: "50% 38%",
+              perspectiveOrigin: "50% 36%",
               transform: "translate(-50%, -50%)",
               transformStyle: "preserve-3d",
             }}
@@ -401,13 +401,8 @@ function CurvedWallSection() {
             {rows.map((rowTiles, r) => {
               const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
               const duration = 34 + r * 6;
-              const rowCenter = (cfg.rows - 1) / 2;
-              const rowOffset = (r - rowCenter) / rowCenter;
-              const rowDepth = Math.abs(rowOffset);
               const rowTop = cfg.rowTopStartPct + r * cfg.rowSpacingPct;
-              const rowZ = -rowDepth * 150;
-              const rowRotateX = -rowOffset * 5.5;
-              const rowScale = 1 - rowDepth * 0.035;
+              const rowSkew = r % 2 === 0 ? -1.4 : 1.4;
 
               return (
                 <div
@@ -417,14 +412,14 @@ function CurvedWallSection() {
                     top: `${rowTop}%`,
                     height: cfg.tileH,
                     width: "100%",
-                    transform: `translateX(-50%) translateZ(${rowZ}px) rotateX(${rowRotateX}deg) scale(${rowScale})`,
+                    transform: `translateX(-50%) skewY(${rowSkew}deg)`,
                     transformStyle: "preserve-3d",
                   }}
                 >
                   <div
                     className="absolute top-0 left-0 flex"
                     style={{
-                      left: r % 2 === 0 ? "-14%" : "-36%",
+                      left: r % 2 === 0 ? "-11%" : "-33%",
                       gap: cfg.colGap,
                       animation: `${dir} ${duration}s linear infinite`,
                       transformStyle: "preserve-3d",
@@ -434,8 +429,8 @@ function CurvedWallSection() {
                       const cMod = c % cfg.tilesPerRow;
                       const t = (cMod - halfC) / halfC;
                       const rotY = -t * cfg.curve;
-                      const tz = -Math.pow(Math.abs(t), 1.28) * cfg.depth;
-                      const ty = Math.pow(Math.abs(t), 1.45) * cfg.tileH * 0.1;
+                      const tz = -Math.pow(Math.abs(t), 1.2) * cfg.depth;
+                      const ty = 0;
 
                       return (
                         <WallTile
@@ -462,15 +457,15 @@ function CurvedWallSection() {
           className="absolute inset-0 z-20 pointer-events-none"
           style={{
             background:
-              "radial-gradient(88% 62% at 50% 32%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.05) 44%, rgba(0,0,0,0.58) 100%)",
+              "radial-gradient(98% 62% at 50% 30%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.02) 58%, rgba(0,0,0,0.42) 100%)",
           }}
         />
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-[52%] z-30 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 h-[48%] z-30 pointer-events-none"
           style={{
             background:
-              "linear-gradient(0deg, #000 16%, rgba(0,0,0,0.94) 38%, rgba(0,0,0,0.54) 66%, rgba(0,0,0,0.12) 88%, transparent 100%)",
+              "linear-gradient(0deg, #000 20%, rgba(0,0,0,0.96) 42%, rgba(0,0,0,0.58) 68%, rgba(0,0,0,0.08) 92%, transparent 100%)",
           }}
         />
 
@@ -491,7 +486,7 @@ function WallTile({ url, rotY, tz, ty, w, h }: { url: string; rotY: number; tz: 
         transform: `translateY(${ty}px) rotateY(${rotY}deg) translateZ(${tz}px)`,
         transformStyle: "preserve-3d",
         boxShadow:
-          "0 34px 92px -36px rgba(0,0,0,0.98), inset 0 0 44px rgba(0,0,0,0.34)",
+          "0 22px 54px -34px rgba(0,0,0,0.95), inset 0 0 34px rgba(0,0,0,0.24)",
       }}
     >
       <video
