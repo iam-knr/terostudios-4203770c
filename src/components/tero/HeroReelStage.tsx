@@ -133,17 +133,10 @@ function TopChrome() {
         <span className="inline-block w-1.5 h-1.5 rounded-full bg-vermillion animate-pulse" />
         Tero Studios
       </span>
-      <div className="hidden md:flex items-center gap-1 rounded-full bg-cream/10 backdrop-blur-md ring-1 ring-cream/15 p-1">
-        <span className="px-4 py-1.5 rounded-full bg-cream text-black text-[10px] font-mono uppercase tracking-[0.22em]">
-          Create
-        </span>
-        <span className="px-4 py-1.5 rounded-full text-cream/70 text-[10px] font-mono uppercase tracking-[0.22em]">
-          Explore
-        </span>
-      </div>
       <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-cream/55">
-        Smart Editing Tools
+        Animation · VFX · CGI
       </span>
+
     </div>
   );
 }
@@ -196,15 +189,15 @@ function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
         >
           <div className="absolute inset-x-0 top-[58%] flex justify-center">
             <p className="text-center text-cream/85 text-[13px] md:text-[15px] leading-snug tracking-wide">
-              Instantly Generate
+              A motion &amp; visual effects studio
               <br />
-              Stunning Visual Stories
+              crafting films, campaigns and
               <br />
-              with AI
+              immersive brand worlds.
             </p>
           </div>
           <div className="absolute left-6 md:left-10 bottom-10 flex flex-wrap gap-1.5">
-            {["+ Creativity", "Quality", "Endless Customization"].map((label) => (
+            {["3D Animation", "VFX", "CGI Films"].map((label) => (
               <span
                 key={label}
                 className="rounded-full bg-cream/8 ring-1 ring-cream/15 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/70"
@@ -214,7 +207,7 @@ function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
             ))}
           </div>
           <div className="absolute right-6 md:right-10 bottom-10 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/55">
-            The Future of Visual Storytelling
+            Bengaluru · Est. 2015
           </div>
         </motion.div>
 
@@ -437,41 +430,25 @@ function CurvedWallSection() {
 
         <motion.div
           style={{ opacity: panelOpacity }}
-          className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center justify-center px-6 text-center"
+          className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center justify-center px-6 text-center pointer-events-none"
         >
           <h2 className="font-display text-[clamp(2rem,5vw,4rem)] leading-[1] tracking-[-0.025em] text-cream drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
-            Your Next Big
+            A decade of stories,
             <br />
-            Idea Starts Here
+            built frame by frame.
           </h2>
           <p className="mt-3 text-[11px] md:text-[12px] tracking-[0.22em] uppercase text-cream/70">
-            Imagination is the first step to creation
+            300+ films · 120+ brands · since 2015
           </p>
 
-          <div className="mt-7 w-full max-w-[640px] pointer-events-auto">
-            <div className="flex items-center gap-2 rounded-full bg-black/55 backdrop-blur-md ring-1 ring-cream/15 pl-5 pr-1.5 py-1.5">
-              <input
-                type="text"
-                placeholder="A cinematic anamorphic spot for our brand…"
-                className="flex-1 min-w-0 bg-transparent text-cream placeholder:text-cream/55 text-[13px] md:text-[14px] py-2.5 outline-none"
-              />
-              <Link
-                to="/contact"
-                className="shrink-0 rounded-full bg-cream text-black px-5 py-2.5 text-[11px] font-mono font-bold uppercase tracking-[0.22em] hover:bg-vermillion hover:text-cream transition-colors"
-              >
-                Create →
-              </Link>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-              {["3D", "Quality", "Style", "Color"].map((t) => (
-                <span
-                  key={t}
-                  className="rounded-full bg-black/50 backdrop-blur-md ring-1 ring-cream/15 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/80"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
+          <div className="mt-7 pointer-events-auto">
+            <Link
+              to="/portfolio"
+              className="inline-flex items-center gap-3 rounded-full bg-cream text-black px-6 py-3 text-[11px] font-mono font-bold uppercase tracking-[0.22em] hover:bg-vermillion hover:text-cream transition-colors"
+            >
+              View the reel
+              <span aria-hidden>→</span>
+            </Link>
           </div>
         </motion.div>
 
