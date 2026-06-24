@@ -389,7 +389,15 @@ function CurvedWallSection() {
           className="absolute inset-0 z-20 pointer-events-none"
           style={{
             background:
-              "radial-gradient(44% 38% at 50% 50%, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.25) 58%, transparent 100%)",
+              "radial-gradient(50% 42% at 50% 48%, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.3) 58%, transparent 100%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-[42%] z-30 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(0deg, #000 18%, rgba(0,0,0,0.85) 38%, rgba(0,0,0,0.45) 65%, transparent 100%)",
           }}
         />
 
