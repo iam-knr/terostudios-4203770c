@@ -53,7 +53,7 @@ export function MobileHero() {
         </span>
 
         <h1
-          className="mt-6 font-display tracking-[-0.04em] leading-none text-cream/95 select-none"
+          className="tero-logo-cycle-text mt-6 tracking-[-0.04em] leading-none text-cream/95 select-none"
           style={{ fontSize: "clamp(3.5rem, 22vw, 6rem)" }}
         >
           TERO
