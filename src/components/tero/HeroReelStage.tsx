@@ -16,6 +16,8 @@ import portfolio3 from "@/assets/portfolio-3.jpg";
 import portfolio4 from "@/assets/portfolio-4.jpg";
 import portfolio5 from "@/assets/portfolio-5.jpg";
 import portfolio6 from "@/assets/portfolio-6.jpg";
+import { GrainText } from "./GrainText";
+
 
 /**
  * Three separate scroll sections:
@@ -226,12 +228,12 @@ function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
           style={{ opacity: titleOpacity, scale: titleScale }}
           className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none"
         >
-          <h1
-            className="tero-logo-cycle-text tracking-[-0.04em] leading-none text-cream/95 select-none"
-            style={{ fontSize: "clamp(7rem, 18vw, 16rem)" }}
-          >
-            TERO
-          </h1>
+          <GrainText
+            text="TERO"
+            className="select-none"
+            style={{ width: "min(82vw, 1100px)", height: "clamp(7rem, 18vw, 16rem)" }}
+          />
+
         </motion.div>
 
         <motion.div
