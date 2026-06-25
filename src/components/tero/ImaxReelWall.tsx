@@ -106,13 +106,13 @@ export function ImaxReelWall() {
     <section className="relative w-full bg-black overflow-hidden">
       {/* Curved cinema-screen container — barrel curve via border-radius */}
       <div
-        className="relative w-full h-[100vh] overflow-hidden bg-black"
+        className="relative w-full h-[88vh] sm:h-[92vh] md:h-[100vh] overflow-hidden bg-black"
         style={{
-          borderBottomLeftRadius: "50% 14%",
-          borderBottomRightRadius: "50% 14%",
-          borderTopLeftRadius: "50% 8%",
-          borderTopRightRadius: "50% 8%",
-          perspective: "1600px",
+          borderBottomLeftRadius: "55% 12%",
+          borderBottomRightRadius: "55% 12%",
+          borderTopLeftRadius: "55% 10%",
+          borderTopRightRadius: "55% 10%",
+          perspective: "1800px",
           perspectiveOrigin: "50% 50%",
         }}
       >
@@ -121,9 +121,10 @@ export function ImaxReelWall() {
           style={{
             gap: `${GAP}px`,
             transformStyle: "preserve-3d",
-            transform: "rotateX(3deg) scale(1.04)",
+            transform: "rotateX(4deg) scale(1.06)",
           }}
         >
+
           {rows.map((tiles, r) => {
             const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
             const duration = 55 + r * 7;
