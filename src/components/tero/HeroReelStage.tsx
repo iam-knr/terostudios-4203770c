@@ -452,37 +452,60 @@ function WallTile({
   w: number;
 }) {
   const videoUrl = useResolvedVideoUrl(url);
+  const tileRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [visible, setVisible] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     setVideoReady(false);
   }, [videoUrl]);
 
+  // Only mount/play the video when the tile is actually on-screen
+  useEffect(() => {
+    if (!tileRef.current) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { rootMargin: "200px", threshold: 0.01 },
+    );
+    io.observe(tileRef.current);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (visible) v.play().catch(() => {});
+    else v.pause();
+  }, [visible]);
+
   return (
     <div
+      ref={tileRef}
       className="relative shrink-0 overflow-hidden bg-black rounded-[12px]"
-      style={{
-        width: w,
-        height: "100%",
-      }}
+      style={{ width: w, height: "100%", contain: "layout paint" }}
     >
       <img
         src={fallback}
         alt=""
         loading="lazy"
+        decoding="async"
         className="absolute inset-0 z-10 h-full w-full object-cover pointer-events-none select-none"
       />
-      <video
-        src={videoUrl}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        onCanPlay={() => setVideoReady(true)}
-        onError={() => setVideoReady(false)}
-        className={`absolute inset-0 z-20 h-full w-full object-cover pointer-events-none select-none transition-opacity duration-300 ${videoReady ? "opacity-100" : "opacity-0"}`}
-      />
+      {visible && (
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="none"
+          onCanPlay={() => setVideoReady(true)}
+          onError={() => setVideoReady(false)}
+          className={`absolute inset-0 z-20 h-full w-full object-cover pointer-events-none select-none transition-opacity duration-300 ${videoReady ? "opacity-100" : "opacity-0"}`}
+        />
+      )}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
