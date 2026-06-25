@@ -14,8 +14,9 @@ const WELL_KNOWN = [
   2, 5, 7, 8, 9, 10, 11, 14, 16, 17, 18, 19, 21, 22, 23, 32,
   35, 36, 37, 38, 44, 46, 48, 49, 54, 55, 56, 58, 59, 61, 66, 67,
 ];
+const EXCLUDED = [65]; // Aadhya Animatics — removed per request
 const REST = Array.from({ length: 67 }, (_, i) => i + 1).filter(
-  (n) => !WELL_KNOWN.includes(n),
+  (n) => !WELL_KNOWN.includes(n) && !EXCLUDED.includes(n),
 );
 
 const ALL_URLS = [...WELL_KNOWN, ...REST]
