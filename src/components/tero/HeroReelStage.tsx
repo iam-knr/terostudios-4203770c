@@ -224,7 +224,7 @@ function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
 
         <motion.div
           style={{ opacity: titleOpacity, scale: titleScale }}
-          className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
+          className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none"
         >
           <h1
             className="font-display tracking-[-0.04em] leading-none text-cream/95 select-none"
@@ -232,6 +232,20 @@ function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
           >
             TERO
           </h1>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3 pointer-events-auto">
+            <Link
+              to="/portfolio"
+              className="rounded-full bg-cream text-ink px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] hover:bg-vermillion hover:text-cream transition-colors"
+            >
+              View Showreel
+            </Link>
+            <Link
+              to="/contact"
+              className="rounded-full ring-1 ring-cream/30 text-cream px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] hover:bg-cream/10 transition-colors"
+            >
+              Start a Project
+            </Link>
+          </div>
         </motion.div>
 
         <div className="absolute inset-0 z-20 flex items-center justify-center">
