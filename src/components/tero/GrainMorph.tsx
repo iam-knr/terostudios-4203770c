@@ -174,14 +174,14 @@ export function GrainMorph({ active }: { active: number }) {
       const t = (now - start) / 1000;
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        const bob = Math.sin(t * 0.9 + p.phase) * 2.2;
-        const sway = Math.cos(t * 0.7 + p.phase * 0.7) * 2;
+        const bob = Math.sin(t * 0.45 + p.phase) * 1.1;
+        const sway = Math.cos(t * 0.35 + p.phase * 0.7) * 1.0;
         const tx = p.hx + sway;
         const ty = p.hy + bob;
         const dx = tx - p.x;
         const dy = ty - p.y;
-        p.vx = (p.vx + dx * 0.06) * 0.78;
-        p.vy = (p.vy + dy * 0.06) * 0.78;
+        p.vx = (p.vx + dx * 0.035) * 0.84;
+        p.vy = (p.vy + dy * 0.035) * 0.84;
         p.x += p.vx;
         p.y += p.vy;
         ctx!.beginPath();
