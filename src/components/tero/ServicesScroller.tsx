@@ -73,45 +73,42 @@ const services = [
 // 4 Event & Immersive Hardware — holographic projector cube with dashed beams
 // 5 AI Content Creation — AI chip with pins
 const ICONS: string[] = [
-  // 0 — Brand Storytelling: simple monitor with a centered play button
+  // 0 — Brand Storytelling: monitor bezel (hollow screen) with a play button inside
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
-    <!-- monitor frame -->
-    <rect x="10" y="14" width="60" height="42" rx="3"/>
-    <!-- screen -->
-    <rect x="13" y="17" width="54" height="36" fill="white"/>
-    <!-- play button -->
-    <circle cx="40" cy="35" r="10" fill="black"/>
-    <path d="M36 29 L48 35 L36 41 Z" fill="white"/>
+    <!-- bezel frame: outer rect minus screen rect -->
+    <path fill-rule="evenodd" d="M8 14 H72 V56 H8 Z M12 18 H68 V52 H12 Z"/>
+    <!-- play triangle centered in screen -->
+    <path d="M34 26 L52 35 L34 44 Z"/>
     <!-- stand -->
     <rect x="36" y="56" width="8" height="6"/>
-    <rect x="26" y="62" width="28" height="4" rx="1"/>
+    <rect x="24" y="62" width="32" height="4" rx="1"/>
   </svg>`,
-  // 1 — Anamorphic & DOOH: billboard panel on TWO posts with a ground base
+
+  // 1 — Anamorphic / DOOH billboard (unchanged)
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
-    <rect x="6" y="10" width="68" height="34" rx="2"/>
-    <rect x="10" y="14" width="60" height="26" fill="white"/>
-    <rect x="14" y="18" width="20" height="18" fill="black"/>
-    <rect x="38" y="18" width="28" height="5" fill="black"/>
-    <rect x="38" y="26" width="22" height="4" fill="black"/>
-    <rect x="38" y="32" width="18" height="4" fill="black"/>
-    <rect x="18" y="44" width="4" height="24"/>
-    <rect x="58" y="44" width="4" height="24"/>
-    <rect x="10" y="68" width="60" height="5" rx="1"/>
-    <path d="M6 44 L18 50 L18 46 Z"/>
-    <path d="M74 44 L62 50 L62 46 Z"/>
+    <rect x="6" y="10" width="68" height="44" rx="2"/>
+    <rect x="10" y="14" width="60" height="36" fill="white"/>
+    <rect x="14" y="18" width="22" height="14" fill="black"/>
+    <rect x="40" y="18" width="26" height="6" fill="black"/>
+    <rect x="40" y="26" width="20" height="3" fill="black"/>
+    <rect x="14" y="36" width="52" height="3" fill="black"/>
+    <rect x="14" y="42" width="36" height="3" fill="black"/>
+    <rect x="20" y="54" width="6" height="14"/>
+    <rect x="54" y="54" width="6" height="14"/>
+    <rect x="14" y="68" width="52" height="4" rx="1"/>
   </svg>`,
-  // 2 — Immersive XR Training: front-view VR goggles / headset
+
+  // 2 — Immersive XR: VR goggles with a head strap arching behind
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
-    <path d="M14 26 C10 26 7 29 7 33 L7 52 C7 56 10 59 14 59 L24 59 C27 59 29 57 31 55 L34 51 C36 48 44 48 46 51 L49 55 C51 57 53 59 56 59 L66 59 C70 59 73 56 73 52 L73 33 C73 29 70 26 66 26 Z"/>
-    <ellipse cx="23" cy="42" rx="9" ry="7" fill="white"/>
-    <ellipse cx="57" cy="42" rx="9" ry="7" fill="white"/>
-    <circle cx="23" cy="42" r="3" fill="black"/>
-    <circle cx="57" cy="42" r="3" fill="black"/>
-    <rect x="2" y="36" width="6" height="4" rx="1"/>
-    <rect x="72" y="36" width="6" height="4" rx="1"/>
-    <path d="M7 30 C4 28 2 24 4 20" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M73 30 C76 28 78 24 76 20" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- head strap (band arching over the top, narrow so it reads as a strap) -->
+    <path d="M6 40 Q40 6 74 40 L74 32 Q40 -2 6 32 Z"/>
+    <!-- visor body with two eye-lens holes punched out -->
+    <path fill-rule="evenodd" d="M14 34 C10 34 7 37 7 41 L7 56 C7 60 10 63 14 63 L24 63 C27 63 29 61 31 59 L34 55 C36 52 44 52 46 55 L49 59 C51 61 53 63 56 63 L66 63 C70 63 73 60 73 56 L73 41 C73 37 70 34 66 34 Z M23 48 m-7 0 a7 5.5 0 1 0 14 0 a7 5.5 0 1 0 -14 0 Z M57 48 m-7 0 a7 5.5 0 1 0 14 0 a7 5.5 0 1 0 -14 0 Z"/>
+    <!-- pupils inside the lens holes -->
+    <circle cx="23" cy="48" r="2.6"/>
+    <circle cx="57" cy="48" r="2.6"/>
   </svg>`,
+
 
   // 3 — PropViz: detailed house with roof, chimney, windowpanes, door
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
