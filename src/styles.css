@@ -160,10 +160,10 @@
   }
 
   .tero-logo-cycle-text {
-    font-family: "Clash Display", "Anton", "Plus Jakarta Sans", system-ui, sans-serif;
+    font-family: "Coolvetica Rg Cond", "Clash Display", "Anton", "Plus Jakarta Sans", system-ui, sans-serif;
     font-weight: 700;
     line-height: 1;
-    letter-spacing: 0.005em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     display: inline-block;
     -webkit-font-smoothing: antialiased;
