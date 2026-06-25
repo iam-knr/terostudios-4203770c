@@ -619,6 +619,7 @@ function SnakeCard({
 }) {
   const fallback = WALL_FALLBACKS[seed.id % WALL_FALLBACKS.length];
   const thumb = useVideoThumbnail(seed.url);
+  const videoUrl = useResolvedVideoUrl(seed.url);
   const poster = thumb || fallback;
   const shift = (seed.id / CARD_COUNT) * 0.34;
   const enterAt = 0.02 + shift;
@@ -665,11 +666,14 @@ function SnakeCard({
           "0 50px 100px -30px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.35)",
       }}
     >
-      <img
-        src={poster}
-        alt=""
-        loading="lazy"
-        decoding="async"
+      <video
+        src={videoUrl}
+        poster={poster}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
         className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
       />
     </motion.div>
