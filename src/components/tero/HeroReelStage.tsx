@@ -335,12 +335,12 @@ function TopChrome() {
 function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const p = useSectionProgress(sectionRef);
-  const titleScale = useTransform(p, [0, 0.35, 0.82, 1], [1, 1.04, 1.1, 1.2]);
-  const titleOpacity = useTransform(p, [0, 0.82, 1], [1, 1, 0]);
-  const captionOpacity = useTransform(p, [0.28, 0.45, 0.82, 1], [0, 1, 1, 0]);
+  const titleScale = useTransform(p, [0, 0.5, 1], [1, 1.06, 1.18]);
+  const titleOpacity = useTransform(p, [0, 0.08, 0.88, 1], [1, 0.55, 0.45, 0.25]);
+  const captionOpacity = useTransform(p, [0.25, 0.4, 0.85, 1], [0, 1, 1, 0]);
 
   return (
-    <section ref={sectionRef} className="relative h-[260vh] bg-black text-cream">
+    <section ref={sectionRef} className="relative h-[220vh] bg-black text-cream">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         <Backdrop />
         <TopChrome />
@@ -361,7 +361,7 @@ function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
           <div
             className="relative"
             style={{
-              perspective: "1200px",
+              perspective: "1400px",
               perspectiveOrigin: "50% 52%",
               width: 1,
               height: 1,
