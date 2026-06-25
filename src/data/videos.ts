@@ -1,4 +1,4 @@
-import bhima from "@/assets/videos/bhima-raas-leela.mp4.asset.json";
+
 import catAi from "@/assets/videos/cat-ai.mp4.asset.json";
 import ccpl from "@/assets/videos/ccpl-3d.mp4.asset.json";
 import campa2d from "@/assets/videos/campa-2d.mp4.asset.json";
@@ -29,7 +29,7 @@ export type VideoItem = {
 };
 
 export const videos: VideoItem[] = [
-  { url: r(bhima.url), client: "Bhima Jewellery", title: "Bhima Jewellery", service: "Brand Storytelling", industry: "Retail", aspect: 1498 / 576 },
+  
   { url: r(campa3d.url), client: "Campa", title: "Campa 3D", service: "3D Animation", industry: "Beverages", aspect: 1920 / 1080 },
   { url: r(campa2d.url), client: "Campa", title: "Campa 2D", service: "Motion Graphics", industry: "Beverages", aspect: 854 / 480 },
   { url: r(caterpillar.url), client: "Caterpillar", title: "Caterpillar 3D", service: "3D Animation", industry: "Industrial", aspect: 640 / 360 },
