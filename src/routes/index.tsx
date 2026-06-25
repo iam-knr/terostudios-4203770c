@@ -30,10 +30,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const isMobile = useIsMobile();
   return (
     <PageLayout>
-      {isMobile ? <MobileHero /> : <HeroReelStage />}
+      <Hero />
       <LogoStrip />
       <ServicesScroller />
       <KineticBand />
