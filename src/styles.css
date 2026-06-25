@@ -10,6 +10,14 @@
   src: url("./assets/fonts/CoolveticaRgCond.woff2") format("woff2");
 }
 
+@font-face {
+  font-family: "Tiroski";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/Tiroski.woff2") format("woff2");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================
