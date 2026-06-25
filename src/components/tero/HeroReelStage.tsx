@@ -553,7 +553,7 @@ function PopOutCard({
   seed: CardSeed;
   progress: MotionValue<number>;
 }) {
-  const videoUrl = useResolvedVideoUrl(seed.url);
+  const poster = WALL_FALLBACKS[seed.id % WALL_FALLBACKS.length];
   const start = 0.04 + seed.delay;
   const hit = 0.35 + seed.delay * 0.35;
   const hold = 0.8;
@@ -590,13 +590,11 @@ function PopOutCard({
           "0 40px 80px -30px rgba(0,0,0,0.9), inset 0 0 25px rgba(0,0,0,0.3)",
       }}
     >
-      <video
-        src={videoUrl}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
+      <img
+        src={poster}
+        alt=""
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
       />
     </motion.div>
