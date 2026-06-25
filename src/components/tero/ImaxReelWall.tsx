@@ -15,11 +15,11 @@ const TILES_PER_ROW = 9;
 const TILE_GAP = "clamp(8px, 1vw, 15px)";
 
 const ROW_CURVE = [
-  { top: "-9%", angle: -18, z: -250, scale: 0.99, scaleX: 1.28, opacity: 0.98, duration: 82 },
-  { top: "8%", angle: -9, z: -80, scale: 1.04, scaleX: 1.2, opacity: 1, duration: 66 },
-  { top: "25%", angle: 0, z: 165, scale: 1.09, scaleX: 1.12, opacity: 1, duration: 56 },
-  { top: "42%", angle: 10, z: -100, scale: 1.04, scaleX: 1.2, opacity: 0.94, duration: 74 },
-  { top: "58.5%", angle: 24, z: -360, scale: 1, scaleX: 1.32, opacity: 0.2, duration: 88 },
+  { top: "0%", angle: -20, z: -260, scale: 1, scaleX: 1.34, opacity: 0.96, duration: 84 },
+  { top: "13%", angle: -10, z: -95, scale: 1.04, scaleX: 1.22, opacity: 1, duration: 68 },
+  { top: "27%", angle: 0, z: 180, scale: 1.1, scaleX: 1.13, opacity: 1, duration: 58 },
+  { top: "41%", angle: 11, z: -110, scale: 1.04, scaleX: 1.22, opacity: 0.9, duration: 76 },
+  { top: "55%", angle: 25, z: -380, scale: 1, scaleX: 1.36, opacity: 0.18, duration: 90 },
 ];
 
 function getTileCurve(index: number) {
@@ -49,6 +49,7 @@ function resolveForPlayback(url: string) {
 function Tile({ url, fallback }: { url: string; fallback: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const didPrime = useRef(false);
   const [mount, setMount] = useState(false);
   const [ready, setReady] = useState(false);
   const [src, setSrc] = useState(url);
@@ -72,11 +73,25 @@ function Tile({ url, fallback }: { url: string; fallback: string }) {
 
   useEffect(() => {
     const v = videoRef.current;
-    if (!v || !mount) return;
-    const play = () => v.play().catch(() => {});
-    if (v.readyState >= 2) play();
-    else v.addEventListener("loadeddata", play, { once: true });
-  }, [mount, src]);
+    if (!v || !mount || !ready) return;
+    v.play().catch(() => {});
+  }, [mount, ready, src]);
+
+  const primeVideoFrame = () => {
+    const v = videoRef.current;
+    if (!v || didPrime.current) return;
+    didPrime.current = true;
+
+    const target = Number.isFinite(v.duration) && v.duration > 0
+      ? Math.min(Math.max(v.duration * 0.22, 0.9), 2.8)
+      : 1.2;
+
+    try {
+      v.currentTime = target;
+    } catch {
+      setReady(true);
+    }
+  };
 
   return (
     <div
@@ -101,8 +116,12 @@ function Tile({ url, fallback }: { url: string; fallback: string }) {
           loop
           playsInline
           preload="auto"
-          onCanPlay={() => setReady(true)}
-          className={`absolute inset-0 z-20 h-full w-full object-cover select-none pointer-events-none transition-opacity duration-700 ${ready ? "opacity-95" : "opacity-0"}`}
+          onLoadedMetadata={primeVideoFrame}
+          onSeeked={() => setReady(true)}
+          onCanPlay={() => {
+            if (didPrime.current) setReady(true);
+          }}
+          className={`absolute inset-0 z-20 h-full w-full object-cover select-none pointer-events-none brightness-[1.08] contrast-[1.08] transition-opacity duration-700 ${ready ? "opacity-90" : "opacity-0"}`}
         />
       )}
     </div>
@@ -153,7 +172,7 @@ export function ImaxReelWall() {
                 className="absolute w-full overflow-visible"
                 style={{
                   top: curve.top,
-                  height: "clamp(156px, 27vh, 330px)",
+                  height: "clamp(150px, 25.5vh, 310px)",
                   opacity: curve.opacity,
                   transform: `translate3d(0, 0, ${curve.z}px) rotateX(${curve.angle}deg) scale(${curve.scale}) scaleX(${curve.scaleX})`,
                   transformStyle: "preserve-3d",
@@ -222,7 +241,7 @@ export function ImaxReelWall() {
         {/* Bottom immersive fade */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[30%] sm:h-[35%] md:h-[40%] z-30"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[24%] sm:h-[30%] md:h-[36%] z-30"
           style={{
             background:
               "linear-gradient(0deg, #000 4%, rgba(0,0,0,0.82) 34%, rgba(0,0,0,0.36) 70%, transparent 100%)",
