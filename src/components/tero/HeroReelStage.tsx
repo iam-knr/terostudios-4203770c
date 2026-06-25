@@ -198,10 +198,13 @@ function Backdrop() {
 
 function TopChrome() {
   return (
-    <div className="absolute inset-x-0 top-0 z-50 hidden md:flex items-center justify-end px-10 pt-7 pointer-events-none">
+    <div className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 md:px-10 pt-6 md:pt-7 pointer-events-none">
+      <span />
+
       <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-cream/55">
         Animation · VFX · CGI
       </span>
+
     </div>
   );
 }
@@ -252,17 +255,17 @@ function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
           style={{ opacity: captionOpacity }}
           className="absolute inset-0 z-30 pointer-events-none"
         >
-          <div className="absolute left-4 md:left-10 right-4 md:right-auto bottom-6 md:bottom-10 flex flex-wrap gap-1.5">
+          <div className="absolute left-6 md:left-10 bottom-10 flex flex-wrap gap-1.5">
             {["3D Animation", "VFX", "CGI Films"].map((label) => (
               <span
                 key={label}
-                className="rounded-full bg-cream/10 ring-1 ring-cream/15 px-2.5 py-1 text-[9px] md:text-[10px] font-mono uppercase tracking-[0.22em] text-cream/75"
+                className="rounded-full bg-cream/8 ring-1 ring-cream/15 px-3 py-1 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/70"
               >
                 {label}
               </span>
             ))}
           </div>
-          <div className="hidden md:block absolute right-10 bottom-10 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/55">
+          <div className="absolute right-6 md:right-10 bottom-10 text-[10px] font-mono uppercase tracking-[0.22em] text-cream/55">
             Chennai · Est. 2015
           </div>
         </motion.div>
@@ -317,16 +320,16 @@ function SnakeSection({ seeds }: { seeds: CardSeed[] }) {
 
         <motion.div
           style={{ opacity: microOpacity }}
-          className="absolute inset-0 z-30 pointer-events-none hidden md:block"
+          className="absolute inset-0 z-30 pointer-events-none"
         >
-          <p className="absolute left-10 top-24 text-[11px] tracking-[0.18em] uppercase text-cream/55 max-w-[160px] leading-snug">
+          <p className="absolute left-6 md:left-10 top-24 text-[11px] tracking-[0.18em] uppercase text-cream/55 max-w-[160px] leading-snug">
             Create
             <br />
             compelling
             <br />
             visuals
           </p>
-          <p className="absolute right-10 bottom-10 text-[11px] tracking-[0.18em] uppercase text-cream/55 max-w-[220px] text-right leading-snug">
+          <p className="absolute right-6 md:right-10 bottom-10 text-[11px] tracking-[0.18em] uppercase text-cream/55 max-w-[220px] text-right leading-snug">
             Join the next generation
             <br />
             of moving stories.
@@ -558,7 +561,6 @@ function PopOutCard({
 }) {
   const fallback = WALL_FALLBACKS[seed.id % WALL_FALLBACKS.length];
   const thumb = useVideoThumbnail(seed.url);
-  const videoUrl = useResolvedVideoUrl(seed.url);
   const poster = thumb || fallback;
   const start = 0.04 + seed.delay;
   const hit = 0.35 + seed.delay * 0.35;
@@ -596,14 +598,11 @@ function PopOutCard({
           "0 40px 80px -30px rgba(0,0,0,0.9), inset 0 0 25px rgba(0,0,0,0.3)",
       }}
     >
-      <video
-        src={videoUrl}
-        poster={poster}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
+      <img
+        src={poster}
+        alt=""
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
       />
     </motion.div>
@@ -619,7 +618,6 @@ function SnakeCard({
 }) {
   const fallback = WALL_FALLBACKS[seed.id % WALL_FALLBACKS.length];
   const thumb = useVideoThumbnail(seed.url);
-  const videoUrl = useResolvedVideoUrl(seed.url);
   const poster = thumb || fallback;
   const shift = (seed.id / CARD_COUNT) * 0.34;
   const enterAt = 0.02 + shift;
@@ -666,14 +664,11 @@ function SnakeCard({
           "0 50px 100px -30px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.35)",
       }}
     >
-      <video
-        src={videoUrl}
-        poster={poster}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
+      <img
+        src={poster}
+        alt=""
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
       />
     </motion.div>
