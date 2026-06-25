@@ -90,10 +90,10 @@ export function Testimonials() {
       `}</style>
 
       {/* Header */}
-      <div className="container-tero relative pt-24 md:pt-40 pb-16 md:pb-20">
+      <div className="container-tero relative pt-16 md:pt-24 pb-8 md:pb-12">
         <Reveal>
           <p className="overline text-vermillion">— Portfolio of consensus</p>
-          <h2 className="mt-6 hero-headline text-[clamp(40px,7vw,96px)] leading-[1.05] text-cream max-w-4xl">
+          <h2 className="mt-4 hero-headline text-[clamp(28px,4.5vw,56px)] leading-[1.05] text-cream max-w-3xl">
             What clients say after the
             <br />
             <em className="not-italic font-display italic">lights come up.</em>
@@ -102,17 +102,18 @@ export function Testimonials() {
       </div>
 
       {/* Marquee */}
-      <div className="relative w-full overflow-hidden pb-24 md:pb-40">
+      <div className="relative w-full overflow-hidden pb-14 md:pb-20">
         {/* Edge fade masks */}
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 md:w-40 bg-gradient-to-r from-[#101010] to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 md:w-40 bg-gradient-to-l from-[#101010] to-transparent" />
 
-        <div className="tero-marquee-track gap-6">
+        <div className="tero-marquee-track gap-5">
           {track.map((item, i) => (
             <Card key={`${item.name}-${i}`} item={item} />
           ))}
         </div>
       </div>
+
     </section>
   );
 }
