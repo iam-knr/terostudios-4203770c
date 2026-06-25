@@ -2,6 +2,14 @@
 @import "tw-animate-css";
 @source "../src";
 
+@font-face {
+  font-family: "Coolvetica Rg Cond";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/CoolveticaRgCond.woff2") format("woff2");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================
