@@ -12,15 +12,15 @@ import portfolio6 from "@/assets/portfolio-6.jpg";
 const FALLBACKS = [portfolio1, portfolio2, portfolio3, portfolio4, portfolio5, portfolio6];
 
 const ROWS = 5;
-const TILES_PER_ROW = 8;
-const GAP = -42;
+const TILES_PER_ROW = 9;
+const TILE_GAP = "clamp(8px, 1vw, 15px)";
 
 const ROW_CURVE = [
-  { angle: -14, z: -90, scale: 0.97, y: 10, opacity: 0.98 },
-  { angle: -6, z: -22, scale: 1.02, y: 4, opacity: 1 },
-  { angle: 0, z: 120, scale: 1.1, y: 0, opacity: 1 },
-  { angle: 7, z: -28, scale: 1.02, y: -4, opacity: 0.92 },
-  { angle: 16, z: -160, scale: 0.96, y: -10, opacity: 0.16 },
+  { top: "-1.5%", angle: -18, z: -260, scale: 0.98, scaleX: 1.28, opacity: 0.94, duration: 82 },
+  { top: "15%", angle: -9, z: -90, scale: 1.03, scaleX: 1.2, opacity: 1, duration: 66 },
+  { top: "31.5%", angle: 0, z: 170, scale: 1.08, scaleX: 1.12, opacity: 1, duration: 56 },
+  { top: "48%", angle: 10, z: -105, scale: 1.03, scaleX: 1.2, opacity: 0.92, duration: 74 },
+  { top: "64.5%", angle: 24, z: -360, scale: 0.99, scaleX: 1.32, opacity: 0.24, duration: 88 },
 ];
 
 function getTileCurve(index: number) {
@@ -30,9 +30,9 @@ function getTileCurve(index: number) {
   const edge = Math.abs(normalized);
 
   return {
-    rotateY: normalized * -18,
-    translateZ: -Math.pow(edge, 1.35) * 135,
-    scale: 1 - edge * 0.055,
+    rotateY: normalized * -32,
+    translateZ: -Math.pow(edge, 1.45) * 310,
+    scale: 1 - edge * 0.1,
   };
 }
 
@@ -125,69 +125,54 @@ export function ImaxReelWall() {
 
   return (
     <section className="relative w-full bg-black overflow-hidden">
-      {/* Deep perspective stage: rows recede above and below the center like an IMAX screen */}
       <div
-        className="relative w-full h-[78vh] sm:h-[88vh] md:h-[96vh] lg:h-[104vh] bg-black overflow-hidden"
+        className="relative isolate w-full h-[82vh] sm:h-[92vh] md:h-[100svh] bg-black overflow-hidden"
         style={{
           WebkitMaskImage:
-            "linear-gradient(180deg, #000 0%, #000 70%, rgba(0,0,0,0.72) 84%, transparent 100%)",
+            "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
           maskImage:
-            "linear-gradient(180deg, #000 0%, #000 70%, rgba(0,0,0,0.72) 84%, transparent 100%)",
-          perspective: "760px",
-          perspectiveOrigin: "50% 50%",
+            "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
+          perspective: "clamp(430px, 58vw, 840px)",
+          perspectiveOrigin: "50% 43%",
         }}
       >
-        {/* Concave screen silhouette and depth shadow */}
         <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-[-8%] top-[-8%] z-20 h-[9%] rounded-[0_0_50%_50%] bg-black/70"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-[-10%] bottom-[-22%] z-20 h-[44%] rounded-[50%_50%_0_0] bg-black/95"
-        />
-
-        <div
-          className="absolute inset-x-[-10vw] top-0 bottom-[-8%] flex flex-col"
+          className="absolute inset-x-[-22vw] inset-y-0"
           style={{
-            gap: `${GAP}px`,
             transformStyle: "preserve-3d",
-            transform: "rotateX(0deg) scaleX(1.1)",
-            transformOrigin: "50% 50%",
+            transform: "rotateX(0deg) scale(1.04)",
+            transformOrigin: "50% 43%",
           }}
         >
           {rows.map((tiles, r) => {
-            // Alternate direction; vary speeds so rows feel parallax-like
             const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
-            const durations = [62, 78, 54, 86, 70];
-            const duration = durations[r] ?? 60 + r * 6;
-
             const isLast = r === ROWS - 1;
             const curve = ROW_CURVE[r] ?? ROW_CURVE[2];
             return (
               <div
                 key={r}
-                className="relative w-full overflow-visible"
+                className="absolute w-full overflow-visible"
                 style={{
-                  height: `calc((100% - ${GAP * (ROWS - 1)}px) / ${ROWS})`,
+                  top: curve.top,
+                  height: "clamp(152px, 25.5vh, 292px)",
                   opacity: curve.opacity,
-                  transform: `translateY(${curve.y}px) translateZ(${curve.z}px) rotateX(${curve.angle}deg) scale(${curve.scale})`,
+                  transform: `translate3d(0, 0, ${curve.z}px) rotateX(${curve.angle}deg) scale(${curve.scale}) scaleX(${curve.scaleX})`,
                   transformStyle: "preserve-3d",
-                  transformOrigin: "50% 50%",
+                  transformOrigin: "50% 48%",
+                  zIndex: r === 2 ? 5 : r === 1 || r === 3 ? 4 : 3,
                   maskImage: isLast
-                    ? "linear-gradient(180deg, #000 0%, rgba(0,0,0,0.6) 52%, transparent 100%)"
+                    ? "linear-gradient(180deg, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.42) 42%, transparent 100%)"
                     : undefined,
                   WebkitMaskImage: isLast
-                    ? "linear-gradient(180deg, #000 0%, rgba(0,0,0,0.6) 52%, transparent 100%)"
+                    ? "linear-gradient(180deg, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.42) 42%, transparent 100%)"
                     : undefined,
                 }}
               >
-
                 <div
                   className="absolute inset-y-0 left-0 flex"
                   style={{
-                    gap: `${GAP}px`,
-                    animation: `${dir} ${duration}s linear infinite`,
+                    gap: TILE_GAP,
+                    animation: `${dir} ${curve.duration}s cubic-bezier(0.45, 0, 0.55, 1) infinite`,
                     willChange: "transform",
                     transformStyle: "preserve-3d",
                   }}
@@ -215,22 +200,41 @@ export function ImaxReelWall() {
           })}
         </div>
 
-        {/* Top soft glow */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[12%] sm:h-[14%] md:h-[16%] z-30"
+          className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[22%] opacity-60"
           style={{
             background:
-              "linear-gradient(180deg, #000 0%, rgba(0,0,0,0.45) 50%, transparent 100%)",
+              "linear-gradient(180deg, rgba(255,244,220,0.12) 0%, rgba(255,244,220,0.035) 36%, transparent 100%)",
           }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-[-12%] top-[2%] z-20 h-[58%] opacity-45 mix-blend-screen"
+          style={{
+            background:
+              "radial-gradient(70% 38% at 50% 0%, rgba(255,235,198,0.18) 0%, rgba(255,235,198,0.05) 52%, transparent 100%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-[-18%] bottom-[-29%] z-20 h-[52%] rounded-[55%_55%_0_0] bg-black/95"
         />
         {/* Bottom immersive fade */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[26%] sm:h-[30%] md:h-[34%] z-30"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[34%] sm:h-[39%] md:h-[44%] z-30"
           style={{
             background:
-              "linear-gradient(0deg, #000 6%, rgba(0,0,0,0.55) 55%, transparent 100%)",
+              "linear-gradient(0deg, #000 4%, rgba(0,0,0,0.82) 34%, rgba(0,0,0,0.36) 70%, transparent 100%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[18%] z-30 opacity-80"
+          style={{
+            background:
+              "radial-gradient(85% 115% at 50% 100%, #000 0%, rgba(0,0,0,0.84) 42%, transparent 76%)",
           }}
         />
         {/* Center projector bloom */}
