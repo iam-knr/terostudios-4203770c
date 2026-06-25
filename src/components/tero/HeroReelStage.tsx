@@ -58,43 +58,16 @@ type WallConfig = {
 
 const WALL_CONFIGS: Record<"mobile" | "tablet" | "desktop", WallConfig> = {
   mobile: {
-    rows: 4,
-    tilesPerRow: 8,
-    tileW: 220,
-    tileH: 138,
-    colGap: 6,
-    perspective: 1000,
-    rowGap: 0,
-    wallTop: "4vh",
-    wallWidth: "260vw",
-    wallTilt: 12,
-    edgeTilt: 0,
+    rows: 4, tilesPerRow: 4, tileW: 220, tileH: 138, colGap: 6,
+    perspective: 1000, rowGap: 0, wallTop: "4vh", wallWidth: "260vw", wallTilt: 12, edgeTilt: 0,
   },
   tablet: {
-    rows: 4,
-    tilesPerRow: 9,
-    tileW: 280,
-    tileH: 176,
-    colGap: 8,
-    perspective: 1000,
-    rowGap: 0,
-    wallTop: "2vh",
-    wallWidth: "230vw",
-    wallTilt: 12,
-    edgeTilt: 0,
+    rows: 4, tilesPerRow: 5, tileW: 280, tileH: 176, colGap: 8,
+    perspective: 1000, rowGap: 0, wallTop: "2vh", wallWidth: "230vw", wallTilt: 12, edgeTilt: 0,
   },
   desktop: {
-    rows: 4,
-    tilesPerRow: 10,
-    tileW: 320,
-    tileH: 200,
-    colGap: 8,
-    perspective: 1000,
-    rowGap: 0,
-    wallTop: "2vh",
-    wallWidth: "220vw",
-    wallTilt: 12,
-    edgeTilt: 0,
+    rows: 4, tilesPerRow: 6, tileW: 320, tileH: 200, colGap: 8,
+    perspective: 1000, rowGap: 0, wallTop: "2vh", wallWidth: "220vw", wallTilt: 12, edgeTilt: 0,
   },
 };
 
@@ -371,7 +344,7 @@ function SnakeSection({ seeds }: { seeds: CardSeed[] }) {
 function CurvedWallSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const ROWS = 4;
-  const TILES_PER_ROW = 10;
+  const TILES_PER_ROW = 6;
   const CARD_W = 320;
   const GAP = 8;
 
@@ -479,37 +452,60 @@ function WallTile({
   w: number;
 }) {
   const videoUrl = useResolvedVideoUrl(url);
+  const tileRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [visible, setVisible] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     setVideoReady(false);
   }, [videoUrl]);
 
+  // Only mount/play the video when the tile is actually on-screen
+  useEffect(() => {
+    if (!tileRef.current) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { rootMargin: "200px", threshold: 0.01 },
+    );
+    io.observe(tileRef.current);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (visible) v.play().catch(() => {});
+    else v.pause();
+  }, [visible]);
+
   return (
     <div
+      ref={tileRef}
       className="relative shrink-0 overflow-hidden bg-black rounded-[12px]"
-      style={{
-        width: w,
-        height: "100%",
-      }}
+      style={{ width: w, height: "100%", contain: "layout paint" }}
     >
       <img
         src={fallback}
         alt=""
         loading="lazy"
+        decoding="async"
         className="absolute inset-0 z-10 h-full w-full object-cover pointer-events-none select-none"
       />
-      <video
-        src={videoUrl}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        onCanPlay={() => setVideoReady(true)}
-        onError={() => setVideoReady(false)}
-        className={`absolute inset-0 z-20 h-full w-full object-cover pointer-events-none select-none transition-opacity duration-300 ${videoReady ? "opacity-100" : "opacity-0"}`}
-      />
+      {visible && (
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="none"
+          onCanPlay={() => setVideoReady(true)}
+          onError={() => setVideoReady(false)}
+          className={`absolute inset-0 z-20 h-full w-full object-cover pointer-events-none select-none transition-opacity duration-300 ${videoReady ? "opacity-100" : "opacity-0"}`}
+        />
+      )}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -557,7 +553,7 @@ function PopOutCard({
   seed: CardSeed;
   progress: MotionValue<number>;
 }) {
-  const videoUrl = useResolvedVideoUrl(seed.url);
+  const poster = WALL_FALLBACKS[seed.id % WALL_FALLBACKS.length];
   const start = 0.04 + seed.delay;
   const hit = 0.35 + seed.delay * 0.35;
   const hold = 0.8;
@@ -594,13 +590,11 @@ function PopOutCard({
           "0 40px 80px -30px rgba(0,0,0,0.9), inset 0 0 25px rgba(0,0,0,0.3)",
       }}
     >
-      <video
-        src={videoUrl}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
+      <img
+        src={poster}
+        alt=""
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
       />
     </motion.div>
@@ -614,7 +608,7 @@ function SnakeCard({
   seed: CardSeed;
   progress: MotionValue<number>;
 }) {
-  const videoUrl = useResolvedVideoUrl(seed.url);
+  const poster = WALL_FALLBACKS[seed.id % WALL_FALLBACKS.length];
   const shift = (seed.id / CARD_COUNT) * 0.34;
   const enterAt = 0.02 + shift;
   const midAt = 0.36 + shift * 0.45;
@@ -660,13 +654,11 @@ function SnakeCard({
           "0 50px 100px -30px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.35)",
       }}
     >
-      <video
-        src={videoUrl}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
+      <img
+        src={poster}
+        alt=""
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
       />
     </motion.div>
