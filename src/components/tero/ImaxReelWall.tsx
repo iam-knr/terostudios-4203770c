@@ -7,19 +7,24 @@ import portfolio3 from "@/assets/portfolio-3.jpg";
 import portfolio4 from "@/assets/portfolio-4.jpg";
 import portfolio5 from "@/assets/portfolio-5.jpg";
 import portfolio6 from "@/assets/portfolio-6.jpg";
+import reelA from "@/assets/reel-placeholder-a.jpg";
+import reelB from "@/assets/reel-placeholder-b.jpg";
+import reelC from "@/assets/reel-placeholder-c.jpg";
+import reelD from "@/assets/reel-placeholder-d.jpg";
+import reelE from "@/assets/reel-placeholder-e.jpg";
 
-const FALLBACKS = [portfolio1, portfolio2, portfolio3, portfolio4, portfolio5, portfolio6];
+const FALLBACKS = [reelE, reelB, reelA, reelD, reelC, portfolio1, portfolio2, portfolio3, portfolio4, portfolio5, portfolio6];
 
 const ROWS = 5;
 const TILES_PER_ROW = 9;
-const TILE_GAP = "clamp(9px, 0.9vw, 16px)";
+const TILE_GAP = "clamp(10px, 0.85vw, 15px)";
 
 const ROW_CURVE = [
-  { top: "0%", angle: -8, z: -70, scale: 0.98, scaleX: 1.1, opacity: 0.96, duration: 82 },
-  { top: "15.5%", angle: -3.5, z: 10, scale: 1.01, scaleX: 1.06, opacity: 1, duration: 67 },
-  { top: "31%", angle: 0, z: 60, scale: 1.03, scaleX: 1.03, opacity: 1, duration: 56 },
-  { top: "46.5%", angle: 4.5, z: 5, scale: 1.01, scaleX: 1.06, opacity: 0.94, duration: 74 },
-  { top: "62%", angle: 10, z: -105, scale: 0.98, scaleX: 1.12, opacity: 0.28, duration: 88 },
+  { top: "0%", angle: -10, z: -115, scale: 0.98, scaleX: 1.1, opacity: 0.98, duration: 82 },
+  { top: "16.5%", angle: -4.5, z: -25, scale: 1, scaleX: 1.06, opacity: 1, duration: 67 },
+  { top: "33%", angle: 0, z: 90, scale: 1.02, scaleX: 1.03, opacity: 1, duration: 56 },
+  { top: "49.5%", angle: 5.5, z: -20, scale: 1, scaleX: 1.06, opacity: 0.95, duration: 74 },
+  { top: "66%", angle: 12, z: -150, scale: 0.98, scaleX: 1.12, opacity: 0.22, duration: 88 },
 ];
 
 function getTileCurve(index: number) {
@@ -29,9 +34,9 @@ function getTileCurve(index: number) {
   const edge = Math.abs(normalized);
 
   return {
-    rotateY: normalized * -14,
-    translateZ: -Math.pow(edge, 1.35) * 95,
-    scale: 1 - edge * 0.025,
+    rotateY: normalized * -18,
+    translateZ: -Math.pow(edge, 1.35) * 135,
+    scale: 1 - edge * 0.04,
   };
 }
 
@@ -144,22 +149,22 @@ export function ImaxReelWall() {
   return (
     <section className="relative w-full bg-black overflow-hidden">
       <div
-        className="relative isolate w-full h-[82vh] sm:h-[92vh] md:h-[100svh] bg-black overflow-hidden"
+        className="relative isolate w-full h-[78vh] sm:h-[88vh] md:h-[92svh] bg-black overflow-hidden"
         style={{
           WebkitMaskImage:
             "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
           maskImage:
             "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
-          perspective: "clamp(760px, 86vw, 1280px)",
-          perspectiveOrigin: "50% 44%",
+          perspective: "clamp(720px, 82vw, 1120px)",
+          perspectiveOrigin: "50% 48%",
         }}
       >
         <div
-          className="absolute inset-x-[-10vw] inset-y-0"
+          className="absolute inset-x-[-9vw] inset-y-0"
           style={{
             transformStyle: "preserve-3d",
-            transform: "rotateX(1.5deg) scale(1.02)",
-            transformOrigin: "50% 46%",
+            transform: "rotateX(2deg) scale(1.03)",
+            transformOrigin: "50% 50%",
           }}
         >
           {rows.map((tiles, r) => {
@@ -172,17 +177,17 @@ export function ImaxReelWall() {
                 className="absolute w-full overflow-visible"
                 style={{
                   top: curve.top,
-                  height: "clamp(116px, 20vh, 230px)",
+                  height: "clamp(118px, 18.5vh, 215px)",
                   opacity: curve.opacity,
                   transform: `translate3d(0, 0, ${curve.z}px) rotateX(${curve.angle}deg) scale(${curve.scale}) scaleX(${curve.scaleX})`,
                   transformStyle: "preserve-3d",
                   transformOrigin: "50% 48%",
                   zIndex: r === 2 ? 5 : r === 1 || r === 3 ? 4 : 3,
                   maskImage: isLast
-                    ? "linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.46) 46%, transparent 100%)"
+                    ? "linear-gradient(180deg, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.38) 42%, transparent 100%)"
                     : undefined,
                   WebkitMaskImage: isLast
-                    ? "linear-gradient(180deg, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.46) 46%, transparent 100%)"
+                    ? "linear-gradient(180deg, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.38) 42%, transparent 100%)"
                     : undefined,
                 }}
               >
