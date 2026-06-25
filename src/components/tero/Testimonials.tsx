@@ -123,22 +123,22 @@ function Card({ item }: { item: Testimonial }) {
   return (
     <article
       className={[
-        "flex w-[88vw] sm:w-[520px] md:w-[560px] shrink-0 flex-col justify-between",
-        "bg-[#1E1E1E] p-8 md:p-10 min-h-[440px]",
+        "flex w-[80vw] sm:w-[400px] md:w-[440px] shrink-0 flex-col justify-between",
+        "bg-[#1E1E1E] p-6 md:p-7 min-h-[300px]",
         "border-l-2",
         accent ? "border-[#FF4A1C]/70" : "border-white/5",
       ].join(" ")}
     >
-      <div className="flex items-start justify-between gap-6">
+      <div className="flex items-start justify-between gap-4">
         <img
           src={item.logo}
           alt={`${item.company} logo`}
           loading="lazy"
-          className="h-10 md:h-12 w-auto object-contain object-left"
+          className="h-7 md:h-8 w-auto object-contain object-left"
         />
         <span
           className={[
-            "shrink-0 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em]",
+            "shrink-0 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.18em]",
             accent
               ? "bg-[#FF4A1C]/10 text-[#FF4A1C]"
               : "bg-white/5 text-cream/45",
@@ -148,18 +148,19 @@ function Card({ item }: { item: Testimonial }) {
         </span>
       </div>
 
-      <blockquote className="mt-10 font-display text-[clamp(20px,2vw,28px)] leading-[1.35] text-cream">
+      <blockquote className="mt-6 font-display text-[clamp(15px,1.3vw,18px)] leading-[1.45] text-cream">
         &ldquo;{item.quote}&rdquo;
       </blockquote>
 
-      <div className="mt-10 border-t border-white/10 pt-5">
-        <p className="font-sans-display text-[13px] font-bold uppercase tracking-wider text-cream">
+      <div className="mt-6 border-t border-white/10 pt-4">
+        <p className="font-sans-display text-[12px] font-bold uppercase tracking-wider text-cream">
           {item.name}
         </p>
-        <p className="mt-1 font-body text-[12px] text-cream/55">
+        <p className="mt-0.5 font-body text-[11px] text-cream/55">
           {item.role} · {item.company}
         </p>
       </div>
     </article>
+
   );
 }
