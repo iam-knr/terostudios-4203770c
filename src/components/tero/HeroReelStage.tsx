@@ -409,7 +409,7 @@ function CurvedWallSection() {
               className="relative mx-auto"
               style={{
                 height: cfg.rows * cfg.tileH,
-                transform: `rotateX(${cfg.wallTilt}deg) scale(1.08)`,
+                transform: `rotateX(${cfg.wallTilt}deg) scale(1.1)`,
                 transformOrigin: "50% 50%",
                 transformStyle: "preserve-3d",
               }}
