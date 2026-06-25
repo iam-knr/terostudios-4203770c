@@ -1,17 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { videos } from "@/data/videos";
 import { resolveAssetUrl } from "@/lib/asset-url";
-import portfolio1 from "@/assets/portfolio-1.jpg";
-import portfolio2 from "@/assets/portfolio-2.jpg";
 import portfolio3 from "@/assets/portfolio-3.jpg";
-import portfolio4 from "@/assets/portfolio-4.jpg";
-import portfolio5 from "@/assets/portfolio-5.jpg";
 import portfolio6 from "@/assets/portfolio-6.jpg";
-import reelA from "@/assets/reel-placeholder-a.jpg";
 import reelB from "@/assets/reel-placeholder-b.jpg";
-import reelC from "@/assets/reel-placeholder-c.jpg";
-import reelD from "@/assets/reel-placeholder-d.jpg";
-import reelE from "@/assets/reel-placeholder-e.jpg";
 import reelF from "@/assets/reel-placeholder-f.jpg";
 import imax1 from "@/assets/imax-reference-style-1.jpg";
 import imax2 from "@/assets/imax-reference-style-2.jpg";
