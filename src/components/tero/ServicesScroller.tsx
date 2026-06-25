@@ -73,14 +73,30 @@ const services = [
 // 4 Event & Immersive Hardware — holographic projector cube with dashed beams
 // 5 AI Content Creation — AI chip with pins
 const ICONS: string[] = [
-  // 0 — Brand Storytelling: TV/monitor + megaphone (kept)
+  // 0 — Brand Storytelling: monitor with screen content + megaphone with sound waves
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
-    <path d="M10 20 H54 a2 2 0 0 1 2 2 V46 a2 2 0 0 1 -2 2 H10 a2 2 0 0 1 -2 -2 V22 a2 2 0 0 1 2 -2 Z M12 24 V44 H52 V24 Z" fill-rule="evenodd"/>
-    <rect x="24" y="52" width="16" height="3" rx="1"/>
-    <rect x="28" y="48" width="8" height="6"/>
-    <path d="M22 34 L36 26 L36 42 Z"/>
-    <path d="M52 26 L72 18 L72 50 L52 42 Z"/>
-    <path d="M54 28 V40 L50 38 V30 Z" fill="white"/>
+    <!-- monitor frame -->
+    <rect x="6" y="14" width="52" height="38" rx="3"/>
+    <rect x="9" y="17" width="46" height="32" fill="white"/>
+    <!-- screen content: play triangle + UI bars -->
+    <circle cx="22" cy="33" r="8" fill="black"/>
+    <path d="M19 28 L29 33 L19 38 Z" fill="white"/>
+    <rect x="34" y="22" width="18" height="3" fill="black"/>
+    <rect x="34" y="28" width="14" height="2.5" fill="black"/>
+    <rect x="34" y="33" width="16" height="2.5" fill="black"/>
+    <rect x="34" y="38" width="10" height="2.5" fill="black"/>
+    <!-- monitor stand -->
+    <rect x="28" y="52" width="8" height="6"/>
+    <rect x="20" y="58" width="24" height="4" rx="1"/>
+    <!-- megaphone body -->
+    <path d="M50 28 L72 18 L72 50 L50 40 Z"/>
+    <path d="M52 30 V38 L48 36 V32 Z" fill="white"/>
+    <!-- mouthpiece -->
+    <rect x="72" y="28" width="4" height="12" rx="1"/>
+    <!-- sound waves -->
+    <path d="M58 12 a8 8 0 0 1 6 6" stroke="black" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M62 8 a14 14 0 0 1 10 10" stroke="black" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M58 56 a8 8 0 0 0 6 -6" stroke="black" stroke-width="2" fill="none" stroke-linecap="round"/>
   </svg>`,
   // 1 — Anamorphic & DOOH: billboard panel on TWO posts with a ground base
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
