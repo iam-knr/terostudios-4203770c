@@ -17,16 +17,29 @@ import reelF from "@/assets/reel-placeholder-f.jpg";
 const FALLBACKS = [reelF, reelE, reelB, reelA, reelD, reelC, portfolio1, portfolio2, portfolio3, portfolio4, portfolio5, portfolio6];
 
 const ROWS = 5;
-const TILES_PER_ROW = 14;
-const TILE_GAP = "clamp(6px, 0.6vw, 10px)";
-const ROW_HEIGHT = "clamp(86px, 13.5vh, 165px)";
-const ROW_STEP = "clamp(92px, 14.2vh, 175px)";
+const TILES_PER_ROW = 16;
+const TILE_GAP = "clamp(5px, 0.48vw, 9px)";
 
-const ROW_OPACITY = [1, 1, 1, 0.92, 0.35];
-const ROW_DURATION = [82, 67, 56, 74, 88];
+const ROW_DURATION = [92, 78, 66, 84, 104];
 
-function getTileCurve(_index: number) {
-  return { rotateY: 0, translateZ: 0, scale: 1 };
+const ROW_LAYOUT = [
+  { top: "0%", height: "20.5%", opacity: 0.92, z: -210, rotateX: -12, scaleX: 1.08, scale: 0.96 },
+  { top: "15.2%", height: "22.5%", opacity: 1, z: -70, rotateX: -6, scaleX: 1.16, scale: 1 },
+  { top: "31.5%", height: "24%", opacity: 1, z: 65, rotateX: 0, scaleX: 1.24, scale: 1.035 },
+  { top: "49.4%", height: "22.5%", opacity: 0.9, z: -85, rotateX: 6, scaleX: 1.15, scale: 0.99 },
+  { top: "65.8%", height: "24%", opacity: 0.25, z: -255, rotateX: 13, scaleX: 1.06, scale: 0.94 },
+];
+
+function getTileCurve(index: number) {
+  const center = (TILES_PER_ROW - 1) / 2;
+  const normalized = (index - center) / center;
+  const distance = Math.abs(normalized);
+  return {
+    rotateY: normalized * -31,
+    translateZ: -Math.pow(distance, 1.55) * 270,
+    translateY: Math.pow(distance, 1.7) * 10,
+    scale: 1 - distance * 0.085,
+  };
 }
 
 
@@ -140,43 +153,47 @@ export function ImaxReelWall() {
   return (
     <section className="relative w-full bg-black overflow-hidden">
       <div
-        className="relative isolate w-full h-[78vh] sm:h-[88vh] md:h-[92svh] bg-black overflow-hidden"
+        className="relative isolate w-full h-[82vh] sm:h-[92vh] md:h-[100svh] bg-black overflow-hidden"
         style={{
           WebkitMaskImage:
-            "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
+            "linear-gradient(180deg, #000 0%, #000 73%, rgba(0,0,0,0.62) 86%, transparent 100%)",
           maskImage:
-            "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
-          perspective: "clamp(720px, 82vw, 1120px)",
-          perspectiveOrigin: "50% 48%",
+            "linear-gradient(180deg, #000 0%, #000 73%, rgba(0,0,0,0.62) 86%, transparent 100%)",
+          perspective: "clamp(560px, 62vw, 980px)",
+          perspectiveOrigin: "50% 42%",
         }}
       >
         <div
-          className="absolute inset-x-[-4vw] inset-y-0"
+          className="absolute inset-x-[-13vw] top-0 h-full"
           style={{
             transformStyle: "preserve-3d",
-            transform: "rotateX(0deg) scale(1.01)",
-            transformOrigin: "50% 50%",
+            transform: "rotateX(7deg) translateY(-1.5%) scale(1.08)",
+            transformOrigin: "50% 45%",
+            clipPath: "ellipse(72% 54% at 50% 46%)",
           }}
         >
           {rows.map((tiles, r) => {
             const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
             const isLast = r === ROWS - 1;
-            const opacity = ROW_OPACITY[r] ?? 1;
+            const layout = ROW_LAYOUT[r] ?? ROW_LAYOUT[2];
             const duration = ROW_DURATION[r] ?? 70;
             return (
               <div
                 key={r}
                 className="absolute w-full overflow-visible"
                 style={{
-                  top: `calc(${r} * ${ROW_STEP})`,
-                  height: ROW_HEIGHT,
-                  opacity,
+                  top: layout.top,
+                  height: layout.height,
+                  opacity: layout.opacity,
                   zIndex: 10 - r,
+                  transform: `translateZ(${layout.z}px) rotateX(${layout.rotateX}deg) scale(${layout.scale}) scaleX(${layout.scaleX})`,
+                  transformStyle: "preserve-3d",
+                  transformOrigin: "50% 50%",
                   maskImage: isLast
-                    ? "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
+                    ? "linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.32) 52%, transparent 100%)"
                     : undefined,
                   WebkitMaskImage: isLast
-                    ? "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
+                    ? "linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.32) 52%, transparent 100%)"
                     : undefined,
                 }}
               >
@@ -186,17 +203,26 @@ export function ImaxReelWall() {
                     gap: TILE_GAP,
                     animation: `${dir} ${duration}s linear infinite`,
                     willChange: "transform",
+                    transformStyle: "preserve-3d",
                   }}
                 >
-                  {tiles.map((t, c) => (
-                    <div
-                      key={`${r}-${c}`}
-                      className="h-full shrink-0"
-                      style={{ aspectRatio: "16 / 9" }}
-                    >
-                      <Tile url={t.url} fallback={t.fb} />
-                    </div>
-                  ))}
+                  {tiles.map((t, c) => {
+                    const curve = getTileCurve(c % TILES_PER_ROW);
+                    return (
+                      <div
+                        key={`${r}-${c}`}
+                        className="h-full shrink-0"
+                        style={{
+                          aspectRatio: "16 / 9",
+                          transform: `translateY(${curve.translateY}px) translateZ(${curve.translateZ}px) rotateY(${curve.rotateY}deg) scale(${curve.scale})`,
+                          transformStyle: "preserve-3d",
+                          transformOrigin: "50% 50%",
+                        }}
+                      >
+                        <Tile url={t.url} fallback={t.fb} />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );
@@ -206,10 +232,15 @@ export function ImaxReelWall() {
 
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[15%] opacity-35"
+          className="pointer-events-none absolute inset-x-[-10%] top-[-15%] z-20 h-[31%] rounded-[0_0_50%_50%] bg-black/72"
+        />
+
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[13%] opacity-28"
           style={{
             background:
-              "linear-gradient(180deg, rgba(255,244,220,0.08) 0%, rgba(255,244,220,0.022) 42%, transparent 100%)",
+              "linear-gradient(180deg, rgba(255,244,220,0.07) 0%, rgba(255,244,220,0.018) 45%, transparent 100%)",
           }}
         />
         <div
@@ -222,7 +253,7 @@ export function ImaxReelWall() {
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-[-18%] bottom-[-30%] z-20 h-[46%] rounded-[55%_55%_0_0] bg-black/88"
+          className="pointer-events-none absolute inset-x-[-16%] bottom-[-29%] z-20 h-[48%] rounded-[55%_55%_0_0] bg-black/90"
         />
         {/* Bottom immersive fade */}
         <div
