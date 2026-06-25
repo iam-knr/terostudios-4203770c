@@ -134,15 +134,23 @@ const ICONS: string[] = [
     <rect x="44" y="10" width="30" height="58" rx="2"/>
     <!-- speaker inner panel cutout -->
     <rect x="47" y="13" width="24" height="52" rx="1" fill="white"/>
-    <!-- tweeter -->
-    <circle cx="59" cy="22" r="4" fill="black"/>
-    <circle cx="59" cy="22" r="1.5" fill="white"/>
-    <!-- woofer -->
-    <circle cx="59" cy="46" r="11" fill="black"/>
-    <circle cx="59" cy="46" r="7" fill="white"/>
-    <circle cx="59" cy="46" r="3" fill="black"/>
-    <!-- port -->
-    <rect x="54" y="60" width="10" height="2.5" rx="1" fill="black"/>
+    <!-- tweeter (top) with concentric rings -->
+    <circle cx="59" cy="22" r="5" fill="black"/>
+    <circle cx="59" cy="22" r="3.5" fill="white"/>
+    <circle cx="59" cy="22" r="2" fill="black"/>
+    <circle cx="59" cy="22" r="0.8" fill="white"/>
+    <!-- woofer (big) with cone rings -->
+    <circle cx="59" cy="44" r="11" fill="black"/>
+    <circle cx="59" cy="44" r="9" fill="white"/>
+    <circle cx="59" cy="44" r="7.5" fill="black"/>
+    <circle cx="59" cy="44" r="5.5" fill="white"/>
+    <circle cx="59" cy="44" r="3.5" fill="black"/>
+    <circle cx="59" cy="44" r="1.4" fill="white"/>
+    <!-- bass port -->
+    <rect x="53" y="60" width="12" height="3" rx="1.5" fill="black"/>
+    <circle cx="56" cy="61.5" r="0.7" fill="white"/>
+    <circle cx="59" cy="61.5" r="0.7" fill="white"/>
+    <circle cx="62" cy="61.5" r="0.7" fill="white"/>
   </svg>`,
   // 5 — AI Content Creation: chip with pins on all four sides, "AI" label, fits inside frame
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
