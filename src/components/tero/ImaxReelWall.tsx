@@ -17,7 +17,7 @@ import reelF from "@/assets/reel-placeholder-f.jpg";
 const FALLBACKS = [reelF, reelE, reelB, reelA, reelD, reelC, portfolio1, portfolio2, portfolio3, portfolio4, portfolio5, portfolio6];
 
 const ROWS = 5;
-const TILES_PER_ROW = 16;
+const TILES_PER_ROW = 8;
 const TILE_GAP = "clamp(10px, 0.95vw, 18px)";
 
 const ROW_DURATION = [108, 92, 80, 98, 118];
@@ -35,10 +35,10 @@ function getTileCurve(index: number) {
   const normalized = (index - center) / center;
   const distance = Math.abs(normalized);
   return {
-    rotateY: normalized * -20,
-    translateZ: -Math.pow(distance, 1.55) * 185,
-    translateY: Math.pow(distance, 1.7) * 4,
-    scale: 1 - distance * 0.045,
+    rotateY: normalized * -36,
+    translateZ: -Math.pow(distance, 1.45) * 360,
+    translateY: Math.pow(distance, 1.65) * 12,
+    scale: 1 - distance * 0.1,
   };
 }
 
@@ -113,7 +113,7 @@ function Tile({ url, fallback }: { url: string; fallback: string }) {
         alt=""
         loading="eager"
         decoding="async"
-        className="absolute inset-0 z-10 h-full w-full object-cover select-none pointer-events-none brightness-[0.74] contrast-[1.12] saturate-[0.52]"
+        className="absolute inset-0 z-10 h-full w-full object-cover select-none pointer-events-none brightness-[0.82] contrast-[1.08] grayscale saturate-0"
       />
       {mount && (
         <video
@@ -130,7 +130,7 @@ function Tile({ url, fallback }: { url: string; fallback: string }) {
           onCanPlay={() => {
             if (didPrime.current) setReady(true);
           }}
-          className={`absolute inset-0 z-20 h-full w-full object-cover select-none pointer-events-none brightness-[0.8] contrast-[1.1] saturate-[0.58] transition-opacity duration-700 ${ready ? "opacity-95" : "opacity-0"}`}
+          className={`absolute inset-0 z-20 h-full w-full object-cover select-none pointer-events-none brightness-[0.86] contrast-[1.08] grayscale saturate-0 transition-opacity duration-700 ${ready ? "opacity-95" : "opacity-0"}`}
         />
       )}
     </div>
@@ -197,8 +197,9 @@ export function ImaxReelWall() {
                 }}
               >
                 <div
-                  className="absolute inset-y-0 left-0 flex"
+                  className="absolute inset-y-0 flex"
                   style={{
+                    left: "-18vw",
                     gap: TILE_GAP,
                     animation: `${dir} ${duration}s linear infinite`,
                     willChange: "transform",
