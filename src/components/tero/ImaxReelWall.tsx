@@ -12,8 +12,9 @@ import reelB from "@/assets/reel-placeholder-b.jpg";
 import reelC from "@/assets/reel-placeholder-c.jpg";
 import reelD from "@/assets/reel-placeholder-d.jpg";
 import reelE from "@/assets/reel-placeholder-e.jpg";
+import reelF from "@/assets/reel-placeholder-f.jpg";
 
-const FALLBACKS = [reelE, reelB, reelA, reelD, reelC, portfolio1, portfolio2, portfolio3, portfolio4, portfolio5, portfolio6];
+const FALLBACKS = [reelF, reelE, reelB, reelA, reelD, reelC, portfolio1, portfolio2, portfolio3, portfolio4, portfolio5, portfolio6];
 
 const ROWS = 5;
 const TILES_PER_ROW = 9;
