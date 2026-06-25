@@ -224,10 +224,8 @@ function Backdrop() {
 function TopChrome() {
   return (
     <div className="absolute inset-x-0 top-0 z-50 flex items-center justify-between px-6 md:px-10 pt-6 md:pt-7 pointer-events-none">
-      <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-cream/70 flex items-center gap-2.5">
-        <span className="inline-block w-1.5 h-1.5 rounded-full bg-vermillion animate-pulse" />
-        Tero Studios
-      </span>
+      <span />
+
       <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-cream/55">
         Animation · VFX · CGI
       </span>
