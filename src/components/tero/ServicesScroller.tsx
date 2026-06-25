@@ -73,45 +73,42 @@ const services = [
 // 4 Event & Immersive Hardware — holographic projector cube with dashed beams
 // 5 AI Content Creation — AI chip with pins
 const ICONS: string[] = [
-  // 0 — Brand Storytelling: simple monitor with a centered play button
+  // 0 — Brand Storytelling: monitor bezel (hollow screen) with a play button inside
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
-    <!-- monitor frame -->
-    <rect x="10" y="14" width="60" height="42" rx="3"/>
-    <!-- screen -->
-    <rect x="13" y="17" width="54" height="36" fill="white"/>
-    <!-- play button -->
-    <circle cx="40" cy="35" r="10" fill="black"/>
-    <path d="M36 29 L48 35 L36 41 Z" fill="white"/>
+    <!-- bezel frame: outer rect minus screen rect -->
+    <path fill-rule="evenodd" d="M8 14 H72 V56 H8 Z M12 18 H68 V52 H12 Z"/>
+    <!-- play triangle centered in screen -->
+    <path d="M34 26 L52 35 L34 44 Z"/>
     <!-- stand -->
     <rect x="36" y="56" width="8" height="6"/>
-    <rect x="26" y="62" width="28" height="4" rx="1"/>
+    <rect x="24" y="62" width="32" height="4" rx="1"/>
   </svg>`,
-  // 1 — Anamorphic & DOOH: billboard panel on TWO posts with a ground base
+
+  // 1 — Anamorphic / DOOH billboard (unchanged)
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
-    <rect x="6" y="10" width="68" height="34" rx="2"/>
-    <rect x="10" y="14" width="60" height="26" fill="white"/>
-    <rect x="14" y="18" width="20" height="18" fill="black"/>
-    <rect x="38" y="18" width="28" height="5" fill="black"/>
-    <rect x="38" y="26" width="22" height="4" fill="black"/>
-    <rect x="38" y="32" width="18" height="4" fill="black"/>
-    <rect x="18" y="44" width="4" height="24"/>
-    <rect x="58" y="44" width="4" height="24"/>
-    <rect x="10" y="68" width="60" height="5" rx="1"/>
-    <path d="M6 44 L18 50 L18 46 Z"/>
-    <path d="M74 44 L62 50 L62 46 Z"/>
+    <rect x="6" y="10" width="68" height="44" rx="2"/>
+    <rect x="10" y="14" width="60" height="36" fill="white"/>
+    <rect x="14" y="18" width="22" height="14" fill="black"/>
+    <rect x="40" y="18" width="26" height="6" fill="black"/>
+    <rect x="40" y="26" width="20" height="3" fill="black"/>
+    <rect x="14" y="36" width="52" height="3" fill="black"/>
+    <rect x="14" y="42" width="36" height="3" fill="black"/>
+    <rect x="20" y="54" width="6" height="14"/>
+    <rect x="54" y="54" width="6" height="14"/>
+    <rect x="14" y="68" width="52" height="4" rx="1"/>
   </svg>`,
-  // 2 — Immersive XR Training: front-view VR goggles / headset
+
+  // 2 — Immersive XR: VR goggles with a head strap arching behind
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
-    <path d="M14 26 C10 26 7 29 7 33 L7 52 C7 56 10 59 14 59 L24 59 C27 59 29 57 31 55 L34 51 C36 48 44 48 46 51 L49 55 C51 57 53 59 56 59 L66 59 C70 59 73 56 73 52 L73 33 C73 29 70 26 66 26 Z"/>
-    <ellipse cx="23" cy="42" rx="9" ry="7" fill="white"/>
-    <ellipse cx="57" cy="42" rx="9" ry="7" fill="white"/>
-    <circle cx="23" cy="42" r="3" fill="black"/>
-    <circle cx="57" cy="42" r="3" fill="black"/>
-    <rect x="2" y="36" width="6" height="4" rx="1"/>
-    <rect x="72" y="36" width="6" height="4" rx="1"/>
-    <path d="M7 30 C4 28 2 24 4 20" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M73 30 C76 28 78 24 76 20" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- head strap (band arching over the top, narrow so it reads as a strap) -->
+    <path d="M6 40 Q40 6 74 40 L74 32 Q40 -2 6 32 Z"/>
+    <!-- visor body with two eye-lens holes punched out -->
+    <path fill-rule="evenodd" d="M14 34 C10 34 7 37 7 41 L7 56 C7 60 10 63 14 63 L24 63 C27 63 29 61 31 59 L34 55 C36 52 44 52 46 55 L49 59 C51 61 53 63 56 63 L66 63 C70 63 73 60 73 56 L73 41 C73 37 70 34 66 34 Z M23 48 m-7 0 a7 5.5 0 1 0 14 0 a7 5.5 0 1 0 -14 0 Z M57 48 m-7 0 a7 5.5 0 1 0 14 0 a7 5.5 0 1 0 -14 0 Z"/>
+    <!-- pupils inside the lens holes -->
+    <circle cx="23" cy="48" r="2.6"/>
+    <circle cx="57" cy="48" r="2.6"/>
   </svg>`,
+
 
   // 3 — PropViz: detailed house with roof, chimney, windowpanes, door
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
@@ -136,7 +133,7 @@ const ICONS: string[] = [
     <circle cx="43" cy="63" r="1" fill="black"/>
     <rect x="32" y="68" width="16" height="2" fill="black"/>
   </svg>`,
-  // 4 — Event & Immersive Hardware: microphone on stand + speaker cabinet
+  // 4 — Event & Immersive Hardware: microphone on stand + speaker with real driver holes
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
     <!-- microphone capsule -->
     <rect x="16" y="8" width="14" height="26" rx="7"/>
@@ -147,35 +144,36 @@ const ICONS: string[] = [
     <!-- mic base -->
     <rect x="13" y="56" width="20" height="4" rx="1"/>
     <rect x="10" y="60" width="26" height="3" rx="1.5"/>
-    <!-- speaker cabinet -->
-    <rect x="44" y="10" width="30" height="58" rx="2"/>
-    <!-- speaker inner panel cutout -->
-    <rect x="47" y="13" width="24" height="52" rx="1" fill="white"/>
-    <!-- tweeter (top) with concentric rings -->
-    <circle cx="59" cy="22" r="5" fill="black"/>
-    <circle cx="59" cy="22" r="3.5" fill="white"/>
-    <circle cx="59" cy="22" r="2" fill="black"/>
-    <circle cx="59" cy="22" r="0.8" fill="white"/>
-    <!-- woofer (big) with cone rings -->
-    <circle cx="59" cy="44" r="11" fill="black"/>
-    <circle cx="59" cy="44" r="9" fill="white"/>
-    <circle cx="59" cy="44" r="7.5" fill="black"/>
-    <circle cx="59" cy="44" r="5.5" fill="white"/>
-    <circle cx="59" cy="44" r="3.5" fill="black"/>
-    <circle cx="59" cy="44" r="1.4" fill="white"/>
-    <!-- bass port -->
-    <rect x="53" y="60" width="12" height="3" rx="1.5" fill="black"/>
-    <circle cx="56" cy="61.5" r="0.7" fill="white"/>
-    <circle cx="59" cy="61.5" r="0.7" fill="white"/>
-    <circle cx="62" cy="61.5" r="0.7" fill="white"/>
+    <!-- speaker cabinet with tweeter, woofer and bass-port punched out (evenodd) -->
+    <path fill-rule="evenodd" d="
+      M44 10 H74 V68 H44 Z
+      M59 22 m-5 0 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 Z
+      M59 44 m-10 0 a10 10 0 1 0 20 0 a10 10 0 1 0 -20 0 Z
+      M52 59 H66 V63 H52 Z
+    "/>
+    <!-- woofer dust cap (solid dot inside the punched hole) -->
+    <circle cx="59" cy="44" r="2.4"/>
+    <!-- tweeter dome (solid dot inside the punched hole) -->
+    <circle cx="59" cy="22" r="1.4"/>
   </svg>`,
-  // 5 — AI Content Creation: chip with pins on all four sides, "AI" label
+  // 5 — AI Content Creation: chip with pins on all four sides and an "AI" cutout
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
-    <rect x="22" y="22" width="36" height="36" rx="4"/>
-    <text x="40" y="49" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="20" fill="white">AI</text>
+    <!-- chip body with letter holes punched via evenodd.
+         Outer rect = chip. A-outline + I-outline = holes.
+         Inner A-triangle = solid (double-nested, evenodd flips back to fill). -->
+    <path fill-rule="evenodd" d="
+      M22 22 H58 V58 H22 Z
+      M27 47 L31 29 L35 29 L39 47 L35.4 47 L34.6 43 L31.4 43 L30.6 47 Z
+      M31.8 40 H34.2 L33 34 Z
+      M42 29 H48 V32 H46.5 V44 H48 V47 H42 V44 H43.5 V32 H42 Z
+    "/>
+    <!-- pins top -->
     <rect x="27" y="14" width="4" height="8"/><rect x="38" y="14" width="4" height="8"/><rect x="49" y="14" width="4" height="8"/>
+    <!-- pins bottom -->
     <rect x="27" y="58" width="4" height="8"/><rect x="38" y="58" width="4" height="8"/><rect x="49" y="58" width="4" height="8"/>
+    <!-- pins left -->
     <rect x="14" y="27" width="8" height="4"/><rect x="14" y="38" width="8" height="4"/><rect x="14" y="49" width="8" height="4"/>
+    <!-- pins right -->
     <rect x="58" y="27" width="8" height="4"/><rect x="58" y="38" width="8" height="4"/><rect x="58" y="49" width="8" height="4"/>
   </svg>`,
 ];
