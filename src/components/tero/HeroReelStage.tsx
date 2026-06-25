@@ -124,12 +124,7 @@ function useSectionProgress(ref: RefObject<HTMLElement | null>) {
     offset: ["start start", "end end"],
   });
 
-  return useSpring(scrollYProgress, {
-    stiffness: 70,
-    damping: 24,
-    mass: 0.6,
-    restDelta: 0.0005,
-  });
+  return scrollYProgress;
 }
 
 function useResolvedVideoUrl(url: string) {
@@ -351,13 +346,13 @@ function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
   const p = useSectionProgress(sectionRef);
   const popScale = Math.min(1, Math.max(0.58, width / 1440));
   const popYScale = Math.min(1, Math.max(0.62, height / 900));
-  const titleScale = useTransform(p, [0, 0.5, 1], [1, 1.06, 1.18]);
-  const titleOpacity = useTransform(p, [0, 0.08, 0.88, 1], [1, 0.55, 0.45, 0.25]);
-  const captionOpacity = useTransform(p, [0.25, 0.4, 0.85, 1], [0, 1, 1, 0]);
+  const titleScale = useTransform(p, [0, 0.55, 1], [1, 1.05, 1.14]);
+  const titleOpacity = useTransform(p, [0, 0.08, 0.92, 1], [1, 0.68, 0.52, 0.25]);
+  const captionOpacity = useTransform(p, [0.2, 0.34, 0.9, 1], [0, 1, 1, 0]);
 
   return (
-    <section ref={sectionRef} className="relative h-[360vh] bg-black text-cream">
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+    <section ref={sectionRef} data-hero-section="pop" className="relative h-[560vh] lg:h-[540vh] xl:h-[520vh] bg-black text-cream">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
         <Backdrop />
         <TopChrome />
 
@@ -420,13 +415,13 @@ function SnakeSection({ seeds }: { seeds: CardSeed[] }) {
   const { width } = useViewportMetrics();
   const p = useSectionProgress(sectionRef);
   const snakeTravel = Math.min(820, Math.max(560, width * 0.62));
-  const headlineX = useTransform(p, [0, 1], ["8%", "-32%"]);
-  const headlineOpacity = useTransform(p, [0, 0.1, 0.9, 1], [0, 1, 1, 0]);
-  const microOpacity = useTransform(p, [0.15, 0.28, 0.8, 1], [0, 1, 1, 0]);
+  const headlineX = useTransform(p, [0, 1], ["8%", "-24%"]);
+  const headlineOpacity = useTransform(p, [0, 0.08, 0.92, 1], [0, 1, 1, 0]);
+  const microOpacity = useTransform(p, [0.12, 0.24, 0.84, 1], [0, 1, 1, 0]);
 
   return (
-    <section ref={sectionRef} className="relative h-[300vh] bg-black text-cream">
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+    <section ref={sectionRef} data-hero-section="snake" className="relative h-[500vh] lg:h-[480vh] xl:h-[460vh] bg-black text-cream">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
         <Backdrop />
         <TopChrome />
 
@@ -521,9 +516,9 @@ function CurvedWallSection() {
   );
 
   return (
-    <section ref={sectionRef} data-hide-site-nav="true" className="relative h-[220vh] bg-black text-cream">
+    <section ref={sectionRef} data-hero-section="wall" data-hide-site-nav="true" className="relative h-[220vh] bg-black text-cream">
       <div
-        className="sticky top-0 h-screen w-full overflow-hidden bg-black"
+        className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-black"
         style={{ perspective: "1200px" }}
       >
         <motion.div
@@ -707,8 +702,8 @@ function PopOutCard({
   const fallback = WALL_FALLBACKS[seed.id % WALL_FALLBACKS.length];
   const thumb = useVideoThumbnail(seed.url);
   const poster = thumb || fallback;
-  const start = 0.02 + seed.delay * 0.6;
-  const hit = 0.32 + seed.delay * 0.4;
+  const start = 0.01 + seed.delay * 0.4;
+  const hit = 0.2 + seed.delay * 0.28;
   // Hold cards visible across the bulk of the section, only drift slightly
   const restX = seed.popX * popScale;
   const restY = seed.popY * popYScale;
@@ -775,9 +770,9 @@ function SnakeCard({
   const fallback = WALL_FALLBACKS[seed.id % WALL_FALLBACKS.length];
   const thumb = useVideoThumbnail(seed.url);
   const poster = thumb || fallback;
-  // Stagger across the full scroll: each card travels left→right over a ~0.55 window
-  const span = 0.55;
-  const startOffset = (seed.id / (CARD_COUNT - 1)) * (1 - span); // 0 → 0.45
+  // Stagger through the middle of a longer sticky section so the snake remains readable.
+  const span = 0.5;
+  const startOffset = 0.12 + (seed.id / (CARD_COUNT - 1)) * 0.28;
   const enterAt = startOffset;
   const midAt = startOffset + span * 0.5;
   const exitAt = startOffset + span;
