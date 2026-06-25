@@ -125,15 +125,28 @@ const ICONS: string[] = [
     <path d="M73 30 C76 28 78 24 76 20" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round"/>
   </svg>`,
 
-  // 3 — PropViz: house with roof and windows (property visualization)
+  // 3 — PropViz: detailed house with roof, chimney, windowpanes, door
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
+    <!-- chimney -->
+    <rect x="56" y="14" width="6" height="14"/>
+    <rect x="55" y="13" width="8" height="3"/>
+    <!-- main silhouette: roof + body -->
     <path d="M40 8 L72 32 L72 36 L66 36 L66 70 L14 70 L14 36 L8 36 L8 32 Z"/>
+    <!-- roof shingle lines -->
+    <path d="M14 32 L66 32" stroke="white" stroke-width="1" fill="none"/>
+    <path d="M20 28 L60 28" stroke="white" stroke-width="1" fill="none"/>
+    <path d="M26 24 L54 24" stroke="white" stroke-width="1" fill="none"/>
+    <!-- windows with cross panes -->
     <g fill="white">
-      <rect x="22" y="42" width="10" height="10"/>
-      <rect x="48" y="42" width="10" height="10"/>
-      <path d="M34 56 H46 V70 H34 Z"/>
+      <rect x="20" y="40" width="12" height="12"/>
+      <rect x="48" y="40" width="12" height="12"/>
     </g>
-    <rect x="56" y="14" width="6" height="12"/>
+    <path d="M26 40 V52 M20 46 H32 M54 40 V52 M48 46 H60" stroke="black" stroke-width="1.2" fill="none"/>
+    <!-- door + step + knob -->
+    <path d="M34 54 H46 V70 H34 Z" fill="white"/>
+    <rect x="34" y="54" width="12" height="2" fill="black"/>
+    <circle cx="43" cy="63" r="1" fill="black"/>
+    <rect x="32" y="68" width="16" height="2" fill="black"/>
   </svg>`,
   // 4 — Event & Immersive Hardware: microphone on stand + speaker cabinet
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="black" stroke="none">
