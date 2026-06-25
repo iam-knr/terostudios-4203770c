@@ -10,7 +10,7 @@ function OutlineName({ name }: { name: string }) {
     <span
       className="font-sans-display font-bold whitespace-nowrap"
       style={{
-        WebkitTextStroke: "1.5px rgba(255,255,255,0.95)",
+        WebkitTextStroke: "1.5px rgba(15,15,15,0.95)",
         color: "transparent",
         letterSpacing: "-0.01em",
       }}
