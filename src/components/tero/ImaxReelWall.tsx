@@ -13,7 +13,7 @@ const FALLBACKS = [portfolio1, portfolio2, portfolio3, portfolio4, portfolio5, p
 
 const ROWS = 5;
 const TILES_PER_ROW = 8;
-const GAP = 12;
+const GAP = -28;
 
 const ROW_CURVE = [
   { angle: -16, z: -115, scale: 0.95, y: 18, opacity: 0.95 },
