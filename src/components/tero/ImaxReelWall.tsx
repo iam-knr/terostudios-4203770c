@@ -130,9 +130,9 @@ export function ImaxReelWall() {
         className="relative w-full h-[78vh] sm:h-[88vh] md:h-[96vh] lg:h-[104vh] bg-black overflow-hidden"
         style={{
           WebkitMaskImage:
-            "linear-gradient(180deg, transparent 0%, #000 5%, #000 68%, rgba(0,0,0,0.72) 82%, transparent 100%)",
+            "linear-gradient(180deg, #000 0%, #000 70%, rgba(0,0,0,0.72) 84%, transparent 100%)",
           maskImage:
-            "linear-gradient(180deg, transparent 0%, #000 5%, #000 68%, rgba(0,0,0,0.72) 82%, transparent 100%)",
+            "linear-gradient(180deg, #000 0%, #000 70%, rgba(0,0,0,0.72) 84%, transparent 100%)",
           perspective: "760px",
           perspectiveOrigin: "50% 50%",
         }}
@@ -140,7 +140,7 @@ export function ImaxReelWall() {
         {/* Concave screen silhouette and depth shadow */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-[-8%] top-[-12%] z-20 h-[34%] rounded-[0_0_50%_50%] bg-black"
+          className="pointer-events-none absolute inset-x-[-8%] top-[-7%] z-20 h-[12%] rounded-[0_0_50%_50%] bg-black/80"
         />
         <div
           aria-hidden
