@@ -227,12 +227,13 @@ function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
           style={{ opacity: titleOpacity, scale: titleScale }}
           className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none"
         >
-          <h1
-            className="tero-logo-cycle-text tracking-[-0.04em] leading-none text-cream/95 select-none"
-            style={{ fontSize: "clamp(7rem, 18vw, 16rem)" }}
-          >
-            TERO
-          </h1>
+          <img
+            src={teroWordmark}
+            alt="Tero"
+            className="select-none w-auto object-contain [filter:brightness(0)_invert(1)]"
+            style={{ height: "clamp(7rem, 18vw, 16rem)" }}
+            draggable={false}
+          />
         </motion.div>
 
         <motion.div
