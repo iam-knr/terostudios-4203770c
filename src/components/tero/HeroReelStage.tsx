@@ -511,14 +511,10 @@ function WallTile({
 
   return (
     <div
-      className="relative shrink-0 overflow-hidden rounded-[18px] ring-1 ring-cream/10 bg-black"
+      className="relative shrink-0 overflow-hidden bg-black"
       style={{
         width: w,
         height: h,
-        transform: `translateZ(${depth}px) rotateY(${-curve}deg)`,
-        transformStyle: "preserve-3d",
-        boxShadow:
-          "0 18px 36px -28px rgba(0,0,0,0.9), inset 0 0 0 1px rgba(255,255,255,0.04)",
       }}
     >
       <img
