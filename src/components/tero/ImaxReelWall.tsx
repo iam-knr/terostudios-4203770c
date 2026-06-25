@@ -16,12 +16,25 @@ const TILES_PER_ROW = 8;
 const GAP = 12;
 
 const ROW_CURVE = [
-  { angle: -18, z: -155, scale: 0.94, y: 10, opacity: 0.92 },
-  { angle: -8, z: -48, scale: 1.01, y: 2, opacity: 1 },
-  { angle: 0, z: 82, scale: 1.08, y: 0, opacity: 1 },
-  { angle: 9, z: -42, scale: 1.01, y: -2, opacity: 0.96 },
-  { angle: 19, z: -185, scale: 0.95, y: -12, opacity: 0.34 },
+  { angle: -16, z: -115, scale: 0.95, y: 18, opacity: 0.95 },
+  { angle: -7, z: -34, scale: 1.01, y: 6, opacity: 1 },
+  { angle: 0, z: 105, scale: 1.09, y: 0, opacity: 1 },
+  { angle: 8, z: -38, scale: 1.01, y: -6, opacity: 0.96 },
+  { angle: 18, z: -170, scale: 0.95, y: -16, opacity: 0.34 },
 ];
+
+function getTileCurve(index: number) {
+  const position = index % TILES_PER_ROW;
+  const center = (TILES_PER_ROW - 1) / 2;
+  const normalized = (position - center) / center;
+  const edge = Math.abs(normalized);
+
+  return {
+    rotateY: normalized * -18,
+    translateZ: -Math.pow(edge, 1.35) * 135,
+    scale: 1 - edge * 0.055,
+  };
+}
 
 function resolveForPlayback(url: string) {
   if (typeof window === "undefined") return resolveAssetUrl(url);
@@ -179,9 +192,23 @@ export function ImaxReelWall() {
                     transformStyle: "preserve-3d",
                   }}
                 >
-                  {tiles.map((t, c) => (
-                    <Tile key={`${r}-${c}`} url={t.url} fallback={t.fb} />
-                  ))}
+                  {tiles.map((t, c) => {
+                    const tileCurve = getTileCurve(c);
+                    return (
+                      <div
+                        key={`${r}-${c}`}
+                        className="h-full shrink-0"
+                        style={{
+                          aspectRatio: "16 / 9",
+                          transform: `translateZ(${tileCurve.translateZ}px) rotateY(${tileCurve.rotateY}deg) scale(${tileCurve.scale})`,
+                          transformStyle: "preserve-3d",
+                          transformOrigin: "50% 50%",
+                        }}
+                      >
+                        <Tile url={t.url} fallback={t.fb} />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );
