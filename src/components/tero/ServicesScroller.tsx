@@ -216,7 +216,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
     if (!ctx) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const dpr = Math.min(window.devicePixelRatio || 1, reduceMotion ? 1 : 1.25);
+    const dpr = Math.min(window.devicePixelRatio || 1, reduceMotion ? 1 : 1);
     let raf = 0;
     let w = 0;
     let h = 0;
@@ -315,7 +315,7 @@ function ParticleJourney({ hostRef }: { hostRef: React.RefObject<HTMLElement | n
       pointSets = await Promise.all(ICONS.map((icon) => sampleIcon(icon, box)));
       if (run !== sampleRun) return;
       serviceNodes = Array.from(host.querySelectorAll<HTMLElement>("[data-service-index]"));
-      const total = reduceMotion ? 640 : w < 760 ? 1600 : 3200;
+      const total = reduceMotion ? 400 : w < 760 ? 900 : 1600;
       particles = new Array(total).fill(0).map((_, i) => {
         const a = Math.random() * Math.PI * 2;
         const r = Math.min(w, h) * (0.22 + Math.random() * 0.62);
