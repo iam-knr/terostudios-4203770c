@@ -577,7 +577,9 @@ function SnakeCard({
   seed: CardSeed;
   progress: MotionValue<number>;
 }) {
-  const poster = WALL_FALLBACKS[seed.id % WALL_FALLBACKS.length];
+  const fallback = WALL_FALLBACKS[seed.id % WALL_FALLBACKS.length];
+  const thumb = useVideoThumbnail(seed.url);
+  const poster = thumb || fallback;
   const shift = (seed.id / CARD_COUNT) * 0.34;
   const enterAt = 0.02 + shift;
   const midAt = 0.36 + shift * 0.45;
