@@ -452,25 +452,62 @@ function WallTile({
   fallback: string;
   w: number;
 }) {
+  const videoUrl = useResolvedVideoUrl(url);
   const thumb = useVideoThumbnail(url);
+  const tileRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [mount, setMount] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (!tileRef.current) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setMount(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "600px", threshold: 0.01 },
+    );
+    io.observe(tileRef.current);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || !mount) return;
+    const play = () => v.play().catch(() => {});
+    if (v.readyState >= 2) play();
+    else v.addEventListener("loadeddata", play, { once: true });
+  }, [mount, videoUrl]);
+
+  const poster = thumb || fallback;
+
   return (
     <div
+      ref={tileRef}
       className="relative shrink-0 overflow-hidden bg-black rounded-[12px]"
       style={{ width: w, height: "100%", contain: "layout paint" }}
     >
       <img
-        src={fallback}
+        src={poster}
         alt=""
         loading="lazy"
         decoding="async"
         className="absolute inset-0 z-10 h-full w-full object-cover pointer-events-none select-none"
       />
-      {thumb && (
-        <img
-          src={thumb}
-          alt=""
-          decoding="async"
-          className="absolute inset-0 z-20 h-full w-full object-cover pointer-events-none select-none"
+      {mount && (
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          onCanPlay={() => setReady(true)}
+          className={`absolute inset-0 z-20 h-full w-full object-cover pointer-events-none select-none transition-opacity duration-300 ${ready ? "opacity-100" : "opacity-0"}`}
         />
       )}
       <div
