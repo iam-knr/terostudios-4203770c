@@ -466,10 +466,10 @@ function WallTile({
 
   return (
     <div
-      className="relative shrink-0 overflow-hidden bg-black"
+      className="relative shrink-0 overflow-hidden bg-black rounded-[12px]"
       style={{
         width: w,
-        height: h,
+        height: "100%",
       }}
     >
       <img
