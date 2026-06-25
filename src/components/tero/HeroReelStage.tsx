@@ -59,41 +59,41 @@ type WallConfig = {
 const WALL_CONFIGS: Record<"mobile" | "tablet" | "desktop", WallConfig> = {
   mobile: {
     rows: 4,
-    tilesPerRow: 10,
-    tileW: 320,
-    tileH: 140,
-    colGap: 10,
-    perspective: 900,
+    tilesPerRow: 8,
+    tileW: 220,
+    tileH: 138,
+    colGap: 6,
+    perspective: 1000,
     rowGap: 0,
     wallTop: "4vh",
     wallWidth: "260vw",
-    wallTilt: 10,
+    wallTilt: 12,
     edgeTilt: 0,
   },
   tablet: {
     rows: 4,
-    tilesPerRow: 11,
-    tileW: 380,
-    tileH: 170,
-    colGap: 10,
-    perspective: 900,
+    tilesPerRow: 9,
+    tileW: 280,
+    tileH: 176,
+    colGap: 8,
+    perspective: 1000,
     rowGap: 0,
     wallTop: "2vh",
-    wallWidth: "240vw",
-    wallTilt: 10,
+    wallWidth: "230vw",
+    wallTilt: 12,
     edgeTilt: 0,
   },
   desktop: {
     rows: 4,
-    tilesPerRow: 12,
-    tileW: 440,
+    tilesPerRow: 10,
+    tileW: 320,
     tileH: 200,
-    colGap: 12,
-    perspective: 900,
+    colGap: 8,
+    perspective: 1000,
     rowGap: 0,
     wallTop: "2vh",
-    wallWidth: "230vw",
-    wallTilt: 10,
+    wallWidth: "220vw",
+    wallTilt: 12,
     edgeTilt: 0,
   },
 };
@@ -237,8 +237,8 @@ function TopChrome() {
 function PopOutSection({ seeds }: { seeds: CardSeed[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const p = useSectionProgress(sectionRef);
-  const titleScale = useTransform(p, [0, 0.35, 0.82, 1], [0.82, 1, 1.08, 1.18]);
-  const titleOpacity = useTransform(p, [0, 0.22, 0.82, 1], [0, 1, 1, 0]);
+  const titleScale = useTransform(p, [0, 0.35, 0.82, 1], [1, 1.04, 1.1, 1.2]);
+  const titleOpacity = useTransform(p, [0, 0.82, 1], [1, 1, 0]);
   const captionOpacity = useTransform(p, [0.28, 0.45, 0.82, 1], [0, 1, 1, 0]);
 
   return (
@@ -409,7 +409,7 @@ function CurvedWallSection() {
               className="relative mx-auto"
               style={{
                 height: cfg.rows * cfg.tileH,
-                transform: `rotateX(${cfg.wallTilt}deg) scale(1.08)`,
+                transform: `rotateX(${cfg.wallTilt}deg) scale(1.1)`,
                 transformOrigin: "50% 50%",
                 transformStyle: "preserve-3d",
               }}
