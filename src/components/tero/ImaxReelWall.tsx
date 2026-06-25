@@ -13,35 +13,38 @@ import reelC from "@/assets/reel-placeholder-c.jpg";
 import reelD from "@/assets/reel-placeholder-d.jpg";
 import reelE from "@/assets/reel-placeholder-e.jpg";
 import reelF from "@/assets/reel-placeholder-f.jpg";
+import imax1 from "@/assets/imax-reference-style-1.jpg";
+import imax2 from "@/assets/imax-reference-style-2.jpg";
+import imax3 from "@/assets/imax-reference-style-3.jpg";
+import imax4 from "@/assets/imax-reference-style-4.jpg";
 
-const FALLBACKS = [reelF, reelE, reelB, reelA, reelD, reelC, portfolio1, portfolio2, portfolio3, portfolio4, portfolio5, portfolio6];
+const FALLBACKS = [imax1, imax2, imax3, imax4, reelF, reelB, portfolio3, portfolio6];
 
 const ROWS = 5;
-const TILES_PER_ROW = 8;
-const TILE_GAP = "clamp(10px, 0.9vw, 18px)";
+const TILES_PER_ROW = 7;
 
-const ROW_DURATION = [34, 29, 25, 31, 38];
+const ROW_DURATION = [30, 26, 23, 28, 34];
 
 const ROW_LAYOUT = [
-  { top: "-1.4%", height: "18.4%", opacity: 0.92, z: -170, rotateX: -7, scale: 0.96 },
-  { top: "17.2%", height: "19.2%", opacity: 1, z: -55, rotateX: -3.5, scale: 1 },
-  { top: "36.2%", height: "19.8%", opacity: 1, z: 58, rotateX: 0, scale: 1.025 },
-  { top: "55.4%", height: "19.2%", opacity: 0.84, z: -80, rotateX: 4.5, scale: 0.98 },
-  { top: "74%", height: "19.6%", opacity: 0.2, z: -210, rotateX: 10, scale: 0.94 },
+  { top: "-4%", height: "22%", opacity: 0.88, z: -330, rotateX: -12, scale: 0.9 },
+  { top: "15.2%", height: "22%", opacity: 1, z: -125, rotateX: -5.8, scale: 0.97 },
+  { top: "34.4%", height: "22%", opacity: 1, z: 84, rotateX: 0, scale: 1.045 },
+  { top: "53.4%", height: "22%", opacity: 0.86, z: -130, rotateX: 6.6, scale: 0.97 },
+  { top: "72.2%", height: "22%", opacity: 0.22, z: -360, rotateX: 13, scale: 0.9 },
 ];
 
-const TILE_LEFT = [-18, 1.5, 21, 40.5, 60, 79.5, 99, 118.5];
+const TILE_LEFT = [-15, 4, 23, 42, 61, 80, 99];
 
 function getTileCurve(index: number) {
   const center = (TILES_PER_ROW - 1) / 2;
   const normalized = (index - center) / center;
   const distance = Math.abs(normalized);
   return {
-    rotateY: normalized * -58,
-    translateZ: -Math.pow(distance, 1.28) * 780,
-    translateY: Math.pow(distance, 1.45) * 26,
-    scale: 1 - distance * 0.28,
-    brightness: 1 - distance * 0.5,
+    rotateY: normalized * -68,
+    translateZ: -Math.pow(distance, 1.22) * 980,
+    translateY: Math.pow(distance, 1.35) * 34,
+    scale: 1 - distance * 0.34,
+    brightness: 1 - distance * 0.58,
   };
 }
 
@@ -58,7 +61,7 @@ function resolveForPlayback(url: string) {
     : resolved;
 }
 
-function Tile({ url, fallback }: { url: string; fallback: string }) {
+function Tile({ url, fallback, generated }: { url: string; fallback: string; generated?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const didPrime = useRef(false);
@@ -108,7 +111,7 @@ function Tile({ url, fallback }: { url: string; fallback: string }) {
   return (
     <div
       ref={ref}
-      className="relative shrink-0 h-full overflow-hidden rounded-[22px] bg-black ring-1 ring-white/10"
+      className="relative shrink-0 h-full overflow-hidden rounded-[24px] bg-black ring-1 ring-white/10 shadow-[0_18px_70px_rgba(0,0,0,0.55)]"
       style={{ aspectRatio: "16 / 9" }}
     >
       <img
@@ -117,7 +120,7 @@ function Tile({ url, fallback }: { url: string; fallback: string }) {
         loading="eager"
         decoding="async"
         className="absolute inset-0 z-10 h-full w-full object-cover select-none pointer-events-none"
-        style={{ filter: "grayscale(1) saturate(0) brightness(0.82) contrast(1.08)" }}
+        style={{ filter: generated ? "brightness(0.96) contrast(1.2)" : "grayscale(1) saturate(0) brightness(0.62) contrast(1.18)" }}
       />
       {mount && (
         <video
@@ -134,8 +137,8 @@ function Tile({ url, fallback }: { url: string; fallback: string }) {
           onCanPlay={() => {
             if (didPrime.current) setReady(true);
           }}
-          className={`absolute inset-0 z-20 h-full w-full object-cover select-none pointer-events-none transition-opacity duration-700 ${ready ? "opacity-95" : "opacity-0"}`}
-          style={{ filter: "grayscale(1) saturate(0) brightness(0.86) contrast(1.08)" }}
+          className={`absolute inset-0 z-20 h-full w-full object-cover select-none pointer-events-none transition-opacity duration-700 ${ready && !generated ? "opacity-80" : "opacity-0"}`}
+          style={{ filter: "grayscale(1) saturate(0) brightness(0.58) contrast(1.2)" }}
         />
       )}
     </div>
@@ -148,7 +151,8 @@ export function ImaxReelWall() {
       Array.from({ length: ROWS }, (_, r) => {
         return Array.from({ length: TILES_PER_ROW }, (_, c) => {
           const v = videos[(r * 4 + c * 2) % videos.length];
-          return { url: v.url, fb: FALLBACKS[(r + c) % FALLBACKS.length] };
+          const fb = FALLBACKS[(r * 2 + c) % FALLBACKS.length];
+          return { url: v.url, fb, generated: [imax1, imax2, imax3, imax4].includes(fb) };
         });
       }),
     [],
@@ -163,15 +167,15 @@ export function ImaxReelWall() {
             "linear-gradient(180deg, #000 0%, #000 65%, rgba(0,0,0,0.56) 82%, transparent 100%)",
           maskImage:
             "linear-gradient(180deg, #000 0%, #000 65%, rgba(0,0,0,0.56) 82%, transparent 100%)",
-          perspective: "clamp(360px, 42vw, 680px)",
+          perspective: "clamp(280px, 33vw, 520px)",
           perspectiveOrigin: "50% 43%",
         }}
       >
         <div
-          className="absolute inset-x-[-7vw] top-0 h-full"
+          className="absolute inset-x-[-4vw] top-0 h-full"
           style={{
             transformStyle: "preserve-3d",
-            transform: "rotateX(5deg) scale(1.045)",
+            transform: "rotateX(8deg) scale(1.08)",
             transformOrigin: "50% 44%",
           }}
         >
@@ -203,7 +207,7 @@ export function ImaxReelWall() {
                 <div
                   className="absolute inset-0"
                   style={{
-                    animation: `${dir === "tero-row-left" ? "tero-row-drift-left" : "tero-row-drift-right"} ${duration}s ease-in-out infinite alternate`,
+                    animation: `${dir === "tero-row-left" ? "tero-row-drift-left" : "tero-row-drift-right"} ${duration}s cubic-bezier(0.45,0,0.55,1) infinite alternate`,
                     willChange: "transform",
                     transformStyle: "preserve-3d",
                   }}
@@ -215,7 +219,7 @@ export function ImaxReelWall() {
                         key={`${r}-${c}`}
                         className="absolute top-0 h-full"
                         style={{
-                          left: `calc(${TILE_LEFT[c] ?? 0}% + ${c % 2 === 0 ? "0px" : TILE_GAP})`,
+                          left: `${TILE_LEFT[c] ?? 0}%`,
                           aspectRatio: "16 / 9",
                           transform: `translateY(${curve.translateY}px) translateZ(${curve.translateZ}px) rotateY(${curve.rotateY}deg) scale(${curve.scale})`,
                           transformStyle: "preserve-3d",
@@ -223,7 +227,7 @@ export function ImaxReelWall() {
                           filter: `brightness(${curve.brightness})`,
                         }}
                       >
-                        <Tile url={t.url} fallback={t.fb} />
+                        <Tile url={t.url} fallback={t.fb} generated={t.generated} />
                       </div>
                     );
                   })}
