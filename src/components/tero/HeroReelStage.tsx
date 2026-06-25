@@ -430,9 +430,8 @@ function CurvedWallSection() {
                   </div>
                 </div>
               );
-            })}
           </div>
-        </div>
+
 
         <div
           aria-hidden
