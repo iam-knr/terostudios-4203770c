@@ -44,19 +44,10 @@ function Team() {
       </section>
 
       <TeamMarquee
-        eyebrow="— Leadership"
-        title={<>Meet the founder <br /><span className="italic">& CEO.</span></>}
-        people={[
-          { name: "Arvind", role: "Founder & Creative Director", li: "#" },
-          { name: "Sneha", role: "CEO & Executive Producer", li: "#" },
-        ]}
-        featured
-      />
-
-      <TeamMarquee
         eyebrow="— The team"
         title={<>Our team of <br /><span className="italic">strategists.</span></>}
         people={team.map((t) => ({ name: t.name.split(" ")[0], role: t.role, li: t.li }))}
+        rows={3}
       />
     </PageLayout>
   );
