@@ -1,4 +1,3 @@
-import { Reveal } from "./Reveal";
 import bhimaLogo from "@/assets/client-logos-white/bhima.png.asset.json";
 import forumLogo from "@/assets/client-logos-white/forum.png.asset.json";
 import luluLogo from "@/assets/client-logos-white/lulu.png.asset.json";
@@ -79,17 +78,20 @@ export function Testimonials() {
       data-nav-theme="dark"
       className="relative overflow-hidden bg-[#101010] text-cream"
     >
-      <div className="container-tero relative pt-16 md:pt-24 pb-16 md:pb-24">
-        <Reveal>
-          <p className="overline text-vermillion">— Portfolio of consensus</p>
-          <h2 className="mt-4 hero-headline text-[clamp(28px,4.2vw,52px)] leading-[1.05] text-cream max-w-3xl">
-            What clients say after the
-            <br />
-            <em className="not-italic font-display italic">lights come up.</em>
-          </h2>
-        </Reveal>
+      <div className="container-tero relative py-10 md:py-14">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="overline text-vermillion">— Client response</p>
+            <h2 className="mt-3 hero-headline text-[clamp(24px,3.4vw,42px)] leading-[1.02] text-cream">
+              Trusted by brands that move culture.
+            </h2>
+          </div>
+          <p className="max-w-sm font-body text-sm leading-relaxed text-cream/50">
+            Campaign craft, launch visuals and immersive motion systems built with studio precision.
+          </p>
+        </div>
 
-        <div className="mt-10 md:mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+        <div className="mt-7 grid grid-cols-1 min-[560px]:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
           {items.map((item, i) => (
             <Card key={`${item.name}-${i}`} item={item} index={i} />
           ))}
@@ -106,7 +108,7 @@ function Card({ item }: { item: Testimonial; index: number }) {
     <article
       className={[
         "group relative flex h-full flex-col justify-between",
-        "bg-[#1E1E1E] p-6 md:p-7 min-h-[260px]",
+        "bg-[#1E1E1E] p-4 md:p-5 min-h-[178px]",
         "border-l-2 transition-colors duration-300",
         accent
           ? "border-[#FF4A1C]/70"
@@ -117,12 +119,13 @@ function Card({ item }: { item: Testimonial; index: number }) {
         <img
           src={item.logo}
           alt={`${item.company} logo`}
-          loading="lazy"
-          className="h-7 md:h-8 w-auto object-contain object-left opacity-90"
+          loading="eager"
+          decoding="sync"
+          className="h-6 md:h-7 max-w-[104px] w-auto object-contain object-left opacity-90"
         />
         <span
           className={[
-            "shrink-0 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.18em]",
+            "shrink-0 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.14em]",
             accent
               ? "bg-[#FF4A1C]/10 text-[#FF4A1C]"
               : "bg-white/5 text-cream/45",
@@ -133,11 +136,11 @@ function Card({ item }: { item: Testimonial; index: number }) {
       </div>
 
 
-        <blockquote className="mt-5 font-display text-[15px] md:text-[16px] leading-[1.5] text-cream/95">
+        <blockquote className="mt-4 font-display text-[13px] md:text-[14px] leading-[1.45] text-cream/95">
           &ldquo;{item.quote}&rdquo;
         </blockquote>
 
-        <div className="mt-5 border-t border-white/10 pt-3">
+        <div className="mt-4 border-t border-white/10 pt-3">
           <p className="font-sans-display text-[12px] font-bold uppercase tracking-wider text-cream">
             {item.name}
           </p>
