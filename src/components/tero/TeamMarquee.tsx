@@ -10,7 +10,7 @@ function OutlineName({ name }: { name: string }) {
     <span
       className="font-sans-display font-bold whitespace-nowrap"
       style={{
-        WebkitTextStroke: "1.5px rgba(255,255,255,0.95)",
+        WebkitTextStroke: "1.5px rgba(15,15,15,0.95)",
         color: "transparent",
         letterSpacing: "-0.01em",
       }}
@@ -75,21 +75,22 @@ function MarqueeRow({
               <h3 className="leading-[0.9] text-[clamp(64px,11vw,180px)]">
                 <OutlineName name={p.name} />
               </h3>
-              <div className="mt-4 flex items-center gap-3 font-body text-[13px] md:text-[15px] text-white/80">
+              <div className="mt-4 flex items-center gap-3 font-body text-[13px] md:text-[15px] text-ink/80">
                 <span>{p.role}</span>
-                <span className="text-white/40">—</span>
+                <span className="text-ink/40">—</span>
                 <a
                   href={p.li ?? "#"}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={`${p.name} on LinkedIn`}
-                  className="inline-flex items-center justify-center text-white/85 hover:text-vermillion transition-colors"
+                  className="inline-flex items-center justify-center text-ink/85 hover:text-vermillion transition-colors"
                 >
                   <Linkedin className="h-5 w-5" strokeWidth={2} />
                 </a>
               </div>
             </div>
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white/50" />
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-ink/50" />
+
           </div>
         ))}
       </div>
@@ -122,19 +123,19 @@ export function TeamMarquee({
   const speeds = [0.55, 0.45, 0.65, 0.5];
 
   return (
-    <section className="relative overflow-hidden bg-black text-white py-24 md:py-36">
+    <section className="relative overflow-hidden bg-cream text-ink py-24 md:py-36">
       <div className="container-tero relative z-10">
         <Reveal>
-          <p className="overline text-white/60">{eyebrow}</p>
-          <h2 className="mt-6 hero-headline text-[clamp(40px,6vw,80px)] leading-[1] text-white">
+          <p className="overline text-ink/60">{eyebrow}</p>
+          <h2 className="mt-6 hero-headline text-[clamp(40px,6vw,80px)] leading-[1] text-ink">
             {title}
           </h2>
         </Reveal>
       </div>
 
       <div className="relative z-10 mt-16 md:mt-24">
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-32 md:w-64 bg-gradient-to-r from-black to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-32 md:w-64 bg-gradient-to-l from-black to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-32 md:w-64 bg-gradient-to-r from-cream to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-32 md:w-64 bg-gradient-to-l from-cream to-transparent" />
 
         <div className="flex flex-col gap-4 md:gap-8">
           {grouped.map((row, i) => (
