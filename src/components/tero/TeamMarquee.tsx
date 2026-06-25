@@ -75,21 +75,22 @@ function MarqueeRow({
               <h3 className="leading-[0.9] text-[clamp(64px,11vw,180px)]">
                 <OutlineName name={p.name} />
               </h3>
-              <div className="mt-4 flex items-center gap-3 font-body text-[13px] md:text-[15px] text-white/80">
+              <div className="mt-4 flex items-center gap-3 font-body text-[13px] md:text-[15px] text-ink/80">
                 <span>{p.role}</span>
-                <span className="text-white/40">—</span>
+                <span className="text-ink/40">—</span>
                 <a
                   href={p.li ?? "#"}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={`${p.name} on LinkedIn`}
-                  className="inline-flex items-center justify-center text-white/85 hover:text-vermillion transition-colors"
+                  className="inline-flex items-center justify-center text-ink/85 hover:text-vermillion transition-colors"
                 >
                   <Linkedin className="h-5 w-5" strokeWidth={2} />
                 </a>
               </div>
             </div>
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white/50" />
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-ink/50" />
+
           </div>
         ))}
       </div>
