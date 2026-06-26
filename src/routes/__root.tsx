@@ -152,6 +152,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <CinemaTransition />
       <Outlet />
+      <WhatsAppButton />
     </QueryClientProvider>
   );
 }
