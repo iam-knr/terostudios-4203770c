@@ -1,50 +1,32 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { videos } from "@/data/videos";
 import { resolveAssetUrl } from "@/lib/asset-url";
+import portfolio1 from "@/assets/portfolio-1.jpg";
+import portfolio2 from "@/assets/portfolio-2.jpg";
 import portfolio3 from "@/assets/portfolio-3.jpg";
+import portfolio4 from "@/assets/portfolio-4.jpg";
+import portfolio5 from "@/assets/portfolio-5.jpg";
 import portfolio6 from "@/assets/portfolio-6.jpg";
+import reelA from "@/assets/reel-placeholder-a.jpg";
 import reelB from "@/assets/reel-placeholder-b.jpg";
+import reelC from "@/assets/reel-placeholder-c.jpg";
+import reelD from "@/assets/reel-placeholder-d.jpg";
+import reelE from "@/assets/reel-placeholder-e.jpg";
 import reelF from "@/assets/reel-placeholder-f.jpg";
-import imax1 from "@/assets/imax-reference-style-1.jpg";
-import imax2 from "@/assets/imax-reference-style-2.jpg";
-import imax3 from "@/assets/imax-reference-style-3.jpg";
-import imax4 from "@/assets/imax-reference-style-4.jpg";
-import imax5 from "@/assets/imax-reference-style-5.jpg";
-import imax6 from "@/assets/imax-reference-style-6.jpg";
-import imax7 from "@/assets/imax-reference-style-7.jpg";
-import imax8 from "@/assets/imax-reference-style-8.jpg";
-import imax9 from "@/assets/imax-reference-style-9.jpg";
-import imax10 from "@/assets/imax-reference-style-10.jpg";
 
-const FALLBACKS = [imax1, imax2, imax3, imax4, imax5, imax6, imax7, imax8, imax9, imax10, reelF, reelB, portfolio3, portfolio6];
-const GENERATED_FALLBACKS = [imax1, imax2, imax3, imax4, imax5, imax6, imax7, imax8, imax9, imax10];
+const FALLBACKS = [reelF, reelE, reelB, reelA, reelD, reelC, portfolio1, portfolio2, portfolio3, portfolio4, portfolio5, portfolio6];
 
 const ROWS = 5;
-const TILES_PER_ROW = 7;
+const TILES_PER_ROW = 14;
+const TILE_GAP = "clamp(6px, 0.6vw, 10px)";
+const ROW_HEIGHT = "clamp(86px, 13.5vh, 165px)";
+const ROW_STEP = "clamp(92px, 14.2vh, 175px)";
 
-const ROW_DURATION = [30, 26, 23, 28, 34];
+const ROW_OPACITY = [1, 1, 1, 0.92, 0.35];
+const ROW_DURATION = [82, 67, 56, 74, 88];
 
-const ROW_LAYOUT = [
-  { top: "-4%", height: "22%", opacity: 0.88, z: -330, rotateX: -12, scale: 0.9 },
-  { top: "15.2%", height: "22%", opacity: 1, z: -125, rotateX: -5.8, scale: 0.97 },
-  { top: "34.4%", height: "22%", opacity: 1, z: 84, rotateX: 0, scale: 1.045 },
-  { top: "53.4%", height: "22%", opacity: 0.86, z: -130, rotateX: 6.6, scale: 0.97 },
-  { top: "72.2%", height: "22%", opacity: 0.22, z: -360, rotateX: 13, scale: 0.9 },
-];
-
-const TILE_LEFT = [-15, 4, 23, 42, 61, 80, 99];
-
-function getTileCurve(index: number) {
-  const center = (TILES_PER_ROW - 1) / 2;
-  const normalized = (index - center) / center;
-  const distance = Math.abs(normalized);
-  return {
-    rotateY: normalized * -68,
-    translateZ: -Math.pow(distance, 1.22) * 980,
-    translateY: Math.pow(distance, 1.35) * 34,
-    scale: 1 - distance * 0.34,
-    brightness: 1 - distance * 0.58,
-  };
+function getTileCurve(_index: number) {
+  return { rotateY: 0, translateZ: 0, scale: 1 };
 }
 
 
@@ -60,7 +42,7 @@ function resolveForPlayback(url: string) {
     : resolved;
 }
 
-function Tile({ url, fallback, generated }: { url: string; fallback: string; generated?: boolean }) {
+function Tile({ url, fallback }: { url: string; fallback: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const didPrime = useRef(false);
@@ -110,7 +92,7 @@ function Tile({ url, fallback, generated }: { url: string; fallback: string; gen
   return (
     <div
       ref={ref}
-      className="relative shrink-0 h-full overflow-hidden rounded-[24px] bg-black ring-1 ring-white/10 shadow-[0_18px_70px_rgba(0,0,0,0.55)]"
+      className="relative shrink-0 h-full overflow-hidden rounded-[14px] bg-black ring-1 ring-white/5"
       style={{ aspectRatio: "16 / 9" }}
     >
       <img
@@ -118,8 +100,7 @@ function Tile({ url, fallback, generated }: { url: string; fallback: string; gen
         alt=""
         loading="eager"
         decoding="async"
-        className="absolute inset-0 z-10 h-full w-full object-cover select-none pointer-events-none"
-        style={{ filter: generated ? "brightness(0.96) contrast(1.2)" : "grayscale(1) saturate(0) brightness(0.62) contrast(1.18)" }}
+        className="absolute inset-0 z-10 h-full w-full object-cover select-none pointer-events-none brightness-[0.9] contrast-[1.08]"
       />
       {mount && (
         <video
@@ -136,8 +117,7 @@ function Tile({ url, fallback, generated }: { url: string; fallback: string; gen
           onCanPlay={() => {
             if (didPrime.current) setReady(true);
           }}
-          className={`absolute inset-0 z-20 h-full w-full object-cover select-none pointer-events-none transition-opacity duration-700 ${ready && !generated ? "opacity-80" : "opacity-0"}`}
-          style={{ filter: "grayscale(1) saturate(0) brightness(0.58) contrast(1.2)" }}
+          className={`absolute inset-0 z-20 h-full w-full object-cover select-none pointer-events-none brightness-[1.08] contrast-[1.08] transition-opacity duration-700 ${ready ? "opacity-90" : "opacity-0"}`}
         />
       )}
     </div>
@@ -148,11 +128,11 @@ export function ImaxReelWall() {
   const rows = useMemo(
     () =>
       Array.from({ length: ROWS }, (_, r) => {
-        return Array.from({ length: TILES_PER_ROW }, (_, c) => {
-          const v = videos[(r * 4 + c * 2) % videos.length];
-          const fb = FALLBACKS[(r * 2 + c) % FALLBACKS.length];
-          return { url: v.url, fb, generated: GENERATED_FALLBACKS.includes(fb) };
+        const base = Array.from({ length: TILES_PER_ROW }, (_, c) => {
+          const v = videos[(r * 3 + c * 2) % videos.length];
+          return { url: v.url, fb: FALLBACKS[(r + c) % FALLBACKS.length] };
         });
+        return [...base, ...base];
       }),
     [],
   );
@@ -160,76 +140,63 @@ export function ImaxReelWall() {
   return (
     <section className="relative w-full bg-black overflow-hidden">
       <div
-        className="relative isolate w-full h-[82vh] sm:h-[92vh] md:h-[100svh] bg-black overflow-hidden"
+        className="relative isolate w-full h-[78vh] sm:h-[88vh] md:h-[92svh] bg-black overflow-hidden"
         style={{
           WebkitMaskImage:
-            "linear-gradient(180deg, #000 0%, #000 65%, rgba(0,0,0,0.56) 82%, transparent 100%)",
+            "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
           maskImage:
-            "linear-gradient(180deg, #000 0%, #000 65%, rgba(0,0,0,0.56) 82%, transparent 100%)",
-          perspective: "clamp(280px, 33vw, 520px)",
-          perspectiveOrigin: "50% 43%",
+            "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
+          perspective: "clamp(720px, 82vw, 1120px)",
+          perspectiveOrigin: "50% 48%",
         }}
       >
         <div
-          className="absolute inset-x-[-4vw] top-0 h-full"
+          className="absolute inset-x-[-4vw] inset-y-0"
           style={{
             transformStyle: "preserve-3d",
-            transform: "rotateX(8deg) scale(1.08)",
-            transformOrigin: "50% 44%",
+            transform: "rotateX(0deg) scale(1.01)",
+            transformOrigin: "50% 50%",
           }}
         >
           {rows.map((tiles, r) => {
             const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
             const isLast = r === ROWS - 1;
-            const layout = ROW_LAYOUT[r] ?? ROW_LAYOUT[2];
+            const opacity = ROW_OPACITY[r] ?? 1;
             const duration = ROW_DURATION[r] ?? 70;
             return (
               <div
                 key={r}
                 className="absolute w-full overflow-visible"
                 style={{
-                  top: layout.top,
-                  height: layout.height,
-                  opacity: layout.opacity,
+                  top: `calc(${r} * ${ROW_STEP})`,
+                  height: ROW_HEIGHT,
+                  opacity,
                   zIndex: 10 - r,
-                  transform: `translateZ(${layout.z}px) rotateX(${layout.rotateX}deg) scale(${layout.scale})`,
-                  transformStyle: "preserve-3d",
-                  transformOrigin: "50% 50%",
                   maskImage: isLast
-                    ? "linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.32) 52%, transparent 100%)"
+                    ? "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
                     : undefined,
                   WebkitMaskImage: isLast
-                    ? "linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.32) 52%, transparent 100%)"
+                    ? "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
                     : undefined,
                 }}
               >
                 <div
-                  className="absolute inset-0"
+                  className="absolute inset-y-0 left-0 flex"
                   style={{
-                    animation: `${dir === "tero-row-left" ? "tero-row-drift-left" : "tero-row-drift-right"} ${duration}s cubic-bezier(0.45,0,0.55,1) infinite alternate`,
+                    gap: TILE_GAP,
+                    animation: `${dir} ${duration}s linear infinite`,
                     willChange: "transform",
-                    transformStyle: "preserve-3d",
                   }}
                 >
-                  {tiles.map((t, c) => {
-                    const curve = getTileCurve(c);
-                    return (
-                      <div
-                        key={`${r}-${c}`}
-                        className="absolute top-0 h-full"
-                        style={{
-                          left: `${TILE_LEFT[c] ?? 0}%`,
-                          aspectRatio: "16 / 9",
-                          transform: `translateY(${curve.translateY}px) translateZ(${curve.translateZ}px) rotateY(${curve.rotateY}deg) scale(${curve.scale})`,
-                          transformStyle: "preserve-3d",
-                          transformOrigin: c < TILES_PER_ROW / 2 ? "100% 50%" : "0% 50%",
-                          filter: `brightness(${curve.brightness})`,
-                        }}
-                      >
-                        <Tile url={t.url} fallback={t.fb} generated={t.generated} />
-                      </div>
-                    );
-                  })}
+                  {tiles.map((t, c) => (
+                    <div
+                      key={`${r}-${c}`}
+                      className="h-full shrink-0"
+                      style={{ aspectRatio: "16 / 9" }}
+                    >
+                      <Tile url={t.url} fallback={t.fb} />
+                    </div>
+                  ))}
                 </div>
               </div>
             );
@@ -239,10 +206,10 @@ export function ImaxReelWall() {
 
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[11%] opacity-24"
+          className="pointer-events-none absolute inset-x-0 top-0 z-20 h-[15%] opacity-35"
           style={{
             background:
-              "linear-gradient(180deg, rgba(255,244,220,0.055) 0%, rgba(255,244,220,0.014) 48%, transparent 100%)",
+              "linear-gradient(180deg, rgba(255,244,220,0.08) 0%, rgba(255,244,220,0.022) 42%, transparent 100%)",
           }}
         />
         <div
@@ -255,15 +222,15 @@ export function ImaxReelWall() {
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-[-16%] bottom-[-31%] z-20 h-[48%] rounded-[55%_55%_0_0] bg-black/92"
+          className="pointer-events-none absolute inset-x-[-18%] bottom-[-30%] z-20 h-[46%] rounded-[55%_55%_0_0] bg-black/88"
         />
         {/* Bottom immersive fade */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[36%] sm:h-[40%] md:h-[44%] z-30"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[24%] sm:h-[29%] md:h-[34%] z-30"
           style={{
             background:
-              "linear-gradient(0deg, #000 0%, rgba(0,0,0,0.86) 28%, rgba(0,0,0,0.46) 66%, transparent 100%)",
+              "linear-gradient(0deg, #000 2%, rgba(0,0,0,0.78) 32%, rgba(0,0,0,0.28) 70%, transparent 100%)",
           }}
         />
         <div
