@@ -104,13 +104,17 @@ export function ImaxReelWall() {
 
   return (
     <section className="relative w-full bg-black overflow-hidden">
-      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-20 pb-10 sm:pt-24 sm:pb-12 text-center">
-        <p className="font-mono text-[11px] uppercase tracking-[0.32em] text-cream/50">— The Reel Wall</p>
-        <h2 className="mt-4 font-display text-cream text-[clamp(36px,6vw,84px)] leading-[1.02] tracking-[-0.02em]">
-          Stories built for the <em className="font-serif italic text-vermillion">big screen.</em>
+      <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 pb-12 sm:pt-28 sm:pb-16 text-center">
+        <div className="mb-5 flex items-center justify-center gap-3 font-mono text-[11px] uppercase tracking-[0.32em] text-[#e8390e]">
+          <span className="h-px w-8 bg-[#e8390e]/60" />
+          <span>The Reel Wall</span>
+          <span className="h-px w-8 bg-[#e8390e]/60" />
+        </div>
+        <h2 className="font-display text-[clamp(44px,7vw,110px)] font-bold leading-[0.94] text-[#fdfaf6]">
+          Crafted for the <span className="font-serif italic font-normal text-[#e8390e]">big screen.</span>
         </h2>
-        <p className="mt-4 mx-auto max-w-xl font-body text-[15px] sm:text-base text-cream/65">
-          A living wall of work in motion — crafted frame by frame at Tero Studios.
+        <p className="mt-6 mx-auto max-w-xl font-body text-[15px] sm:text-base text-[#fdfaf6]/65">
+          A living wall of work in motion — frame by frame, shot by shot, from the studio floor.
         </p>
       </div>
       <div
