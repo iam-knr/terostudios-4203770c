@@ -40,7 +40,7 @@ function ContactPage() {
     (step === 2 && data.name && /\S+@\S+\.\S+/.test(data.email));
 
   const APPS_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbxupNGy5U7McTPAvl-_0C_-CyHW3HxpL4Zv7vOH0w0-P4JNhdExzqVUD4kmTSA1G3P8/exec";
+    "https://script.google.com/macros/s/AKfycbwB9tlgx2OGaRzhTKkt6oHoi3nIYCMPwpnGFpCy4x1yEOdI3T2ASSJUAXVW11J5GwXW/exec";
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
