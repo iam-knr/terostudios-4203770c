@@ -255,7 +255,7 @@ export function ImaxReelWall() {
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-[-16%] bottom-[-31%] z-20 h-[48%] rounded-[55%_55%_0_0] bg-black/92"
+          className="pointer-events-none absolute inset-x-[-16%] bottom-[-48%] z-20 h-[36%] rounded-[55%_55%_0_0] bg-black/80"
         />
         {/* Bottom immersive fade */}
         <div
