@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { CinemaTransition } from "@/components/tero/CinemaTransition";
+import { WhatsAppButton } from "@/components/tero/WhatsAppButton";
 
 function NotFoundComponent() {
   return (
