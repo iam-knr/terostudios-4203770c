@@ -39,11 +39,11 @@ function getTileCurve(index: number) {
   const normalized = (index - center) / center;
   const distance = Math.abs(normalized);
   return {
-    rotateY: normalized * -68,
-    translateZ: -Math.pow(distance, 1.22) * 980,
-    translateY: Math.pow(distance, 1.35) * 34,
-    scale: 1 - distance * 0.34,
-    brightness: 1 - distance * 0.58,
+    rotateY: normalized * -38,
+    translateZ: -Math.pow(distance, 1.22) * 360,
+    translateY: Math.pow(distance, 1.35) * 18,
+    scale: 1 - distance * 0.18,
+    brightness: 1 - distance * 0.34,
   };
 }
 
