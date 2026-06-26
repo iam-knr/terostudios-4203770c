@@ -104,17 +104,19 @@ export function ImaxReelWall() {
 
   return (
     <section className="relative w-full bg-black overflow-hidden">
-      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-20 pb-10 md:pt-24 md:pb-14 text-center">
-        <div className="mb-4 flex items-center justify-center gap-3">
-          <span className="h-px w-8 bg-[#e8390e]/60" />
-          <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#e8390e]">
-            (01) The Reel Wall
-          </span>
-          <span className="h-px w-8 bg-[#e8390e]/60" />
-        </div>
-        <h2 className="font-display text-[clamp(34px,5vw,72px)] leading-[0.95] tracking-tight text-[#fdfaf6]">
-          Crafted for the <span className="italic text-[#e8390e]">big screen.</span>
-        </h2>
+      <div className="container-tero py-20 md:py-28">
+        <header className="mb-14 md:mb-20 text-center">
+          <div className="mb-4 flex items-center justify-center gap-3">
+            <span className="h-px w-8 bg-vermillion/60" />
+            <span className="font-mono text-[10px] tracking-[0.4em] uppercase text-vermillion">
+              (01) The Reel Wall
+            </span>
+            <span className="h-px w-8 bg-vermillion/60" />
+          </div>
+          <h2 className="font-display text-[clamp(34px,5vw,72px)] leading-[0.95] tracking-tight text-[#fdfaf6]">
+            Crafted for the <span className="italic text-vermillion">big screen.</span>
+          </h2>
+        </header>
       </div>
       <div
         className="relative isolate w-full h-[78vh] sm:h-[88vh] md:h-[92svh] bg-black overflow-hidden"
