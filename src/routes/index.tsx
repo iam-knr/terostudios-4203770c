@@ -46,7 +46,6 @@ function Index() {
       <Testimonials />
       
       <FAQ />
-      <ScrollToTop />
       <ReelWallCompareOverlay />
     </PageLayout>
   );
