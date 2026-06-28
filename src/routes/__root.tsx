@@ -158,6 +158,7 @@ function RootComponent() {
       <CinemaTransition />
       <Outlet />
       <WhatsAppButton />
+      <ScrollToTop />
     </QueryClientProvider>
   );
 }
