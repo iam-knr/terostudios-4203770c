@@ -116,7 +116,11 @@ export function Nav() {
           "absolute inset-0 transition-all duration-500",
           openMega
             ? "opacity-100 bg-cream/95 backdrop-blur-xl border-b border-ink/8"
-            : "opacity-0",
+            : scrolled
+              ? lightBg
+                ? "opacity-100 bg-cream/95 backdrop-blur-xl border-b border-ink/8 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]"
+                : "opacity-100 bg-ink/90 backdrop-blur-xl border-b border-white/10"
+              : "opacity-0",
         ].join(" ")}
       />
 
