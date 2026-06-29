@@ -127,15 +127,15 @@ export function ImaxReelWall() {
             "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
           maskImage:
             "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
-          perspective: "clamp(720px, 82vw, 1120px)",
-          perspectiveOrigin: "50% 48%",
+          perspective: "clamp(900px, 90vw, 1400px)",
+          perspectiveOrigin: "50% 50%",
         }}
       >
         <div
-          className="absolute inset-x-[-4vw] inset-y-0"
+          className="absolute inset-x-[-6vw] inset-y-0"
           style={{
             transformStyle: "preserve-3d",
-            transform: "rotateX(0deg) scale(1.01)",
+            transform: "rotateX(0deg) scale(1.02)",
             transformOrigin: "50% 50%",
           }}
         >
@@ -153,6 +153,7 @@ export function ImaxReelWall() {
                   height: ROW_HEIGHT,
                   opacity,
                   zIndex: 10 - r,
+                  transformStyle: "preserve-3d",
                   maskImage: isLast
                     ? "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
                     : undefined,
@@ -161,23 +162,37 @@ export function ImaxReelWall() {
                     : undefined,
                 }}
               >
+                {/* Cylindrical curve overlay: left & right edges bend back */}
                 <div
                   className="absolute inset-y-0 left-0 flex"
                   style={{
                     gap: TILE_GAP,
                     animation: `${dir} ${duration}s linear infinite`,
                     willChange: "transform",
+                    transformStyle: "preserve-3d",
                   }}
                 >
-                  {tiles.map((t, c) => (
-                    <div
-                      key={`${r}-${c}`}
-                      className="h-full shrink-0"
-                      style={{ aspectRatio: "16 / 9" }}
-                    >
-                      <Tile url={t.url} fallback={t.fb} />
-                    </div>
-                  ))}
+                  {tiles.map((t, c) => {
+                    // Curve based on position within a single base set so the loop seam matches.
+                    const within = c % TILES_PER_ROW;
+                    const norm = (within / (TILES_PER_ROW - 1)) * 2 - 1; // -1..1
+                    const rotY = norm * 28; // degrees
+                    const tz = -Math.abs(norm) * 120; // push edges back
+                    return (
+                      <div
+                        key={`${r}-${c}`}
+                        className="h-full shrink-0"
+                        style={{
+                          aspectRatio: "16 / 9",
+                          transform: `translateZ(${tz}px) rotateY(${rotY}deg)`,
+                          transformOrigin: "50% 50%",
+                          backfaceVisibility: "hidden",
+                        }}
+                      >
+                        <Tile url={t.url} fallback={t.fb} />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );
@@ -185,7 +200,17 @@ export function ImaxReelWall() {
 
         </div>
 
+        {/* Side vignettes to enhance curved-screen illusion */}
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 w-[12vw] z-30"
+          style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.85), transparent)" }}
+        />
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 w-[12vw] z-30"
+          style={{ background: "linear-gradient(270deg, rgba(0,0,0,0.85), transparent)" }}
+        />
       </div>
+
     </section>
   );
 }
