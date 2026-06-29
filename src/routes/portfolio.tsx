@@ -442,8 +442,14 @@ function Lightbox({ project, onClose }: { project: VideoItem | null; onClose: ()
             initial={{ scale: 0.96, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: 12 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-6xl rounded-2xl overflow-hidden bg-black shadow-2xl"
-            style={{ aspectRatio: aspect }}
+            className="relative rounded-2xl overflow-hidden bg-black shadow-2xl"
+            style={{
+              aspectRatio: aspect,
+              height: "min(90svh, calc(95vw / " + aspect + "))",
+              width: "auto",
+              maxWidth: "95vw",
+              maxHeight: "90svh",
+            }}
           >
             <video
               ref={videoRef} src={project.url} autoPlay controls playsInline
