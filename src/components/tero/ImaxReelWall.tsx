@@ -120,96 +120,102 @@ export function ImaxReelWall() {
           </h2>
         </header>
       </div>
+      {/* Outer stage: tilts the whole wall like a cinema screen */}
       <div
         className="relative isolate w-full h-[78vh] sm:h-[88vh] md:h-[92svh] bg-black overflow-hidden"
         style={{
-          WebkitMaskImage:
-            "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
-          maskImage:
-            "linear-gradient(180deg, #000 0%, #000 71%, rgba(0,0,0,0.66) 86%, transparent 100%)",
-          perspective: "clamp(900px, 90vw, 1400px)",
-          perspectiveOrigin: "50% 50%",
+          perspective: "1800px",
+          perspectiveOrigin: "50% 55%",
         }}
       >
+        {/* The bent sheet itself — one continuous curved surface */}
         <div
-          className="absolute inset-x-[-6vw] inset-y-0"
+          className="absolute inset-0"
           style={{
             transformStyle: "preserve-3d",
-            transform: "rotateX(0deg) scale(1.02)",
-            transformOrigin: "50% 50%",
+            transform: "rotateX(6deg)",
+            transformOrigin: "50% 60%",
           }}
         >
-          {rows.map((tiles, r) => {
-            const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
-            const isLast = r === ROWS - 1;
-            const opacity = ROW_OPACITY[r] ?? 1;
-            const duration = ROW_DURATION[r] ?? 70;
-            return (
-              <div
-                key={r}
-                className="absolute w-full overflow-visible"
-                style={{
-                  top: `calc(${r} * ${ROW_STEP})`,
-                  height: ROW_HEIGHT,
-                  opacity,
-                  zIndex: 10 - r,
-                  transformStyle: "preserve-3d",
-                  maskImage: isLast
-                    ? "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
-                    : undefined,
-                  WebkitMaskImage: isLast
-                    ? "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
-                    : undefined,
-                }}
-              >
-                {/* Cylindrical curve overlay: left & right edges bend back */}
-                <div
-                  className="absolute inset-y-0 left-0 flex"
-                  style={{
-                    gap: TILE_GAP,
-                    animation: `${dir} ${duration}s linear infinite`,
-                    willChange: "transform",
-                    transformStyle: "preserve-3d",
-                  }}
-                >
-                  {tiles.map((t, c) => {
-                    // Curve based on position within a single base set so the loop seam matches.
-                    const within = c % TILES_PER_ROW;
-                    const norm = (within / (TILES_PER_ROW - 1)) * 2 - 1; // -1..1
-                    const rotY = norm * 28; // degrees
-                    const tz = -Math.abs(norm) * 120; // push edges back
-                    return (
-                      <div
-                        key={`${r}-${c}`}
-                        className="h-full shrink-0"
-                        style={{
-                          aspectRatio: "16 / 9",
-                          transform: `translateZ(${tz}px) rotateY(${rotY}deg)`,
-                          transformOrigin: "50% 50%",
-                          backfaceVisibility: "hidden",
-                        }}
-                      >
-                        <Tile url={t.url} fallback={t.fb} />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-
+          <div
+            className="absolute inset-x-[-8vw] inset-y-[-2vh] overflow-hidden bg-black"
+            style={{
+              // Barrel curve: large horizontal radius, small vertical radius
+              // bends the left & right edges inward like a curved TV / IMAX screen
+              borderRadius: "50% / 14%",
+              WebkitMaskImage:
+                "linear-gradient(180deg, #000 0%, #000 70%, rgba(0,0,0,0.6) 88%, transparent 100%)",
+              maskImage:
+                "linear-gradient(180deg, #000 0%, #000 70%, rgba(0,0,0,0.6) 88%, transparent 100%)",
+            }}
+          >
+            {/* Inner padding so rows don't touch the curved edge */}
+            <div className="absolute inset-x-0 inset-y-[4vh]">
+              {rows.map((tiles, r) => {
+                const dir = r % 2 === 0 ? "tero-row-left" : "tero-row-right";
+                const isLast = r === ROWS - 1;
+                const opacity = ROW_OPACITY[r] ?? 1;
+                const duration = ROW_DURATION[r] ?? 70;
+                return (
+                  <div
+                    key={r}
+                    className="absolute w-full overflow-visible"
+                    style={{
+                      top: `calc(${r} * ${ROW_STEP})`,
+                      height: ROW_HEIGHT,
+                      opacity,
+                      zIndex: 10 - r,
+                      maskImage: isLast
+                        ? "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
+                        : undefined,
+                      WebkitMaskImage: isLast
+                        ? "linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)"
+                        : undefined,
+                    }}
+                  >
+                    <div
+                      className="absolute inset-y-0 left-0 flex"
+                      style={{
+                        gap: TILE_GAP,
+                        animation: `${dir} ${duration}s linear infinite`,
+                        willChange: "transform",
+                      }}
+                    >
+                      {tiles.map((t, c) => (
+                        <div
+                          key={`${r}-${c}`}
+                          className="h-full shrink-0"
+                          style={{ aspectRatio: "16 / 9" }}
+                        >
+                          <Tile url={t.url} fallback={t.fb} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
-        {/* Side vignettes to enhance curved-screen illusion */}
+        {/* Curved-edge shading: deepens the bent-sheet illusion */}
         <div
-          className="pointer-events-none absolute inset-y-0 left-0 w-[12vw] z-30"
-          style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.85), transparent)" }}
+          className="pointer-events-none absolute inset-0 z-30"
+          style={{
+            background:
+              "radial-gradient(ellipse 75% 100% at 50% 50%, transparent 55%, rgba(0,0,0,0.55) 82%, rgba(0,0,0,0.95) 100%)",
+          }}
         />
+        {/* Subtle top highlight to read as a screen */}
         <div
-          className="pointer-events-none absolute inset-y-0 right-0 w-[12vw] z-30"
-          style={{ background: "linear-gradient(270deg, rgba(0,0,0,0.85), transparent)" }}
+          className="pointer-events-none absolute inset-x-0 top-0 h-[18%] z-30"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.04), transparent)",
+          }}
         />
       </div>
+
 
     </section>
   );
