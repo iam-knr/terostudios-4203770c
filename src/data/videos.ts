@@ -15,6 +15,7 @@ import phoenix from "@/assets/videos/phoenix-mall-cgi.mp4.asset.json";
 import shopontime from "@/assets/videos/shopontime-anamorphic.mp4.asset.json";
 import siemens from "@/assets/videos/siemens-gamesa-3d.mp4.asset.json";
 import sirc from "@/assets/videos/sirc-hologram.mp4.asset.json";
+import sotefin from "@/assets/videos/sotefin.mp4.asset.json";
 import { resolveAssetUrl } from "@/lib/asset-url";
 
 const r = resolveAssetUrl;
