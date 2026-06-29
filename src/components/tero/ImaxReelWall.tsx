@@ -25,8 +25,16 @@ const ROW_STEP = "clamp(92px, 14.2vh, 175px)";
 const ROW_OPACITY = [1, 1, 1, 0.92, 0.35];
 const ROW_DURATION = [82, 67, 56, 74, 88];
 
-function getTileCurve(_index: number) {
-  return { rotateY: 0, translateZ: 0, scale: 1 };
+function getTileCurve(index: number) {
+  const pos = index % TILES_PER_ROW;
+  const center = (TILES_PER_ROW - 1) / 2;
+  const norm = (pos - center) / center;
+  const maxAngle = 22;
+  const angle = norm * maxAngle;
+  const angleRad = (angle * Math.PI) / 180;
+  const radius = 2200;
+  const z = radius * (1 - Math.cos(angleRad));
+  return { rotateY: -angle, translateZ: z, scale: 1.04 };
 }
 
 
