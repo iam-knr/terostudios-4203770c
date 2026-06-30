@@ -21,18 +21,13 @@ function resolveForPlayback(url: string) {
     : resolved;
 }
 
-// Dome geometry — tiles distributed across latitude rings.
-// Rings go from near the horizon (top of dome) toward the zenith.
-const RINGS = [
-  { lat: 78, count: 14 }, // outer ring — horizon, most tiles
-  { lat: 60, count: 12 },
-  { lat: 42, count: 10 },
-  { lat: 24, count: 7 },
-  { lat: 8,  count: 1 },  // zenith cap
-];
-const RADIUS = 640; // px — sphere radius
-const TILE_W = 200;
-const TILE_H = 112; // 16:9
+// Dome geometry — viewer sits inside the dome looking outward.
+// Tiles tile the inside surface of a hemisphere (upper half) packed tightly
+// in latitude rings sized by circumference so they read as one continuous shell.
+const RADIUS = 520;             // sphere radius (px)
+const TILE_W = 168;             // 16:9
+const TILE_H = 94;
+const GAP_FACTOR = 1.08;        // tile spacing vs tile width
 
 type DomeTile = {
   url: string;
@@ -42,20 +37,27 @@ type DomeTile = {
 
 function buildDome(pool: { url: string }[]): DomeTile[] {
   const tiles: DomeTile[] = [];
+  // Rings from horizon (phi=90°) up to near the zenith.
+  // Ring spacing chosen so tile heights tile the surface vertically.
+  const ringStep = (TILE_H * GAP_FACTOR) / RADIUS; // radians
+  const phis: number[] = [];
+  for (let phi = Math.PI / 2 - 0.05; phi > 0.18; phi -= ringStep) phis.push(phi);
+  phis.push(0); // zenith cap
+
   let i = 0;
-  RINGS.forEach(({ lat, count }) => {
-    const phi = (lat * Math.PI) / 180; // from zenith
+  phis.forEach((phi) => {
+    const ringRadius = RADIUS * Math.sin(phi);
+    const circumference = 2 * Math.PI * ringRadius;
+    const count = Math.max(1, Math.floor(circumference / (TILE_W * GAP_FACTOR)));
     for (let k = 0; k < count; k++) {
       const theta = (k / count) * Math.PI * 2;
       const x = RADIUS * Math.sin(phi) * Math.cos(theta);
       const z = RADIUS * Math.sin(phi) * Math.sin(theta);
-      const y = -RADIUS * Math.cos(phi); // negative = up (dome above viewer)
-      const rotY = (theta * 180) / Math.PI + 90; // face center
-      const rotX = -(90 - lat); // tilt down toward viewer
-      tiles.push({
-        url: pool[i % pool.length].url,
-        x, y, z, rotY, rotX,
-      });
+      const y = -RADIUS * Math.cos(phi); // up
+      // Face inward (toward origin). Compute yaw then pitch.
+      const rotY = (Math.atan2(x, z) * 180) / Math.PI + 180;
+      const rotX = (Math.asin(y / RADIUS) * 180) / Math.PI;
+      tiles.push({ url: pool[i % pool.length].url, x, y, z, rotY, rotX });
       i++;
     }
   });
