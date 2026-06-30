@@ -194,37 +194,31 @@ export function ImaxReelWall() {
           @keyframes dome-drift-2 { to { transform: translate3d(-25vw, -15vh, 0); } }
           @keyframes dome-drift-3 { to { transform: translate3d(-15vw, -25vh, 0); } }
 
-          .dome-stars { background-repeat: repeat; opacity: 0.85; }
+          .dome-stars { background-repeat: repeat; opacity: 0.55; will-change: transform; }
           .dome-stars-far {
             background-image:
-              radial-gradient(1px 1px at 7% 12%, rgba(255,255,255,0.55), transparent 60%),
-              radial-gradient(1px 1px at 19% 47%, rgba(255,255,255,0.4), transparent 60%),
-              radial-gradient(1px 1px at 31% 78%, rgba(255,255,255,0.5), transparent 60%),
-              radial-gradient(1px 1px at 44% 22%, rgba(255,255,255,0.45), transparent 60%),
-              radial-gradient(1px 1px at 56% 64%, rgba(255,255,255,0.5), transparent 60%),
-              radial-gradient(1px 1px at 68% 9%, rgba(255,255,255,0.4), transparent 60%),
-              radial-gradient(1px 1px at 79% 53%, rgba(255,255,255,0.55), transparent 60%),
-              radial-gradient(1px 1px at 88% 86%, rgba(255,255,255,0.45), transparent 60%),
-              radial-gradient(1px 1px at 95% 30%, rgba(255,255,255,0.5), transparent 60%);
-            background-size: 320px 320px;
-            animation: dome-twinkle 6s ease-in-out infinite alternate;
+              radial-gradient(1px 1px at 18% 22%, rgba(255,255,255,0.4), transparent 60%),
+              radial-gradient(1px 1px at 47% 64%, rgba(255,255,255,0.35), transparent 60%),
+              radial-gradient(1px 1px at 73% 38%, rgba(255,255,255,0.4), transparent 60%),
+              radial-gradient(1px 1px at 88% 81%, rgba(255,255,255,0.3), transparent 60%);
+            background-size: 460px 460px;
+            animation: dome-twinkle 8s ease-in-out infinite alternate, dome-pan-far 180s linear infinite;
           }
           .dome-stars-near {
             background-image:
-              radial-gradient(1.6px 1.6px at 13% 32%, rgba(255,255,255,0.95), transparent 60%),
-              radial-gradient(1.4px 1.4px at 27% 71%, rgba(220,230,255,0.85), transparent 60%),
-              radial-gradient(1.8px 1.8px at 41% 18%, rgba(255,240,220,0.9), transparent 60%),
-              radial-gradient(1.3px 1.3px at 58% 82%, rgba(255,255,255,0.7), transparent 60%),
-              radial-gradient(1.6px 1.6px at 72% 38%, rgba(220,230,255,0.95), transparent 60%),
-              radial-gradient(1.4px 1.4px at 84% 11%, rgba(255,255,255,0.85), transparent 60%),
-              radial-gradient(1.8px 1.8px at 92% 67%, rgba(255,240,220,0.85), transparent 60%);
-            background-size: 540px 540px;
-            animation: dome-twinkle 4.5s ease-in-out infinite alternate-reverse;
+              radial-gradient(1.4px 1.4px at 22% 36%, rgba(255,255,255,0.7), transparent 60%),
+              radial-gradient(1.2px 1.2px at 58% 78%, rgba(220,230,255,0.6), transparent 60%),
+              radial-gradient(1.5px 1.5px at 81% 18%, rgba(255,240,220,0.65), transparent 60%);
+            background-size: 720px 720px;
+            animation: dome-twinkle 6s ease-in-out infinite alternate-reverse, dome-pan-near 120s linear infinite;
           }
-          @keyframes dome-twinkle { 0% { opacity: 0.55; } 100% { opacity: 1; } }
+          @keyframes dome-twinkle { 0% { opacity: 0.35; } 100% { opacity: 0.75; } }
+          @keyframes dome-pan-far { to { background-position: 460px 0; } }
+          @keyframes dome-pan-near { to { background-position: -720px 0; } }
           @media (prefers-reduced-motion: reduce) {
             .dome-orb, .dome-stars { animation: none !important; }
           }
+
         `}</style>
 
         {/* Heading — offset below fixed nav */}
