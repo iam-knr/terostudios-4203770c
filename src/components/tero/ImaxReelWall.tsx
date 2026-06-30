@@ -192,8 +192,8 @@ export function ImaxReelWall() {
 
         {/* Stage */}
         <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ perspective: "1500px", perspectiveOrigin: "50% 58%" }}
+          className="absolute inset-0 flex items-center justify-center overflow-hidden"
+          style={{ perspective: "1200px", perspectiveOrigin: "50% 62%" }}
         >
           <motion.div
             className="relative"
@@ -204,9 +204,10 @@ export function ImaxReelWall() {
               rotateY: rotY,
               rotateX: rotX,
               scale,
-              translateY: 120,
+              translateY: "18vh",
             }}
           >
+
             {tiles.map((t, i) => (
               <div
                 key={i}
