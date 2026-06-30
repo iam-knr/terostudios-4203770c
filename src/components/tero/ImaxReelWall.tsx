@@ -54,9 +54,9 @@ function buildDome(pool: { url: string }[]): DomeTile[] {
       const x = RADIUS * Math.sin(phi) * Math.cos(theta);
       const z = RADIUS * Math.sin(phi) * Math.sin(theta);
       const y = -RADIUS * Math.cos(phi); // up
-      // Face inward (toward origin). Compute yaw then pitch.
-      const rotY = (Math.atan2(x, z) * 180) / Math.PI + 180;
-      const rotX = (Math.asin(y / RADIUS) * 180) / Math.PI;
+      // Face outward (away from origin) so viewer outside the dome sees screens.
+      const rotY = (Math.atan2(x, z) * 180) / Math.PI;
+      const rotX = -(Math.asin(y / RADIUS) * 180) / Math.PI;
       tiles.push({ url: pool[i % pool.length].url, x, y, z, rotY, rotX });
       i++;
     }
