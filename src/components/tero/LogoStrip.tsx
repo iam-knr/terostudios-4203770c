@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { resolveAssetUrl } from "@/lib/asset-url";
 
 const logoModules = import.meta.glob<{ url: string }>(
@@ -6,11 +6,10 @@ const logoModules = import.meta.glob<{ url: string }>(
   { eager: true, import: "default" },
 );
 
-const logoByName = (n: number) => {
+const logoPathByName = (n: number) => {
   const suffix = `/client-logos/logo-${String(n).padStart(2, "0")}.png.asset.json`;
   const entry = Object.entries(logoModules).find(([k]) => k.endsWith(suffix));
-  const url = entry?.[1]?.url;
-  return url ? resolveAssetUrl(url) : undefined;
+  return entry?.[1]?.url;
 };
 
 // Primary / famous brands (curated indices)
@@ -24,25 +23,31 @@ const ALL = Array.from({ length: 67 }, (_, i) => i + 1).filter(
   (n) => !EXCLUDED.includes(n),
 );
 
-const PRIMARY_URLS = PRIMARY.map(logoByName).filter((u): u is string => Boolean(u));
-const ALL_URLS = ALL.map(logoByName).filter((u): u is string => Boolean(u));
+const PRIMARY_PATHS = PRIMARY.map(logoPathByName).filter((u): u is string => Boolean(u));
+const ALL_PATHS = ALL.map(logoPathByName).filter((u): u is string => Boolean(u));
 
-function Row({ urls, direction, duration }: { urls: string[]; direction: "left" | "right"; duration: number }) {
+function LogoImage({ path, className, ...rest }: { path: string } & Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src">) {
+  const [src, setSrc] = useState(path);
+  useEffect(() => setSrc(resolveAssetUrl(path)), [path]);
+  return <img src={src} className={className} {...rest} />;
+}
+
+function Row({ paths, direction, duration }: { paths: string[]; direction: "left" | "right"; duration: number }) {
   const animationName = direction === "left" ? "tero-row-left" : "tero-row-right";
-  const loop = [...urls, ...urls];
+  const loop = [...paths, ...paths];
   return (
     <div className="relative w-full overflow-hidden">
       <div
         className="flex items-center gap-10 md:gap-16 w-max"
         style={{ animation: `${animationName} ${duration}s linear infinite`, willChange: "transform" }}
       >
-        {loop.map((src, i) => (
+        {loop.map((path, i) => (
           <div
             key={i}
             className="flex h-[72px] md:h-[96px] w-[140px] md:w-[180px] shrink-0 items-center justify-center"
           >
-            <img
-              src={src}
+            <LogoImage
+              path={path}
               alt="Client logo"
               loading="lazy"
               decoding="async"
@@ -56,8 +61,8 @@ function Row({ urls, direction, duration }: { urls: string[]; direction: "left" 
 }
 
 export function LogoStrip() {
-  const primary = useMemo(() => PRIMARY_URLS, []);
-  const all = useMemo(() => ALL_URLS, []);
+  const primary = useMemo(() => PRIMARY_PATHS, []);
+  const all = useMemo(() => ALL_PATHS, []);
 
   return (
     <section className="relative border-y border-parchment bg-cream overflow-hidden">
@@ -76,8 +81,8 @@ export function LogoStrip() {
         </header>
 
         <div className="relative space-y-10 md:space-y-14">
-          <Row urls={primary} direction="left" duration={120} />
-          <Row urls={all} direction="right" duration={180} />
+          <Row paths={primary} direction="left" duration={120} />
+          <Row paths={all} direction="right" duration={180} />
 
           {/* Edge fades */}
           <div
@@ -94,7 +99,7 @@ export function LogoStrip() {
 
         <div className="mt-12 flex items-center justify-center gap-4 font-mono text-[10px] uppercase tracking-[0.3em] text-ink/45">
           <span className="h-px w-10 bg-ink/30" />
-          <span>{ALL_URLS.length} brands · Selected archive</span>
+          <span>{ALL_PATHS.length} brands · Selected archive</span>
           <span className="h-px w-10 bg-ink/30" />
         </div>
       </div>
