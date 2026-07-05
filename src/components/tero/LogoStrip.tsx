@@ -26,22 +26,22 @@ const ALL = Array.from({ length: 67 }, (_, i) => i + 1).filter(
 const PRIMARY_PATHS = PRIMARY.map(logoPathByName).filter((u): u is string => Boolean(u));
 const ALL_PATHS = ALL.map(logoPathByName).filter((u): u is string => Boolean(u));
 
-function Row({ urls, direction, duration }: { urls: string[]; direction: "left" | "right"; duration: number }) {
+function Row({ paths, direction, duration }: { paths: string[]; direction: "left" | "right"; duration: number }) {
   const animationName = direction === "left" ? "tero-row-left" : "tero-row-right";
-  const loop = [...urls, ...urls];
+  const loop = [...paths, ...paths];
   return (
     <div className="relative w-full overflow-hidden">
       <div
         className="flex items-center gap-10 md:gap-16 w-max"
         style={{ animation: `${animationName} ${duration}s linear infinite`, willChange: "transform" }}
       >
-        {loop.map((src, i) => (
+        {loop.map((path, i) => (
           <div
             key={i}
             className="flex h-[72px] md:h-[96px] w-[140px] md:w-[180px] shrink-0 items-center justify-center"
           >
             <img
-              src={src}
+              src={resolveAssetUrl(path)}
               alt="Client logo"
               loading="lazy"
               decoding="async"
