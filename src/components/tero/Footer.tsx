@@ -126,7 +126,7 @@ export function Footer() {
               </a>
             </li>
             <li>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cream/40">WhatsApp</p>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-cream/40">WhatsApp</p>
               <a
                 href="https://wa.me/919900013988"
                 target="_blank"
