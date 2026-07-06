@@ -1,50 +1,44 @@
-# IMAX Curved Wall — replace the Dome
+# IMAX Wall — spherical curve, mouse parallax, hover lift, native-aspect masonry
 
-Rework `src/components/tero/ImaxReelWall.tsx` so the pinned "Step inside the dome" section renders a concave IMAX-style curved video wall instead of a hemispherical dome. Reuse the exact same `videos` array from `src/data/videos.ts` (no new placeholder assets). All other page sections (`Hero`, `LogoStrip`, `ServicesScroller`, etc.) stay untouched.
+Refine `src/components/tero/ImaxReelWall.tsx` only. All other files untouched. Continue reusing the `videos` array from `src/data/videos.ts` — no new assets.
 
-## What changes
+## 1. Vertical curve (spherical feel)
 
-Only `src/components/tero/ImaxReelWall.tsx`. The exported `ImaxReelWall` component keeps its name and its slot in `src/routes/index.tsx`.
+Currently only columns rotate on Y. Add a per-tile vertical curve:
+- Compute a row index per tile within its column (0..N-1) and a normalized offset from the column's vertical center (`rowOffset = rowIndex - (colLength-1)/2`).
+- Apply per tile: `rotateX(${-rowOffset * 3}deg) translateZ(${-Math.abs(rowOffset) * 12}px)` — top and bottom tiles tilt inward toward the viewer; middle tiles sit furthest back. Combined with the existing column `rotateY` this reads as a section of a sphere.
+- Scale down for mobile (`degPerRow` 2 on <640px, 2.5 on md, 3 on lg).
 
-## New structure
+## 2. Native-aspect masonry (max videos in their own dimensions)
 
-1. Keep the outer pinned section, cosmic backdrop, orbs, starfield, grain, vignettes, headline block, and "scroll ↓" hint exactly as they are.
-2. Replace the 3D dome stage (`.absolute inset-x-0 bottom-0 ...` + `motion.div` with spherical tile math) with a curved masonry wall:
-   - Container: `perspective: 1200px`, `perspectiveOrigin: 50% 55%`, `transform-style: preserve-3d`.
-   - Inner wrapper: fixed logical width (e.g. `min(1600px, 140vw)`), centered, with `preserve-3d`.
-   - 7 explicit column `<div>`s in a flex row with a small consistent gap (e.g. `gap-2` / 8px).
-   - Distribute `videos` across the 7 columns round-robin so every column has 3–5 tiles cycling from the same pool. If the total isn't divisible, cycle from the start — never invent assets.
-   - Each column is `flex flex-col gap-2` with varied tile heights via a fixed pattern per column index (e.g. `[220, 160, 260, 180, 240]` px, offset per column for a masonry feel). Tile widths come from the column width; each tile keeps `overflow-hidden rounded-[12px] ring-1 ring-white/10` and the same subtle inner shadow/vignette overlay used today.
+Replace the fixed HEIGHT_PATTERNS with per-video heights derived from each `VideoItem.aspect`:
+- Column width is fluid (`flex-1`). Render each tile with `paddingTop: ${100 / aspect}%` on an inner box, or set `aspectRatio: ${aspect}` on the tile so it takes its native shape.
+- Distribute videos across columns using a shortest-column bin-packing pass (track cumulative `1/aspect` height per column, push next video into the currently-shortest column). This gives a real masonry with no cropping and packs every video in the pool at least once.
+- Use the full `videos` pool (17 items) so the wall shows the maximum available reels; if a column ends up empty at small widths, cycle from the start.
 
-## Concave curve
+## 3. Screen bloom + edge vignette
 
-- Center column index = 3 (0..6). For each column compute `offset = index - 3` (range −3..+3).
-- Apply per column: `transform: rotateY(${offset * 8}deg) translateZ(${-Math.abs(offset) * -40}px)` — i.e. negative offsets rotate positive-Y and positive offsets rotate negative-Y so both edges wrap toward the viewer, and edge columns get pulled forward with `translateZ` (center sits furthest back).
-- Set `transformOrigin: 'center center'` on each column and `backfaceVisibility: hidden` on tiles.
-- Use ~8° per column offset (tunable within the 6–10° range) and up to ~120px forward pull at the outermost columns for a smooth cylinder-section read.
+- Add a soft radial bloom behind the wall (inside the stage container, below the columns): a large `radial-gradient` in cream/warm-white at ~10% opacity with `mix-blend-screen` and heavy blur, sized ~120% of the wall.
+- Add a subtle inner-edge vignette on top of the wall: an absolutely-positioned overlay with `box-shadow: inset 0 0 240px 40px rgba(0,0,0,0.75)` and `pointer-events-none`, above tiles but below the existing black gradient vignettes so the edges darken like an IMAX theatre.
 
-## Scroll behavior
+## 4. Mouse parallax tilt
 
-- Drop the dome's `useScroll` rotY/rotX/scale mapping. The wall is a static curved surface — the pinned section stays (still `320vh`) so the viewer has time to look at it, but rotation goes away. Keep a subtle parallax: map scroll progress to a small `translateY` (e.g. `-40px → 40px`) and a very light `scale` (0.98 → 1.02) on the wrapper so it doesn't feel dead. No dome-style spin.
+- Track mouse position over the sticky stage via `onMouseMove` on the sticky container; normalize to `(-1..1, -1..1)` from center.
+- Feed into two `motion` values with a slow spring (`stiffness: 40, damping: 20`).
+- Apply to the wall wrapper as `rotateY: mouseX * 3deg` and `rotateX: -mouseY * 2deg`, combined with the existing scroll-driven `translateY`/`scale` (framer-motion handles combined transforms via style props). Reset toward 0 on `mouseleave`.
+- Respect `prefers-reduced-motion` — skip parallax if reduced.
 
-## Videos
+## 5. Hover tile lift + brighten
 
-Reuse the existing `Tile` component and its lazy mount/`resolveForPlayback` logic verbatim — same `muted`, `autoPlay`, `loop`, `playsInline`, `object-fit: cover`. Eager-mount only the first ~14 tiles (first two columns) to keep initial network cost similar to today.
-
-## Responsive
-
-- ≥1024px: 7 columns as above.
-- 640–1023px: 5 columns, curve reduced to ~7°/column, translateZ scaled down.
-- <640px: 3 columns, ~5°/column, translateZ minimal — still concave but flatter so tiles don't clip.
-- Column count + curve values chosen via a small `useEffect` + `window.matchMedia` (or `useMobile` hook if already imported elsewhere) so SSR renders the desktop layout and hydration adjusts.
+- On each `Tile`, add `transition: transform 400ms cubic-bezier(.2,.7,.2,1), filter 400ms` and a `group hover:` state (or `onMouseEnter`/`Leave` local state) that applies `translateZ(40px) scale(1.03)` and boosts the video `filter` to `brightness(1.25) contrast(1.15) saturate(1.1)`, plus a stronger ring (`ring-white/25`) and a slightly amplified box-shadow for a "lit screen" pop.
+- Keep tiles `cursor-pointer`-free (no click behavior added) — pure visual affordance.
 
 ## What stays exactly the same
 
-- `src/data/videos.ts` — untouched.
-- Headline block, backdrop layers, vignettes, "scroll ↓" hint — untouched.
-- `src/routes/index.tsx` — untouched (still renders `<ImaxReelWall />`).
-- All other components — untouched.
+- Cosmic backdrop, orbs, starfield, film grain, headline, "scroll ↓" hint, section height (320vh), scroll-driven subtle `translateY`/`scale`, and all four black edge vignettes.
+- `resolveForPlayback`, lazy Tile mounting, video attributes (`muted autoPlay loop playsInline`).
+- `src/data/videos.ts`, `src/routes/index.tsx`, all other components.
 
 ## Verification
 
-After the edit: run the dev build, load `/`, confirm the section shows a concave curved wall of the same client reels, tiles autoplay muted, headline still reads "Step inside the dome.", and no console errors. Resize to mobile widths to confirm the responsive column counts kick in.
+Reload `/`, confirm: tiles show at native aspect ratios in a packed masonry, wall reads as a section of a sphere (both horizontal and vertical curve), moving the mouse tilts the whole wall smoothly, hovering a tile lifts and brightens it, edges are darkened by a vignette with a soft warm bloom behind the wall. Resize to mobile/tablet — curve softens, columns drop to 5 then 3, no console errors.
