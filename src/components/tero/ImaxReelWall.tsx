@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
-import { videos, type VideoItem } from "@/data/videos";
+import { videos } from "@/data/videos";
 import { resolveAssetUrl } from "@/lib/asset-url";
 
 /**
- * IMAX Curved Wall — a spherical section of reels curved concavely toward the
- * viewer. Tiles keep their native aspect ratios and are packed masonry-style
- * across columns. The whole wall tilts gently toward the mouse cursor and
- * individual tiles lift on hover.
+ * IMAX Curved Wall — one massive seamless concave LED screen made of
+ * uniform 1.9:1 panels tiled with no gaps and mapped onto a cylinder.
  */
 
 function resolveForPlayback(url: string) {
@@ -21,51 +19,25 @@ function resolveForPlayback(url: string) {
     : resolved;
 }
 
-function Tile({
-  url,
-  aspect,
-  rotX,
-  tz,
-  eager,
-}: {
-  url: string;
-  aspect: number;
-  rotX: number;
-  tz: number;
-  eager: boolean;
-}) {
+function Panel({ url, eager }: { url: string; eager: boolean }) {
   const [mount, setMount] = useState(eager);
-  const [playing, setPlaying] = useState(false);
   const [src, setSrc] = useState(url);
-  const [hover, setHover] = useState(false);
 
   useEffect(() => setSrc(resolveForPlayback(url)), [url]);
 
   useEffect(() => {
     if (eager) return;
-    const t = window.setTimeout(() => setMount(true), 250);
+    const t = window.setTimeout(() => setMount(true), 300 + Math.random() * 600);
     return () => window.clearTimeout(t);
   }, [eager]);
 
-  const hoverLift = hover ? 60 : 0;
-
   return (
     <div
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      className="relative w-full overflow-hidden rounded-[12px] bg-black ring-1 ring-white/10"
+      className="relative w-full bg-black"
       style={{
-        aspectRatio: `${aspect}`,
-        transform: `rotateX(${rotX}deg) translateZ(${tz + hoverLift}px) scale(${hover ? 1.04 : 1})`,
-        transformOrigin: "center center",
-        transformStyle: "preserve-3d",
-        backfaceVisibility: "hidden",
-        transition:
-          "transform 500ms cubic-bezier(.2,.7,.2,1), box-shadow 400ms ease, outline-color 300ms ease",
-        boxShadow: hover
-          ? "0 30px 90px -20px rgba(255,220,180,0.35), 0 20px 60px -30px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,0,0,0.3)"
-          : "0 20px 60px -30px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.55)",
-        outline: hover ? "1px solid rgba(255,255,255,0.28)" : "1px solid transparent",
+        aspectRatio: "1.9 / 1",
+        outline: "1px solid rgba(0,0,0,0.55)",
+        outlineOffset: "-1px",
       }}
     >
       {mount && (
@@ -80,62 +52,30 @@ function Tile({
             const v = e.currentTarget;
             if (v.paused) v.play().catch(() => {});
           }}
-          onPlaying={() => setPlaying(true)}
-          className={`absolute inset-0 h-full w-full object-cover pointer-events-none select-none transition-[filter,opacity] duration-300 ${playing ? "opacity-95" : "opacity-0"}`}
-          style={{
-            filter: hover
-              ? "brightness(1.25) contrast(1.15) saturate(1.1)"
-              : "brightness(1.08) contrast(1.08)",
-          }}
+          className="absolute inset-0 h-full w-full object-cover pointer-events-none select-none"
+          style={{ filter: "brightness(1.12) contrast(1.1) saturate(1.05)" }}
         />
       )}
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none transition-opacity duration-300"
-        style={{
-          opacity: hover ? 0.3 : 1,
-          background:
-            "linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.5) 100%)",
-        }}
-      />
     </div>
   );
 }
 
-function useColumnCount() {
-  const [cols, setCols] = useState(7);
+type Layout = { cols: number; rows: number; sweep: number; radius: number };
+
+function useLayout(): Layout {
+  const [layout, setLayout] = useState<Layout>({ cols: 9, rows: 5, sweep: 90, radius: 900 });
   useEffect(() => {
     const compute = () => {
       const w = window.innerWidth;
-      if (w < 640) setCols(3);
-      else if (w < 1024) setCols(5);
-      else setCols(7);
+      if (w < 640) setLayout({ cols: 5, rows: 3, sweep: 50, radius: 500 });
+      else if (w < 1024) setLayout({ cols: 7, rows: 4, sweep: 70, radius: 700 });
+      else setLayout({ cols: 9, rows: 5, sweep: 90, radius: 900 });
     };
     compute();
     window.addEventListener("resize", compute);
     return () => window.removeEventListener("resize", compute);
   }, []);
-  return cols;
-}
-
-// Bin-pack videos into `cols` columns using shortest-column-first.
-// Repeat the pool so every column is well filled.
-function packColumns(pool: VideoItem[], cols: number, minTilesPerCol: number): VideoItem[][] {
-  const buckets: VideoItem[][] = Array.from({ length: cols }, () => []);
-  const heights = new Array(cols).fill(0);
-  const target = Math.max(minTilesPerCol, Math.ceil((pool.length * 2) / cols));
-  const totalNeeded = target * cols;
-  for (let i = 0; i < totalNeeded; i++) {
-    const item = pool[i % pool.length];
-    // Height contribution = 1 / aspect (taller videos take more vertical space).
-    let shortest = 0;
-    for (let c = 1; c < cols; c++) {
-      if (heights[c] < heights[shortest]) shortest = c;
-    }
-    buckets[shortest].push(item);
-    heights[shortest] += 1 / item.aspect;
-  }
-  return buckets;
+  return layout;
 }
 
 export function ImaxReelWall() {
@@ -147,39 +87,48 @@ export function ImaxReelWall() {
   });
   const p = useSpring(scrollYProgress, { stiffness: 140, damping: 32, mass: 0.35, restDelta: 0.0005 });
 
-  const scrollY = useTransform(p, [0, 1], [-40, 40]);
-  const scrollScale = useTransform(p, [0, 0.5, 1], [0.98, 1.02, 1.0]);
+  const scrollY = useTransform(p, [0, 1], [-30, 30]);
+  const scrollScale = useTransform(p, [0, 0.5, 1], [0.99, 1.02, 1.0]);
 
-  // Mouse parallax (spring-damped, slow).
+  // Very subtle mouse parallax — a colossal screen barely moves.
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const mouseRotY = useSpring(mx, { stiffness: 40, damping: 20, mass: 0.5 });
-  const mouseRotX = useSpring(my, { stiffness: 40, damping: 20, mass: 0.5 });
+  const mouseRotY = useSpring(mx, { stiffness: 40, damping: 22, mass: 0.6 });
+  const mouseRotX = useSpring(my, { stiffness: 40, damping: 22, mass: 0.6 });
 
-  const cols = useColumnCount();
+  const { cols, rows, sweep, radius } = useLayout();
 
-  const { degPerCol, zPerCol, degPerRow, zPerRow } = useMemo(() => {
-    if (cols <= 3) return { degPerCol: 5, zPerCol: 20, degPerRow: 2, zPerRow: 6 };
-    if (cols <= 5) return { degPerCol: 7, zPerCol: 30, degPerRow: 2.5, zPerRow: 10 };
-    return { degPerCol: 8, zPerCol: 40, degPerRow: 3, zPerRow: 12 };
-  }, [cols]);
-
-  const columns = useMemo(() => packColumns(videos, cols, 4), [cols]);
-  const center = (cols - 1) / 2;
+  // Fill grid by cycling the pool.
+  const grid = useMemo(() => {
+    const out: string[][] = [];
+    let i = 0;
+    for (let r = 0; r < rows; r++) {
+      const row: string[] = [];
+      for (let c = 0; c < cols; c++) {
+        row.push(videos[i % videos.length].url);
+        i++;
+      }
+      out.push(row);
+    }
+    return out;
+  }, [cols, rows]);
 
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = stageRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1; // -1..1
+    const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-    mx.set(nx * 3); // rotateY degrees
-    my.set(-ny * 2); // rotateX degrees
+    mx.set(nx * 1.5);
+    my.set(-ny * 1.0);
   };
   const onLeave = () => {
     mx.set(0);
     my.set(0);
   };
+
+  // Column width — the wrapped arc should fill most of the viewport.
+  const colWidth = `calc(min(100vw, 1600px) / ${cols} * 1.05)`;
 
   return (
     <section
@@ -214,19 +163,19 @@ export function ImaxReelWall() {
         <div aria-hidden className="absolute inset-0 pointer-events-none dome-stars dome-stars-far" />
         <div aria-hidden className="absolute inset-0 pointer-events-none dome-stars dome-stars-near" />
 
-        {/* Screen bloom — warm cream glow behind the wall */}
+        {/* Warm screen bloom — spill light off a bright screen */}
         <div
           aria-hidden
           className="absolute pointer-events-none"
           style={{
             left: "50%",
             top: "55%",
-            width: "120vw",
-            height: "110vh",
+            width: "140vw",
+            height: "120vh",
             transform: "translate(-50%, -50%)",
             background:
-              "radial-gradient(50% 45% at 50% 50%, rgba(255,225,190,0.14) 0%, rgba(255,200,160,0.06) 40%, transparent 70%)",
-            filter: "blur(40px)",
+              "radial-gradient(50% 45% at 50% 50%, rgba(255,225,190,0.10) 0%, rgba(255,200,160,0.04) 45%, transparent 75%)",
+            filter: "blur(60px)",
             mixBlendMode: "screen",
           }}
         />
@@ -294,20 +243,19 @@ export function ImaxReelWall() {
           </header>
         </div>
 
-        {/* IMAX curved wall stage */}
+        {/* Cylindrical IMAX screen */}
         <div
-          className="absolute inset-x-0 flex items-start justify-center overflow-hidden"
+          className="absolute inset-x-0 flex items-center justify-center"
           style={{
             top: "22vh",
             bottom: 0,
-            perspective: "1400px",
-            perspectiveOrigin: "50% 55%",
+            perspective: "1800px",
+            perspectiveOrigin: "50% 50%",
           }}
         >
           <motion.div
-            className="relative flex justify-center"
+            className="relative flex items-center justify-center"
             style={{
-              width: "min(1700px, 145vw)",
               transformStyle: "preserve-3d",
               translateY: scrollY,
               scale: scrollScale,
@@ -315,77 +263,66 @@ export function ImaxReelWall() {
               rotateX: mouseRotX,
             }}
           >
-            <div
-              className="flex gap-2 px-2"
-              style={{ transformStyle: "preserve-3d", width: "100%" }}
-            >
-              {columns.map((colTiles, colIdx) => {
-                const offset = colIdx - center;
-                const rotY = -offset * degPerCol;
-                const tzCol = Math.abs(offset) * zPerCol;
-                const midRow = (colTiles.length - 1) / 2;
+            <div className="flex" style={{ transformStyle: "preserve-3d" }}>
+              {Array.from({ length: cols }).map((_, colIdx) => {
+                const t = cols === 1 ? 0 : colIdx / (cols - 1) - 0.5; // -0.5..0.5
+                const theta = t * sweep; // degrees
+                const rad = (theta * Math.PI) / 180;
+                const tz = Math.cos(rad) * radius - radius; // negative for outer columns
+                const centerRow = Math.floor(rows / 2);
                 return (
                   <div
                     key={colIdx}
-                    className="flex flex-1 min-w-0 flex-col gap-2"
+                    className="flex flex-col"
                     style={{
-                      transform: `rotateY(${rotY}deg) translateZ(${tzCol}px)`,
+                      width: colWidth,
+                      transform: `rotateY(${theta}deg) translateZ(${tz}px)`,
                       transformOrigin: "center center",
                       transformStyle: "preserve-3d",
                     }}
                   >
-                    {colTiles.map((t, i) => {
-                      const rowOffset = i - midRow;
-                      const rowRotX = -rowOffset * degPerRow;
-                      const rowTz = Math.abs(rowOffset) * zPerRow;
-                      const eager = colIdx < 2 && i < 3;
-                      return (
-                        <Tile
-                          key={`${colIdx}-${i}`}
-                          url={t.url}
-                          aspect={t.aspect}
-                          rotX={rowRotX}
-                          tz={rowTz}
-                          eager={eager}
-                        />
-                      );
+                    {grid.map((row, rIdx) => {
+                      const eager = Math.abs(rIdx - centerRow) <= 1 && Math.abs(colIdx - (cols - 1) / 2) <= 2;
+                      return <Panel key={`${colIdx}-${rIdx}`} url={row[colIdx]} eager={eager} />;
                     })}
                   </div>
                 );
               })}
             </div>
+
+            {/* Scanline overlay across the screen surface */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                backgroundImage:
+                  "repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px)",
+                mixBlendMode: "overlay",
+              }}
+            />
           </motion.div>
         </div>
 
-        {/* Inner-edge vignette (theatre feel) */}
+        {/* Soft edge fades (no heavy vignette) */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-30"
-          style={{
-            boxShadow: "inset 0 0 240px 40px rgba(0,0,0,0.75)",
-          }}
-        />
-
-        {/* Vignettes */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[26%] z-30"
-          style={{ background: "linear-gradient(0deg, #000 10%, transparent 100%)" }}
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[16%] z-30"
+          style={{ background: "linear-gradient(0deg, #000 20%, transparent 100%)" }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[18%] z-20"
-          style={{ background: "linear-gradient(180deg, #000 20%, transparent 100%)" }}
+          className="pointer-events-none absolute inset-x-0 top-0 h-[12%] z-20"
+          style={{ background: "linear-gradient(180deg, #000 30%, transparent 100%)" }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 w-[10%] z-30"
-          style={{ background: "linear-gradient(90deg, #000 20%, transparent 100%)" }}
+          className="pointer-events-none absolute inset-y-0 left-0 w-[6%] z-30"
+          style={{ background: "linear-gradient(90deg, #000 30%, transparent 100%)" }}
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 w-[10%] z-30"
-          style={{ background: "linear-gradient(270deg, #000 20%, transparent 100%)" }}
+          className="pointer-events-none absolute inset-y-0 right-0 w-[6%] z-30"
+          style={{ background: "linear-gradient(270deg, #000 30%, transparent 100%)" }}
         />
 
         {/* Scroll hint */}
