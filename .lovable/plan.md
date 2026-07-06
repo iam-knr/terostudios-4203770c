@@ -1,43 +1,50 @@
-## Goal
+# IMAX Curved Wall — replace the Dome
 
-Make `bun run build` reproducibly succeed on a fresh clone so you can deploy to your own VPS as a Node server, instead of the template's Cloudflare Worker default.
+Rework `src/components/tero/ImaxReelWall.tsx` so the pinned "Step inside the dome" section renders a concave IMAX-style curved video wall instead of a hemispherical dome. Reuse the exact same `videos` array from `src/data/videos.ts` (no new placeholder assets). All other page sections (`Hero`, `LogoStrip`, `ServicesScroller`, etc.) stay untouched.
 
-## Root cause
+## What changes
 
-The Lovable Vite wrapper (`@lovable.dev/vite-tanstack-config`) always adds Nitro to the build. By default it uses the `cloudflare-module` preset. When you override with `NITRO_PRESET=node-server`, Nitro re-processes the already-emitted Tailwind v4 CSS through its `virtual:nitro:raw:` critical-CSS pipeline, and Lightning CSS crashes with `Unexpected end of input`. This is a known incompatibility between recent Nitro v3 betas and `@tailwindcss/vite@4` under the Node preset — not caused by anything in your code.
+Only `src/components/tero/ImaxReelWall.tsx`. The exported `ImaxReelWall` component keeps its name and its slot in `src/routes/index.tsx`.
 
-## Plan
+## New structure
 
-1. **Declare the deploy target in `vite.config.ts` instead of via env var.** Add `nitro: { preset: "node-server" }` to the `defineConfig` call so the build is deterministic and doesn't depend on `NITRO_PRESET` being set at the shell.
+1. Keep the outer pinned section, cosmic backdrop, orbs, starfield, grain, vignettes, headline block, and "scroll ↓" hint exactly as they are.
+2. Replace the 3D dome stage (`.absolute inset-x-0 bottom-0 ...` + `motion.div` with spherical tile math) with a curved masonry wall:
+   - Container: `perspective: 1200px`, `perspectiveOrigin: 50% 55%`, `transform-style: preserve-3d`.
+   - Inner wrapper: fixed logical width (e.g. `min(1600px, 140vw)`), centered, with `preserve-3d`.
+   - 7 explicit column `<div>`s in a flex row with a small consistent gap (e.g. `gap-2` / 8px).
+   - Distribute `videos` across the 7 columns round-robin so every column has 3–5 tiles cycling from the same pool. If the total isn't divisible, cycle from the start — never invent assets.
+   - Each column is `flex flex-col gap-2` with varied tile heights via a fixed pattern per column index (e.g. `[220, 160, 260, 180, 240]` px, offset per column for a masonry feel). Tile widths come from the column width; each tile keeps `overflow-hidden rounded-[12px] ring-1 ring-white/10` and the same subtle inner shadow/vignette overlay used today.
 
-2. **Pin `nitro` to a version that builds cleanly with the Node preset + Tailwind v4.** Downgrade from `3.0.260603-beta` (and the newer `260610-beta`, which is also broken) to the earliest version the wrapper still accepts: `3.0.260429-beta`. Use an exact pin (no `^`) in `package.json` so a fresh `bun install` can't drift into a broken beta.
+## Concave curve
 
-3. **Add a Lightning CSS safety net for the SSR pass.** In case a future patch of the wrapper re-introduces the crash, extend `defineConfig` with `vite: { build: { cssMinify: "esbuild" } }` so Nitro's inlining step uses esbuild instead of Lightning CSS for that stage. This is a no-op for the client bundle (Tailwind still uses Lightning CSS) but prevents the SSR re-parse from touching Lightning CSS on the already-minified output.
+- Center column index = 3 (0..6). For each column compute `offset = index - 3` (range −3..+3).
+- Apply per column: `transform: rotateY(${offset * 8}deg) translateZ(${-Math.abs(offset) * -40}px)` — i.e. negative offsets rotate positive-Y and positive offsets rotate negative-Y so both edges wrap toward the viewer, and edge columns get pulled forward with `translateZ` (center sits furthest back).
+- Set `transformOrigin: 'center center'` on each column and `backfaceVisibility: hidden` on tiles.
+- Use ~8° per column offset (tunable within the 6–10° range) and up to ~120px forward pull at the outermost columns for a smooth cylinder-section read.
 
-4. **Document the VPS build/run flow** in a short `DEPLOY.md`:
-   - `bun install`
-   - `bun run download-media` (populates `public/media/` from your CDN)
-   - `VITE_USE_LOCAL_MEDIA=true bun run build`
-   - `node .output/server/index.mjs` behind your reverse proxy (nginx/Caddy) on the port of your choice (`PORT=3000` by default for the Node preset)
+## Scroll behavior
 
-5. **Verify.** Run a fresh install + build in the sandbox after the changes to confirm the Lightning CSS error is gone and the `.output/` tree looks correct (`.output/server/index.mjs` + `.output/public/`).
+- Drop the dome's `useScroll` rotY/rotX/scale mapping. The wall is a static curved surface — the pinned section stays (still `320vh`) so the viewer has time to look at it, but rotation goes away. Keep a subtle parallax: map scroll progress to a small `translateY` (e.g. `-40px → 40px`) and a very light `scale` (0.98 → 1.02) on the wrapper so it doesn't feel dead. No dome-style spin.
 
-## Technical details
+## Videos
 
-- `vite.config.ts` diff (illustrative):
-  ```ts
-  export default defineConfig({
-    tanstackStart: { server: { entry: "server" } },
-    nitro: { preset: "node-server" },
-    vite: { build: { cssMinify: "esbuild" } },
-  });
-  ```
-- `package.json` diff:
-  ```json
-  "nitro": "3.0.260429-beta"
-  ```
-- No source-code changes to your app, components, or asset-URL logic. The earlier CDN-fallback + `VITE_USE_LOCAL_MEDIA` work stays exactly as-is.
+Reuse the existing `Tile` component and its lazy mount/`resolveForPlayback` logic verbatim — same `muted`, `autoPlay`, `loop`, `playsInline`, `object-fit: cover`. Eager-mount only the first ~14 tiles (first two columns) to keep initial network cost similar to today.
 
-## Risk / fallback
+## Responsive
 
-If the pinned `3.0.260429-beta` also trips the Lightning CSS bug on your VPS Node version (unlikely — this beta predates the offending change), the next fallback is to keep the Cloudflare preset and run the output on your VPS via `workerd` (the same runtime Cloudflare uses), which sidesteps Nitro's Node critical-CSS path entirely. I'd only take that step if step 2 doesn't hold up under a clean rebuild.
+- ≥1024px: 7 columns as above.
+- 640–1023px: 5 columns, curve reduced to ~7°/column, translateZ scaled down.
+- <640px: 3 columns, ~5°/column, translateZ minimal — still concave but flatter so tiles don't clip.
+- Column count + curve values chosen via a small `useEffect` + `window.matchMedia` (or `useMobile` hook if already imported elsewhere) so SSR renders the desktop layout and hydration adjusts.
+
+## What stays exactly the same
+
+- `src/data/videos.ts` — untouched.
+- Headline block, backdrop layers, vignettes, "scroll ↓" hint — untouched.
+- `src/routes/index.tsx` — untouched (still renders `<ImaxReelWall />`).
+- All other components — untouched.
+
+## Verification
+
+After the edit: run the dev build, load `/`, confirm the section shows a concave curved wall of the same client reels, tiles autoplay muted, headline still reads "Step inside the dome.", and no console errors. Resize to mobile widths to confirm the responsive column counts kick in.
