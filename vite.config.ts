@@ -12,4 +12,9 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  // VPS deploy: build a Node server output instead of Cloudflare Workers.
+  nitro: { preset: "node-server" },
+  // Safety net: keep Nitro's SSR CSS re-processing off Lightning CSS to avoid
+  // "[lightningcss] Unexpected end of input" during the virtual:nitro:raw pass.
+  vite: { build: { cssMinify: "esbuild" } },
 });
