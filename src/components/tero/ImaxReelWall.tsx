@@ -4,10 +4,9 @@ import { videos } from "@/data/videos";
 import { resolveAssetUrl } from "@/lib/asset-url";
 
 /**
- * Dome Reel Wall — a hemispherical wall of reels arranged on a sphere.
- * The dome only rotates while the user scrolls through the pinned section
- * (no autoplay marquee). Tiles are positioned via spherical coordinates so
- * they wrap a true 3D dome that the viewer looks up into.
+ * IMAX Curved Wall — a masonry grid of reels curved concavely toward the
+ * viewer like the inside of a giant IMAX cylinder screen. Reuses the exact
+ * `videos` data source used by the rest of the site.
  */
 
 function resolveForPlayback(url: string) {
@@ -21,51 +20,7 @@ function resolveForPlayback(url: string) {
     : resolved;
 }
 
-// Dome geometry — viewer sits inside the dome looking outward.
-// Tiles tile the inside surface of a hemisphere (upper half) packed tightly
-// in latitude rings sized by circumference so they read as one continuous shell.
-const RADIUS = 360;             // sphere radius (px) — sized to fit viewport
-const TILE_W = 132;             // 16:9
-const TILE_H = 74;
-const GAP_FACTOR = 1.06;        // tile spacing vs tile width
-
-type DomeTile = {
-  url: string;
-  x: number; y: number; z: number;
-  rotY: number; rotX: number;
-};
-
-function buildDome(pool: { url: string }[]): DomeTile[] {
-  const tiles: DomeTile[] = [];
-  // Rings from horizon (phi=90°) up to near the zenith.
-  // Ring spacing chosen so tile heights tile the surface vertically.
-  const ringStep = (TILE_H * GAP_FACTOR) / RADIUS; // radians
-  const phis: number[] = [];
-  for (let phi = Math.PI / 2 - 0.05; phi > 0.18; phi -= ringStep) phis.push(phi);
-  phis.push(0); // zenith cap
-
-  let i = 0;
-  phis.forEach((phi) => {
-    const ringRadius = RADIUS * Math.sin(phi);
-    const circumference = 2 * Math.PI * ringRadius;
-    const count = Math.max(1, Math.floor(circumference / (TILE_W * GAP_FACTOR)));
-    for (let k = 0; k < count; k++) {
-      const theta = (k / count) * Math.PI * 2;
-      const x = RADIUS * Math.sin(phi) * Math.cos(theta);
-      const z = RADIUS * Math.sin(phi) * Math.sin(theta);
-      const y = -RADIUS * Math.cos(phi); // up
-      // Face outward (away from origin) so viewer outside the dome sees screens.
-      const rotY = (Math.atan2(x, z) * 180) / Math.PI;
-      const rotX = -(Math.asin(y / RADIUS) * 180) / Math.PI;
-      tiles.push({ url: pool[i % pool.length].url, x, y, z, rotY, rotX });
-      i++;
-    }
-  });
-  return tiles;
-}
-
-function Tile({ url, eager }: { url: string; eager: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
+function Tile({ url, height, eager }: { url: string; height: number; eager: boolean }) {
   const [mount, setMount] = useState(eager);
   const [playing, setPlaying] = useState(false);
   const [src, setSrc] = useState(url);
@@ -74,17 +29,17 @@ function Tile({ url, eager }: { url: string; eager: boolean }) {
 
   useEffect(() => {
     if (eager) return;
-    // Defer non-eager tiles slightly so they don't all hit the network at once.
     const t = window.setTimeout(() => setMount(true), 250);
     return () => window.clearTimeout(t);
   }, [eager]);
 
   return (
     <div
-      ref={ref}
-      className="absolute inset-0 overflow-hidden rounded-[12px] bg-black ring-1 ring-white/10"
+      className="relative w-full overflow-hidden rounded-[12px] bg-black ring-1 ring-white/10"
       style={{
+        height,
         boxShadow: "0 20px 60px -30px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.55)",
+        backfaceVisibility: "hidden",
       }}
     >
       {mount && (
@@ -115,6 +70,33 @@ function Tile({ url, eager }: { url: string; eager: boolean }) {
   );
 }
 
+// Height patterns per column (px) — offset per column index for masonry feel.
+const HEIGHT_PATTERNS = [
+  [220, 160, 260, 180, 240],
+  [180, 260, 200, 240, 170],
+  [240, 190, 220, 260, 180],
+  [200, 250, 170, 230, 210],
+  [260, 180, 240, 200, 250],
+  [190, 230, 260, 170, 220],
+  [230, 200, 190, 250, 180],
+];
+
+function useColumnCount() {
+  const [cols, setCols] = useState(7);
+  useEffect(() => {
+    const compute = () => {
+      const w = window.innerWidth;
+      if (w < 640) setCols(3);
+      else if (w < 1024) setCols(5);
+      else setCols(7);
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
+  return cols;
+}
+
 export function ImaxReelWall() {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
@@ -123,16 +105,32 @@ export function ImaxReelWall() {
   });
   const p = useSpring(scrollYProgress, { stiffness: 140, damping: 32, mass: 0.35, restDelta: 0.0005 });
 
-  // Scroll drives the dome's rotation. We sweep ~360° on Y and tilt X slightly.
-  const rotY = useTransform(p, [0, 1], [-30, 330]);
-  const rotX = useTransform(p, [0, 0.5, 1], [-8, 4, -2]);
-  const scale = useTransform(p, [0, 0.15, 1], [0.92, 1, 1]);
+  // Subtle parallax on the whole wall — no dome spin.
+  const translateY = useTransform(p, [0, 1], [-40, 40]);
+  const scale = useTransform(p, [0, 0.5, 1], [0.98, 1.02, 1.0]);
 
-  const tiles = useMemo(() => {
-    const wide = videos.filter((v) => v.aspect >= 1.6 && v.aspect <= 2.1);
-    const pool = wide.length > 0 ? wide : videos;
-    return buildDome(pool);
-  }, []);
+  const cols = useColumnCount();
+
+  // Curve params scale with column count.
+  const { degPerCol, zPerCol } = useMemo(() => {
+    if (cols <= 3) return { degPerCol: 5, zPerCol: 20 };
+    if (cols <= 5) return { degPerCol: 7, zPerCol: 30 };
+    return { degPerCol: 8, zPerCol: 40 };
+  }, [cols]);
+
+  // Distribute videos across columns round-robin, cycling the pool if needed.
+  const columns = useMemo(() => {
+    const tilesPerCol = 5;
+    const total = cols * tilesPerCol;
+    const buckets: { url: string }[][] = Array.from({ length: cols }, () => []);
+    for (let i = 0; i < total; i++) {
+      const src = videos[i % videos.length];
+      buckets[i % cols].push({ url: src.url });
+    }
+    return buckets;
+  }, [cols]);
+
+  const center = (cols - 1) / 2;
 
   return (
     <section
@@ -151,22 +149,16 @@ export function ImaxReelWall() {
           }}
         />
 
-        {/* Drifting nebula orbs (matches site ambient glow) */}
+        {/* Drifting nebula orbs */}
         <div aria-hidden className="absolute inset-0 pointer-events-none overflow-hidden" style={{ mixBlendMode: "screen" }}>
           <div className="dome-orb dome-orb-1" />
           <div className="dome-orb dome-orb-2" />
           <div className="dome-orb dome-orb-3" />
         </div>
 
-        {/* Dense starfield — two parallax layers */}
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none dome-stars dome-stars-far"
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none dome-stars dome-stars-near"
-        />
+        {/* Dense starfield */}
+        <div aria-hidden className="absolute inset-0 pointer-events-none dome-stars dome-stars-far" />
+        <div aria-hidden className="absolute inset-0 pointer-events-none dome-stars dome-stars-near" />
 
         {/* Film grain */}
         <div
@@ -212,10 +204,9 @@ export function ImaxReelWall() {
           @media (prefers-reduced-motion: reduce) {
             .dome-orb, .dome-stars { animation: none !important; }
           }
-
         `}</style>
 
-        {/* Heading — tucked below fixed nav with a subtle backing fade */}
+        {/* Heading */}
         <div className="absolute inset-x-0 z-40 flex flex-col items-center" style={{ top: "120px" }}>
           <div className="pointer-events-none absolute inset-x-0 top-[-36px] h-[150px] z-[-1] bg-gradient-to-b from-black via-black/85 to-transparent" />
           <header className="text-center container-tero">
@@ -232,47 +223,55 @@ export function ImaxReelWall() {
           </header>
         </div>
 
-
-        {/* Stage — pushed below heading via top padding */}
+        {/* IMAX curved wall stage */}
         <div
-          className="absolute inset-x-0 bottom-0 flex items-end justify-center overflow-hidden"
+          className="absolute inset-x-0 flex items-start justify-center overflow-hidden"
           style={{
-            top: "26vh",
+            top: "22vh",
+            bottom: 0,
             perspective: "1200px",
-            perspectiveOrigin: "50% 65%",
+            perspectiveOrigin: "50% 55%",
           }}
         >
           <motion.div
-            className="relative"
+            className="relative flex justify-center"
             style={{
-              width: 1,
-              height: 1,
+              width: "min(1600px, 140vw)",
               transformStyle: "preserve-3d",
-              rotateY: rotY,
-              rotateX: rotX,
+              translateY,
               scale,
-              translateY: "-8vh",
             }}
           >
-
-
-            {tiles.map((t, i) => (
-              <div
-                key={i}
-                className="absolute"
-                style={{
-                  width: TILE_W,
-                  height: TILE_H,
-                  left: -TILE_W / 2,
-                  top: -TILE_H / 2,
-                  transform: `translate3d(${t.x}px, ${t.y}px, ${t.z}px) rotateY(${t.rotY}deg) rotateX(${t.rotX}deg)`,
-                  transformStyle: "preserve-3d",
-                  backfaceVisibility: "hidden",
-                }}
-              >
-                <Tile url={t.url} eager={i < 24} />
-              </div>
-            ))}
+            <div
+              className="flex gap-2 px-2"
+              style={{ transformStyle: "preserve-3d", width: "100%" }}
+            >
+              {columns.map((colTiles, colIdx) => {
+                const offset = colIdx - center;
+                const rotY = -offset * degPerCol; // negative offset (left) => positive rotateY, wraps toward viewer
+                const tz = -Math.abs(offset) * zPerCol * -1; // edge columns pulled forward (+Z)
+                const heights = HEIGHT_PATTERNS[colIdx % HEIGHT_PATTERNS.length];
+                let tileCounter = 0;
+                return (
+                  <div
+                    key={colIdx}
+                    className="flex flex-1 min-w-0 flex-col gap-2"
+                    style={{
+                      transform: `rotateY(${rotY}deg) translateZ(${tz}px)`,
+                      transformOrigin: "center center",
+                      transformStyle: "preserve-3d",
+                    }}
+                  >
+                    {colTiles.map((t, i) => {
+                      const h = heights[i % heights.length];
+                      const eager = colIdx < 2;
+                      const key = `${colIdx}-${i}-${tileCounter++}`;
+                      return <Tile key={key} url={t.url} height={h} eager={eager} />;
+                    })}
+                  </div>
+                );
+              })}
+            </div>
           </motion.div>
         </div>
 
@@ -286,6 +285,16 @@ export function ImaxReelWall() {
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 h-[18%] z-20"
           style={{ background: "linear-gradient(180deg, #000 20%, transparent 100%)" }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-0 w-[10%] z-30"
+          style={{ background: "linear-gradient(90deg, #000 20%, transparent 100%)" }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-0 w-[10%] z-30"
+          style={{ background: "linear-gradient(270deg, #000 20%, transparent 100%)" }}
         />
 
         {/* Scroll hint */}
