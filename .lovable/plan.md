@@ -1,36 +1,43 @@
 ## Goal
 
-Make the site fully self-contained so it runs on your VPS with no dependency on Lovable's `/__l5e/` CDN. All videos, logos, and images will be served from your own server.
+Make `bun run build` reproducibly succeed on a fresh clone so you can deploy to your own VPS as a Node server, instead of the template's Cloudflare Worker default.
 
-## Approach
+## Root cause
 
-Download every asset currently referenced via `.asset.json` pointers into `public/media/` (kept out of the JS bundle so large videos stream directly). Rewrite the resolver so it uses local `/media/...` paths in production instead of pointing back to `terostudios.lovable.app`.
+The Lovable Vite wrapper (`@lovable.dev/vite-tanstack-config`) always adds Nitro to the build. By default it uses the `cloudflare-module` preset. When you override with `NITRO_PRESET=node-server`, Nitro re-processes the already-emitted Tailwind v4 CSS through its `virtual:nitro:raw:` critical-CSS pipeline, and Lightning CSS crashes with `Unexpected end of input`. This is a known incompatibility between recent Nitro v3 betas and `@tailwindcss/vite@4` under the Node preset — not caused by anything in your code.
 
-## What gets migrated
+## Plan
 
-- 17 videos in `src/assets/videos/*.mp4.asset.json` (~80 MB total, sotefin.mp4 alone is ~57 MB)
-- 67 client logos in `src/assets/client-logos/*.png.asset.json`
-- 5 white-variant client logos in `src/assets/client-logos-white/`
-- 6 service icons in `src/assets/service-icons/`
-- 5 brand images in `src/assets/*.png.asset.json` (Bhima, Forum, Lulu, etc.)
+1. **Declare the deploy target in `vite.config.ts` instead of via env var.** Add `nitro: { preset: "node-server" }` to the `defineConfig` call so the build is deterministic and doesn't depend on `NITRO_PRESET` being set at the shell.
 
-## Steps
+2. **Pin `nitro` to a version that builds cleanly with the Node preset + Tailwind v4.** Downgrade from `3.0.260603-beta` (and the newer `260610-beta`, which is also broken) to the earliest version the wrapper still accepts: `3.0.260429-beta`. Use an exact pin (no `^`) in `package.json` so a fresh `bun install` can't drift into a broken beta.
 
-1. **Download script** — Node script reads every `*.asset.json` under `src/assets/`, fetches the file from the CDN `url`, saves it to `public/media/<same-relative-path>` (e.g. `public/media/videos/sotefin.mp4`).
-2. **Rewrite resolver** — `src/lib/asset-url.ts` maps `/__l5e/assets-v1/<id>/<filename>` → `/media/<category>/<filename>` using a lookup table built at module load from the same `import.meta.glob` of `.asset.json` files. Keeps a `VITE_LOVABLE_ASSET_BASE` override for anyone who wants to keep CDN hosting.
-3. **Update LogoStrip and other direct consumers** — they already go through `resolveAssetUrl` after the previous fix; no further code changes needed.
-4. **`.gitignore` guidance** — `public/media/` will be ~100 MB. Options:
-   - Commit it to the repo (simplest, but bloats git history).
-   - Add to `.gitignore` and re-run the download script on the VPS during deploy (recommended).
-5. **Verify** — run `bun run build`, spot-check a couple of resolved URLs in the built HTML.
+3. **Add a Lightning CSS safety net for the SSR pass.** In case a future patch of the wrapper re-introduces the crash, extend `defineConfig` with `vite: { build: { cssMinify: "esbuild" } }` so Nitro's inlining step uses esbuild instead of Lightning CSS for that stage. This is a no-op for the client bundle (Tailwind still uses Lightning CSS) but prevents the SSR re-parse from touching Lightning CSS on the already-minified output.
 
-## Technical notes
+4. **Document the VPS build/run flow** in a short `DEPLOY.md`:
+   - `bun install`
+   - `bun run download-media` (populates `public/media/` from your CDN)
+   - `VITE_USE_LOCAL_MEDIA=true bun run build`
+   - `node .output/server/index.mjs` behind your reverse proxy (nginx/Caddy) on the port of your choice (`PORT=3000` by default for the Node preset)
 
-- Vite serves anything in `public/` at the site root without processing, so `public/media/videos/sotefin.mp4` becomes `/media/videos/sotefin.mp4`. No bundling overhead, range requests work for video streaming.
-- The `.asset.json` files stay in the repo — they're the source of truth mapping filenames to categories.
-- On Lovable-hosted origins the resolver can keep using `/__l5e/` paths (unchanged) so your Lovable preview and terostudios.com continue to work; only non-Lovable hosts get the local `/media/` rewrite.
-- The download script is idempotent — safe to re-run; skips files that already exist.
+5. **Verify.** Run a fresh install + build in the sandbox after the changes to confirm the Lightning CSS error is gone and the `.output/` tree looks correct (`.output/server/index.mjs` + `.output/public/`).
 
-## Open question
+## Technical details
 
-Do you want `public/media/` committed to git, or gitignored with a `bun run download-media` step in your VPS deploy pipeline? I'd recommend the second — keeps the repo small and lets you pull fresh assets any time. Let me know and I'll implement.
+- `vite.config.ts` diff (illustrative):
+  ```ts
+  export default defineConfig({
+    tanstackStart: { server: { entry: "server" } },
+    nitro: { preset: "node-server" },
+    vite: { build: { cssMinify: "esbuild" } },
+  });
+  ```
+- `package.json` diff:
+  ```json
+  "nitro": "3.0.260429-beta"
+  ```
+- No source-code changes to your app, components, or asset-URL logic. The earlier CDN-fallback + `VITE_USE_LOCAL_MEDIA` work stays exactly as-is.
+
+## Risk / fallback
+
+If the pinned `3.0.260429-beta` also trips the Lightning CSS bug on your VPS Node version (unlikely — this beta predates the offending change), the next fallback is to keep the Cloudflare preset and run the output on your VPS via `workerd` (the same runtime Cloudflare uses), which sidesteps Nitro's Node critical-CSS path entirely. I'd only take that step if step 2 doesn't hold up under a clean rebuild.
